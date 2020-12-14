@@ -1,0 +1,10 @@
+*.log
+
+storage.*
+
+wasm/wasm
+
+rice-box.go
+
+static/jade/*
+!static/jade/funcs.go

@@ -1,0 +1,92 @@
+:go:func
+    Menu(c ViewContainer)
+
+nav.navbar.navbar-expand-lg.navbar-light.border-bottom
+    a.navbar-brand(href="#", title="product list", onclick="loadContent('v/products" + "', 'Product_list')")
+        img(src="img/logo_chimitheque_small.png", alt="chimitheque_logo", title="Chimithèque")
+    button.navbar-toggler(
+                        type="button"
+                        data-toggle="collapse" 
+                        data-target="#navbarSupportedContent" 
+                        aria-controls="navbarSupportedContent" 
+                        aria-expanded="false" 
+                        aria-label="Toggle navigation")
+        span.navbar-toggler-icon
+
+    div.collapse.navbar-collapse#navbarSupportedContent
+        ul.navbar-nav.mr-auto
+            li.nav-item#menu_list_bookmarks.collapse
+                a(href="#", onclick="Product_listBookmark()").nav-link
+                    span.mdi.mdi-bookmark.mdi-36px.iconlabel
+                        = T("menu_bookmark", 1) 
+            li.nav-item#menu_scan_qrcode.collapse
+                a(onclick="scanQR();").nav-link
+                    span.mdi.mdi-qrcode-scan.mdi-36px.iconlabel
+                        = T("menu_scanqr", 1) 
+            li.nav-item#menu_create_product.collapse
+                a(href="#", title="create product", onclick="loadContent('vc/products" + "', 'Product_create')").nav-link
+                    span.mdi.mdi-tag.mdi-36px.iconlabel
+                        = T("menu_create_productcard", 1)
+            li.nav-item.dropdown#menu_entities.collapse
+                a(href="#", title="manage entities").nav-link.dropdown-toggle#navbarDropdown(
+                    role="button" 
+                    data-toggle="dropdown" 
+                    aria-haspopup="true" 
+                    aria-expanded="false")
+                    span.mdi.mdi-store.mdi-36px.iconlabel
+                        = T("menu_entity", 1)
+                div.dropdown-menu(aria-labelledby="navbarDropdown")
+                    a(href="#", title="list", onclick="loadContent('v/entities" + "', 'Entity_list')").dropdown-item
+                        = T("list", 1)
+                    a#menu_create_entity.collapse(href="#", title="create", onclick="loadContent('vc/entities" + "', 'Entity_create')").dropdown-item
+                        = T("create", 1)
+
+            li.nav-item.dropdown#menu_storelocations.collapse
+                a(href="#", title="manage storelocations").nav-link.dropdown-toggle#navbarDropdown(
+                    role="button" 
+                    data-toggle="dropdown" 
+                    aria-haspopup="true" 
+                    aria-expanded="false")
+                    span.mdi.mdi-docker.mdi-36px.iconlabel
+                        = T("menu_storelocation", 1)
+                div.dropdown-menu(aria-labelledby="navbarDropdown")
+                    a(href="#", title="list", onclick="loadContent('v/storelocations" + "', 'StoreLocation_list')").dropdown-item
+                        = T("list", 1)
+                    a#menu_create_storelocation.collapse(href="#", title="create", onclick="loadContent('vc/storelocations" + "', 'StoreLocation_create')").dropdown-item
+                        = T("create", 1)
+
+            li.nav-item.dropdown#menu_people.collapse
+                a(href="#", title="manage people").nav-link.dropdown-toggle#navbarDropdown(
+                    role="button" 
+                    data-toggle="dropdown" 
+                    aria-haspopup="true" 
+                    aria-expanded="false")
+                    span.mdi.mdi-account-group.mdi-36px.iconlabel
+                        = T("menu_people", 1)
+                div.dropdown-menu(aria-labelledby="navbarDropdown")
+                    a(href="#", title="list", onclick="loadContent('v/people" + "', 'Person_list')").dropdown-item
+                        = T("list", 1)
+                    a#menu_create_person.collapse(href="#", title="create", onclick="loadContent('vc/people" + "', 'Person_create')").dropdown-item
+                        = T("create", 1)
+
+            li.nav-item.dropdown#menu_account
+                a(href="#", title="my account").nav-link.dropdown-toggle#navbarDropdown(
+                    role="button" 
+                    data-toggle="dropdown" 
+                    aria-haspopup="true" 
+                    aria-expanded="false")
+                    span.mdi.mdi-account.mdi-36px.iconlabel
+                        = T("menu_account", 1)
+                div.dropdown-menu(aria-labelledby="navbarDropdown")
+                    a.dropdown-item(href="#", title= "change password", onclick="loadContent('vu/peoplepass" + "', 'PersonPass_list')")
+                        span.mdi.mdi-shield-lock-outline.mdi-36px.iconlabel
+                                = T("menu_password", 1)
+                    a#menu_update_welcomeannounce.dropdown-item(href="#", title="welcome announce", onclick="loadContent('v/welcomeannounce" + "', 'WelcomeAnnounce_list')").collapse
+                        span.mdi.mdi-information-outline.mdi-36px.iconlabel
+                                = T("menu_welcomeannounce", 1)
+                    a.dropdown-item(title="logout" onclick="localStorage.clear();" href="delete-token")
+                        span.mdi.mdi-logout.mdi-36px.iconlabel
+                                = T("menu_logout", 1 )
+                    a.dropdown-item(href="#", title="about", onclick="loadContent('about" + "', 'About_list')")
+                        span.mdi.mdi-information.mdi-36px.iconlabel
+                                = T("menu_about", 1 )

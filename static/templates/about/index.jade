@@ -1,0 +1,35 @@
+//- extends ../base.jade
+include ../mixins
+block CONTENT
+    :go:func
+        About(c ViewContainer)
+
+    div.mx-auto(style="width: 60%").mt-sm-4
+        span.iconlabel
+            = T("project_leader", 1) 
+        span &nbsp;Delphine Pitrat (delphine.pitrat@ens-lyon.fr)
+    div.mx-auto(style="width: 60%").mt-sm-4
+        span.iconlabel
+            = T("project_site", 1) 
+        span 
+            a(href="https://github.com/tbellembois/gochimitheque")
+                span.mdi.mdi-github-circle &nbsp;https://github.com/tbellembois/gochimitheque
+    div.mx-auto(style="width: 60%").mt-sm-4
+        span.iconlabel
+            = T("project_support", 1) 
+        span 
+            a(href="https://github.com/tbellembois/gochimitheque")
+                span.mdi.mdi-github-circle &nbsp;https://github.com/tbellembois/gochimitheque/issues
+    div.mx-auto(style="width: 60%").mt-sm-4
+        span.iconlabel
+            = T("project_license", 1) 
+        span 
+            a(href="https://raw.githubusercontent.com/tbellembois/gochimitheque/master/LICENSE") &nbsp;Open Source - GNU GENERAL PUBLIC LICENSE V3
+    div.mx-auto(style="width: 60%").mt-sm-4
+        span.iconlabel
+            = T("project_version", 1) 
+        span#appversion
+            
+block CONTENTJS
+    script.
+        document.getElementById("appversion").innerHTML = "&nbsp;" + buildID;

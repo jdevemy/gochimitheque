@@ -1,0 +1,157 @@
+include mixins
+html
+    head
+        meta(charset="utf-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1")
+
+        title chimitheque
+
+        link(href=c.ProxyPath + "css/animate.min.css",  rel="stylesheet" )
+        link(href=c.ProxyPath + "css/bootstrap-colorpicker.min.css",  rel="stylesheet" )
+        link(href=c.ProxyPath + "css/bootstrap-table.min.css",  rel="stylesheet" )
+        link(href=c.ProxyPath + "css/bootstrap-toggle.min.css",  rel="stylesheet" )
+        link(href=c.ProxyPath + "css/bootstrap.min.css",  rel="stylesheet" )
+        link(href=c.ProxyPath + "css/chimitheque.css",  rel="stylesheet" )
+        link(href=c.ProxyPath + "css/fontawesome.all.min.css",  rel="stylesheet" )
+        link(href=c.ProxyPath + "css/materialdesignicons.min.css",  rel="stylesheet" )
+        link(href=c.ProxyPath + "css/select2.min.css",  rel="stylesheet" )
+        link(href=c.ProxyPath + "css/trumbowyg.min.css",  rel="stylesheet" )
+        link(href=c.ProxyPath + "css/trumbowyg.colors.min.css",  rel="stylesheet" )
+        
+        link(rel="shortcut icon" href=c.ProxyPath + "img/favicon.ico" type="image/x-icon")
+        link(rel="icon" href=c.ProxyPath + "img/favicon.ico" type="image/x-icon")
+
+        script(src=c.ProxyPath + "js/jquery.min.js")
+        script(src=c.ProxyPath + "js/popper.min.js" )
+        script(src=c.ProxyPath + "js/bootstrap.min.js" )
+
+    body
+        div#message
+        div#loading
+            span.mdi.mdi-loading.mdi-spin.iconlabel
+                = T("wasm_loading", 1) 
+        div.container.invisible
+
+            span.text-right#logged.blockquote-footer
+
+            div#video.border.border-primary.invisible(style="position: absolute; z-index:1; background-color: white;")
+                video(width="640", id="qr-video", muted, playsinline)
+                button(type="button", onclick="closeQR()").btn.btn-link
+                    span.mdi.mdi-close-box &nbsp;
+
+            div#menu
+            div#export.card.collapse.hide
+                div#export-body.card-body
+            div#searchbar
+            div#content
+
+    include localejs
+    
+    -
+        json, _ := json.Marshal(c)
+
+        var out string
+        for key, value := range c.URLValues {
+            out += fmt.Sprintf("URLValues.set(%s, %s)\n", key, value)
+        }
+    
+    script.           
+        //
+        // global variables init
+        //
+
+        // query parameters saved - used for the storages<>products views switch
+        var lastQueryParams;
+
+        // proxy path
+        var proxyPath = "!{ c.ProxyPath }";
+        
+        // version
+        var buildID = "!{ c.BuildID }";
+        
+        // disable cache
+        var disableCache = "!{ c.DisableCache }";
+
+        // request context
+        var container = !{fmt.Sprintf("%s", json)};
+
+        // url parameters
+        var URLValues = new Map();
+
+        // initializing query parameters map
+        !{out}
+
+    script(src=c.ProxyPath + "js/bootstrap-table.min.js" )
+    script(src=c.ProxyPath + "js/bootstrap-colorpicker.min.js" )                      
+    script(src=c.ProxyPath + "js/jquery.validate.min.js" )
+    script(src=c.ProxyPath + "js/jquery.validate.additional-methods.min.js" )
+    script(src=c.ProxyPath + "js/select2.full.min.js" )
+    script(src=c.ProxyPath + "js/JSmol.lite.nojq.js" )
+    
+    script(type="module").
+        import QrScanner from '/js/qr-scanner.min.js';
+        QrScanner.WORKER_PATH = '/js/qr-scanner-worker.min.js';
+        window.QrScanner = QrScanner;
+
+    script.
+        function scanQR() {
+            $("#video").removeClass("invisible")
+            const video = document.getElementById("qr-video");
+            window.qrScanner = new window.QrScanner(video, result => Storage_scanQRdone(result));
+            QrScanner.hasCamera().then(hasCamera => {
+                if (hasCamera) {
+                    window.qrScanner.start();
+                } else {
+                    alert(Utils_translate("nocamera", container.PersonLanguage));
+                    Storage_closeQR();
+                }
+            });
+        }
+        //- function scanQRdone(result) {
+        //-     closeQR();
+        //-     window.location.href = result;
+        //- }
+        //- function closeQR() {
+        //-     window.qrScanner.destroy();
+        //-     window.qrScanner = null;
+        //-     $("#video").addClass("invisible")
+        //- }
+
+    script.
+        function loadContent(url, callback) {
+            $.ajax({
+                url: url,
+            }).done(function(data) {
+                $("div#content").html(data);
+                window[callback]();
+            });
+        }
+
+    script.
+        function ImagetoPrint(source)
+        {
+            return "<html><head><scri"+"pt>function step1(){\n" +
+                    "setTimeout('step2()', 10);}\n" +
+                    "function step2(){window.print();window.close()}\n" +
+                    "</scri" + "pt></head><body onload='step1()'>\n" +
+                    "<img src='" + source + "' /></body></html>";
+        }
+
+        function PrintImage(source)
+        {
+            var Pagelink = "about:blank";
+            var pwa = window.open(Pagelink, "_new");
+            pwa.document.open();
+            pwa.document.write(ImagetoPrint(source));
+            pwa.document.close();
+        }
+
+    script(src=c.ProxyPath + "wasm/wasm_exec.js")
+    script.
+        const go = new Go();
+        WebAssembly.instantiateStreaming(fetch("/wasm/wasm"), go.importObject).then((result) => {
+            go.run(result.instance);
+        });
+
+    block CONTENTJS

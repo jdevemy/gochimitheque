@@ -1,0 +1,94 @@
+include mixins
+
+:go:func
+    Search(c ViewContainer)
+
+#search.row.pt-sm-5.pb-sm-2.pl-sm-2.pr-sm-2.mt-sm-2.mb-sm-2.ml-sm-5.mr-sm-5.bg-light.border.rounded.collapse.show
+
+    +inputhidden(name="s_entity" value="")
+    +inputhidden(name="s_product" value="")
+    +inputhidden(name="s_history" value="")
+    +inputhidden(name="s_storage" value="")
+    +inputhidden(name="s_storage_archive" value="")
+    +inputhidden(name="s_bookmark" value="")
+
+    .col
+        .row
+            .col-sm-6
+                +inputtextcompact("s_custom_name_part_of", "s_custom_name_part_of")
+            .col-sm-6
+                +selectcompact("s_casnumber", "s_casnumber")
+            .col-sm-6
+                +selectcompact("s_empiricalformula", "s_empiricalformula")
+            .col-sm-6
+                +inputtextcompact("s_storage_barecode", "s_storage_barecode")
+        .row.collapse#advancedsearch
+            .col-sm-12
+                hr
+                .form-row
+                    .col-sm-12
+                        +selectcompact("s_storelocation", "s_storelocation")
+                .form-row
+                    .col-sm-12
+                        +selectcompact("s_name", "s_name")
+                .form-row
+                    .form-group.col-sm-6
+                        +selectcompact("s_signalword", "s_signalword")
+                    .form-group.col-sm-6
+                        +selectmultiplecompact("s_symbols", "s_symbols")
+                .form-row
+                    .form-group.col-sm-6
+                        +selectmultiplecompact("s_hazardstatements", "s_hazardstatements")
+                    .form-group.col-sm-6
+                        +selectmultiplecompact("s_precautionarystatements", "s_precautionarystatements")
+                .form-row
+                    .form-group.col-sm-4
+                        +checkbox("s_casnumber_cmr", "s_casnumber_cmr")
+                    .form-group.col-sm-4
+                        +checkbox("s_borrowing", "s_borrowing")
+                    .form-group.col-sm-4
+                        +checkbox("s_storage_to_destroy", "s_storage_to_destroy")
+        .row
+            .col.col-sm-9
+                button.btn.btn-link(data-toggle="collapse" href="#advancedsearch" aria-expanded="false")
+                    span.mdi.mdi-magnify-plus-outline.mdi-24px.iconlabel
+                        = T("advancedsearch_text", 1) 
+
+            .col.col-sm-3
+                button#search.btn.btn-lg.btn-link.mr-sm-2(type="button" onclick="Common_search();")
+                    span.mdi.mdi-magnify.mdi-24px.iconlabel
+                        = T("search_text", 1)
+
+.row#actions.collapse.show(role="group")
+    .col-sm-6.btn-group
+        button.btn.btn-link#switchview.invisible(type="button" onclick="Common_SwitchProductStorage()")
+            span.mdi.mdi-cube-unfolded.mdi-24px.iconlabel
+                = T("switchstorageview_text", 1)
+        button.btn.btn-link#export(type="button" onclick="Common_export();")
+            span.mdi.mdi-content-save.mdi-24px.iconlabel
+                = T("export_text", 1) 
+        button#s_storage_archive_button.btn.btn-link.collapse(type="button" data-toggle="button" aria-pressed="true" autocomplete="off")
+            span.mdi.mdi-archive-outline.mdi-24px.iconlabel
+                = T("showdeleted_text", 1) 
+        button#clearsearch.btn.btn-link.mr-sm-2(type="button" onclick="Common_clearSearch();")
+            span.mdi.mdi-filter-off-outline.mdi-24px.iconlabel
+                = T("clearsearch_text", 1) 
+        //- TODO
+        #button-store
+        //- TODO
+        #button-stock
+    .col-sm-6.card
+        .card-body
+            .card-title.mdi.mdi-filter-outline.iconlabel
+                = T("active_filter", 1) 
+            .card-text#filter-item
+
+#exportlink.modal.fade(role="dialog" tabindex="-1" aria-labelledby="exportlinkLabel" aria-hidden="true")
+    .modal-dialog.modal-sm(role="document")
+        .modal-content
+            .modal-body#exportlink-body.mx-auto
+            .modal-footer
+                button.btn.btn-link(type="button" data-dismiss="modal")
+                    span.mdi.mdi-close-box.mdi-24px.iconlabel
+                        = T("close", 1)
+    
