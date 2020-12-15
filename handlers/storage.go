@@ -66,11 +66,13 @@ func (env *Env) ToogleStorageBorrowingHandler(w http.ResponseWriter, r *http.Req
 	s.Borrowing.Person.PersonID = c.PersonID
 
 	// toggling the borrowing
-	if s.Borrowing.Borrower == nil {
-		err = env.DB.DeleteStorageBorrowing(s)
-	} else {
-		err = env.DB.CreateStorageBorrowing(s)
-	}
+	// if s.Borrowing.Borrower == nil {
+	// 	err = env.DB.DeleteStorageBorrowing(s)
+	// } else {
+	// 	err = env.DB.CreateStorageBorrowing(s)
+	// }
+	err = env.DB.ToogleStorageBorrowing(s)
+
 	if err != nil {
 		return &models.AppError{
 			Error:   err,

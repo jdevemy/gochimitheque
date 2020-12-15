@@ -15,44 +15,31 @@ import (
 	. "github.com/tbellembois/gochimitheque/models"
 )
 
-// // IsStorageBorrowing returns true if there is a borrowing b in the database
-// func (db *SQLiteDataStore) IsStorageBorrowing(b Borrowing) (bool, error) {
-// 	var (
-// 		sqlr string
-// 		err  error
-// 		i    int
-// 	)
-// 	sqlr = `SELECT count(*) FROM borrowing WHERE borrower = ? AND storage = ?`
-// 	if err = db.Get(&i, sqlr, b.Borrower.PersonID, b.Storage.StorageID.Int64); err != nil {
-// 		return false, err
-// 	}
-// 	return i != 0, err
-// }
-
-// CreateStorageBorrowing creates the borrowing b
-func (db *SQLiteDataStore) CreateStorageBorrowing(s Storage) error {
+// ToogleStorageBorrowing toogles the borrowing b
+func (db *SQLiteDataStore) ToogleStorageBorrowing(s Storage) error {
 	var (
-		sqlr string
-		err  error
+		sqlr  string
+		count int
+		err   error
 	)
-	sqlr = `INSERT into borrowing(person, storage, borrower, borrowing_comment) VALUES (?, ?, ?, ?)`
-	if _, err = db.Exec(sqlr, s.Borrowing.Person.PersonID, s.StorageID.Int64, s.Borrowing.Borrower.PersonID, s.Borrowing.BorrowingComment); err != nil {
+
+	sqlr = `SELECT COUNT(borrowing_id) FROM borrowing WHERE storage = ?`
+	if err = db.Get(&count, sqlr, s.StorageID.Int64); err != nil {
 		return err
 	}
 
-	return nil
-}
-
-// DeleteStorageBorrowing deletes the borrowing b
-func (db *SQLiteDataStore) DeleteStorageBorrowing(s Storage) error {
-	var (
-		sqlr string
-		err  error
-	)
-	sqlr = `DELETE from borrowing WHERE storage = ?`
-	if _, err = db.Exec(sqlr, s.StorageID.Int64); err != nil {
-		return err
+	if count == 0 {
+		sqlr = `INSERT into borrowing(person, storage, borrower, borrowing_comment) VALUES (?, ?, ?, ?)`
+		if _, err = db.Exec(sqlr, s.Borrowing.Person.PersonID, s.StorageID.Int64, s.Borrowing.Borrower.PersonID, s.Borrowing.BorrowingComment); err != nil {
+			return err
+		}
+	} else {
+		sqlr = `DELETE from borrowing WHERE storage = ?`
+		if _, err = db.Exec(sqlr, s.StorageID.Int64); err != nil {
+			return err
+		}
 	}
+
 	return nil
 }
 
