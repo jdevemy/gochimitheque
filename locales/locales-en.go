@@ -380,6 +380,8 @@ var LOCALES_EN = []byte(`
 	one = "restricted access"
 [bookmark]
 	one = "bookmark"
+[unbookmark]
+	one = "remove bookmark"
 [product_create_title]
 	one = "create product"
 [product_update_title]

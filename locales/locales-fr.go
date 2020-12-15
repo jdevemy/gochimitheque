@@ -380,6 +380,8 @@ var LOCALES_FR = []byte(`
 	one = "accès restreint"
 [bookmark]
 	one = "ajouter aux favoris"
+[unbookmark]
+	one = "retirer des favoris"
 [product_create_title]
 	one = "créer produit"
 [product_update_title]
