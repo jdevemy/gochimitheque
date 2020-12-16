@@ -393,7 +393,7 @@ var LOCALES_EN = []byte(`
 [product_msds_title]
 	one = "MSDS"
 [product_sheet_title]
-	one = "supplier product cheet"
+	one = "producer product cheet"
 [product_temperature_title]
 	one = "preconised storage temperature"
 [producer_label_title]

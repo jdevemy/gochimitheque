@@ -1571,6 +1571,7 @@ func (env *Env) UpdateProductHandler(w http.ResponseWriter, r *http.Request) *mo
 	updatedp.Category = p.Category
 	updatedp.ProducerRef = p.ProducerRef
 	updatedp.SupplierRefs = p.SupplierRefs
+	updatedp.ProductSheet = p.ProductSheet
 	updatedp.ProductTemperature = p.ProductTemperature
 	updatedp.UnitTemperature = p.UnitTemperature
 	globals.Log.WithFields(logrus.Fields{"updatedp": updatedp}).Debug("UpdateProductHandler")
