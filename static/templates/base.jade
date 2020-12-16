@@ -129,21 +129,21 @@ html
         }
 
     script.
-        function ImagetoPrint(source)
+        function ImagetoPrint(source, label)
         {
             return "<html><head><scri"+"pt>function step1(){\n" +
                     "setTimeout('step2()', 10);}\n" +
                     "function step2(){window.print();window.close()}\n" +
                     "</scri" + "pt></head><body onload='step1()'>\n" +
-                    "<img src='" + source + "' /></body></html>";
+                    "<div style='width: 12em;'><img src='" + source + "' /></div><div style='width: 12em;'><span>" + label+ "</span></div></body></html>";
         }
 
-        function PrintImage(source)
+        function PrintImage(source, label)
         {
             var Pagelink = "about:blank";
             var pwa = window.open(Pagelink, "_new");
             pwa.document.open();
-            pwa.document.write(ImagetoPrint(source));
+            pwa.document.write(ImagetoPrint(source, label));
             pwa.document.close();
         }
 
