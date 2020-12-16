@@ -62,6 +62,8 @@ var LOCALES_FR = []byte(`
 	one = "pas d'élément"
 [active_filter]
 	one = "filtre actif"
+[no_filter]
+	one = "pas de filtre"
 
 [empirical_formula_convert]
 	one = "convertir en formule brute"
@@ -92,7 +94,9 @@ var LOCALES_FR = []byte(`
 	one = "selecteur magique"
 
 [nb_duplicate]
-	one = "nombre de duplications"
+	one = "nombre d'éléments (bouteilles, boites...)"
+[nb_duplicate_comment]
+	one = "cela créera une fiche stockage par élément"
 
 [bt_loadingMessage]
 	one = "chargement..."
@@ -197,7 +201,7 @@ var LOCALES_FR = []byte(`
 [menu_borrow]
 	one = "mes produits empruntés"
 [menu_create_productcard]
-	one = "créer fiche produit"
+	one = "créer une fiche produit"
 [menu_entity]
 	one = "entités"
 [menu_storelocation]
@@ -273,9 +277,9 @@ var LOCALES_FR = []byte(`
 [ostorages]
 	one = "disponibilité"
 [storage_create_title]
-	one = "créer stockage"
+	one = "stocker un produit"
 [storage_update_title]
-	one = "mise à jour stockage"
+	one = "mise à jour d'un stockage"
 [storage_clone]
 	one = "cloner"
 [storage_borrow]
@@ -383,7 +387,7 @@ var LOCALES_FR = []byte(`
 [unbookmark]
 	one = "retirer des favoris"
 [product_create_title]
-	one = "créer produit"
+	one = "créer une fiche produit"
 [product_update_title]
 	one = "mettre à jour produit"
 [product_threedformula_title]
@@ -476,7 +480,7 @@ var LOCALES_FR = []byte(`
 	one = "inflammable"
 
 [person_create_title]
-	one = "créer personne"
+	one = "créer une personne"
 [person_update_title]
 	one = "mettre à jour personne"
 [person_deleted_message]
@@ -501,7 +505,7 @@ var LOCALES_FR = []byte(`
 	one = "sélectionnez une ou plusieurs entité(s)"
 
 [storelocation_create_title]
-	one = "créer entrepôt"
+	one = "créer un entrepôt"
 [storelocation_update_title]
 	one = "mettre à jour entrepôt"
 [storelocation_deleted_message]

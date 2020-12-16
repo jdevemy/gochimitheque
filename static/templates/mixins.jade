@@ -5,11 +5,10 @@ mixin title(label)
                 = T(label, 1)
 
 mixin titleicon(iconitem, label)
-    .mt-sm-2.mb-sm-2
-        .row
-            .col.d-flex.justify-content-center
-                span(class='mdi-'+ iconitem +' mdi mdi-24px')&nbsp;
-                    = T(label, 1)
+    .row.mt-sm-2.mb-sm-2
+        .col.d-flex.justify-content-center
+            span(class='iconlabel mdi-'+ iconitem +' mdi mdi-36px')&nbsp;
+                = T(label, 1)
 
 mixin checkbox(label,name)
     .form-check

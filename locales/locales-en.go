@@ -62,6 +62,8 @@ var LOCALES_EN = []byte(`
 	one = "no item"
 [active_filter]
 	one = "active filter"
+[no_filter]
+	one = "no filter"
 
 [empirical_formula_convert]
 	one = "convert to empirical formula"
@@ -92,7 +94,9 @@ var LOCALES_EN = []byte(`
 	one = "magical selector"
 
 [nb_duplicate]
-	one = "nb of duplicates"
+	one = "number of items (bottles, boxes...)"
+[nb_duplicate_comment]
+	one = "it will create one storage card per item"
 
 [bt_loadingMessage]
 	one = "loading..."
@@ -197,7 +201,7 @@ var LOCALES_EN = []byte(`
 [menu_borrow]
 	one = "my borrowed products"
 [menu_create_productcard]
-	one = "create product card"
+	one = "create a product card"
 [menu_entity]
 	one = "entities"
 [menu_storelocation]
@@ -273,9 +277,9 @@ var LOCALES_EN = []byte(`
 [ostorages]
 	one = "availability"
 [storage_create_title]
-	one = "create storage"
+	one = "store a product"
 [storage_update_title]
-	one = "update storage"
+	one = "update a storage"
 [storage_clone]
 	one = "clone"
 [storage_borrow]
@@ -383,7 +387,7 @@ var LOCALES_EN = []byte(`
 [unbookmark]
 	one = "remove bookmark"
 [product_create_title]
-	one = "create product"
+	one = "create a product card"
 [product_update_title]
 	one = "update product"
 [product_threedformula_title]
@@ -476,7 +480,7 @@ var LOCALES_EN = []byte(`
 	one = "flammable"
 
 [person_create_title]
-	one = "create person"
+	one = "create a person"
 [person_update_title]
 	one = "update person"
 [person_deleted_message]
@@ -501,7 +505,7 @@ var LOCALES_EN = []byte(`
 	one = "select entity(ies)"
 
 [storelocation_create_title]
-	one = "create store location"
+	one = "create a store location"
 [storelocation_update_title]
 	one = "update store location"
 [storelocation_deleted_message]
