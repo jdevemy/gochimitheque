@@ -669,13 +669,18 @@ func (db *SQLiteDataStore) GenerateAndUpdateStorageBarecode(s *Storage) error {
 		err      error
 		m        []string
 		png      []byte
-		lastbc   string
+		lastbc   []string
 		prefix   string
 		major    string
 		minor    string
 		iminor   int
 		barecode string
 	)
+
+	// defaults
+	major = strconv.Itoa(s.ProductID)
+	minor = "0"
+
 	globals.Log.WithFields(logrus.Fields{"s": s}).Debug("GenerateAndUpdateStorageBarecode")
 
 	//
@@ -706,38 +711,40 @@ func (db *SQLiteDataStore) GenerateAndUpdateStorageBarecode(s *Storage) error {
 	// for the same product
 	// in the same entity
 	sqlr := `SELECT storage_barecode FROM storage 
-	JOIN storelocation on storage.storelocation = storelocation.storelocation_id 
-	WHERE product = "?" AND storelocation.entity = "?" AND regexp('^[a-zA-Z]{0,1}[0-9]+\.[0-9]+$', '' || storage_barecode || '') = true
-	ORDER BY storage_barecode desc 
-	LIMIT 1`
-	if err = db.Get(&lastbc, sqlr, s.ProductID, s.EntityID); err != nil && err != sql.ErrNoRows {
+	WHERE NOT storage_barecode IS NULL AND product = ? AND storelocation = ? 
+	ORDER BY storage_barecode DESC`
+	if err = db.Select(&lastbc, sqlr, s.ProductID, s.StoreLocationID); err != nil && err != sql.ErrNoRows {
 		globals.Log.Error("error getting the last storage barecode")
 		return err
 	}
 	globals.Log.WithFields(logrus.Fields{"lastbc": lastbc}).Debug("GenerateAndUpdateStorageBarecode")
 
-	// regex to extract the major from a barecode
+	// regex to extract the major and minor from a barecode
 	majorr := regexp.MustCompile(`^[a-zA-Z]{0,1}(?P<groupone>[0-9]+)\.(?P<grouptwo>[0-9]+)$`)
 	// finding group names
 	n = majorr.SubexpNames()
-	// finding matches
-	ms = majorr.FindAllStringSubmatch(lastbc, -1)
-	// then building a map of matches
-	md = map[string]string{}
-	if len(ms) != 0 {
-		m = ms[0]
-		for i, j := range m {
-			md[n[i]] = j
+	for _, bc := range lastbc {
+
+		// finding matches
+		ms = majorr.FindAllStringSubmatch(bc, -1)
+		if ms != nil {
+
+			// then building a map of matches
+			md = map[string]string{}
+			if len(ms) != 0 {
+				m = ms[0]
+				for i, j := range m {
+					md[n[i]] = j
+				}
+			}
+			major = md["groupone"]
+			minor = md["grouptwo"]
+			globals.Log.WithFields(logrus.Fields{"major": major, "minor": minor}).Debug("GenerateAndUpdateStorageBarecode")
+
+			break
+
 		}
 	}
-	if len(md) > 0 {
-		major = md["groupone"]
-		minor = md["grouptwo"]
-	} else {
-		major = strconv.Itoa(s.ProductID)
-		minor = "0"
-	}
-	globals.Log.WithFields(logrus.Fields{"major": major, "minor": minor}).Debug("GenerateAndUpdateStorageBarecode")
 
 	if iminor, err = strconv.Atoi(minor); err != nil {
 		return err
