@@ -345,6 +345,8 @@ var LOCALES_EN = []byte(`
 	one = "select a store location"
 [storage_borrower_placeholder]
 	one = "select a borrower"
+[storage_supplier_placeholder]
+	one = "select or enter a supplier"
 [storage_print_qrcode]
 	one = "print qrcode"
 
