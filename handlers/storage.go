@@ -487,16 +487,16 @@ func (env *Env) CreateStorageHandler(w http.ResponseWriter, r *http.Request) *mo
 				Message: "create storage error",
 				Code:    http.StatusInternalServerError}
 		}
-		// generating barecode if not specified
-		if s.StorageBarecode.String == "" {
-			s.StorageID = sql.NullInt64{Valid: true, Int64: int64(id)}
-			if err = env.DB.GenerateAndUpdateStorageBarecode(&s); err != nil {
-				return &models.AppError{
-					Error:   err,
-					Message: "generate storage barecode error",
-					Code:    http.StatusInternalServerError}
-			}
-		}
+		// // generating barecode if not specified
+		// if s.StorageBarecode.String == "" {
+		// 	s.StorageID = sql.NullInt64{Valid: true, Int64: int64(id)}
+		// 	if err = env.DB.GenerateAndUpdateStorageBarecode(&s); err != nil {
+		// 		return &models.AppError{
+		// 			Error:   err,
+		// 			Message: "generate storage barecode error",
+		// 			Code:    http.StatusInternalServerError}
+		// 	}
+		// }
 	}
 	s.StorageID = sql.NullInt64{Valid: true, Int64: int64(id)}
 

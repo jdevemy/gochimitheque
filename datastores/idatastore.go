@@ -96,9 +96,6 @@ type Datastore interface {
 	RestoreStorage(id int) error
 	CreateStorage(s Storage) (int, error)
 	UpdateStorage(s Storage) error
-	GenerateAndUpdateStorageBarecode(s *Storage) error
-	// CreateStorageBorrowing(s Storage) error
-	// DeleteStorageBorrowing(s Storage) error
 	ToogleStorageBorrowing(s Storage) error
 	UpdateAllQRCodes() error
 

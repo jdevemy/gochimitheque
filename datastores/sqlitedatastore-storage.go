@@ -663,141 +663,241 @@ func (db *SQLiteDataStore) RestoreStorage(id int) error {
 // prefix: extracted from the storelocation name [prefix]storelocation_name, or ""
 // major: unique uid identical for the differents storages of the same product in an entity
 // minor: incremental number for the differents storages of the same product in an entity
-func (db *SQLiteDataStore) GenerateAndUpdateStorageBarecode(s *Storage) error {
+// func (db *SQLiteDataStore) GenerateAndUpdateStorageBarecode(s *Storage) error {
 
-	var (
-		err      error
-		m        []string
-		png      []byte
-		lastbc   []string
-		prefix   string
-		major    string
-		minor    string
-		iminor   int
-		barecode string
-	)
+// 	var (
+// 		err      error
+// 		m        []string
+// 		png      []byte
+// 		lastbc   []string
+// 		prefix   string
+// 		major    string
+// 		minor    string
+// 		iminor   int
+// 		barecode string
+// 	)
 
-	// defaults
-	major = strconv.Itoa(s.ProductID)
-	minor = "0"
+// 	// defaults
+// 	major = strconv.Itoa(s.ProductID)
+// 	minor = "0"
 
-	globals.Log.WithFields(logrus.Fields{"s": s}).Debug("GenerateAndUpdateStorageBarecode")
+// 	globals.Log.WithFields(logrus.Fields{"s": s}).Debug("GenerateAndUpdateStorageBarecode")
 
-	//
-	// prefix
-	//
-	// regex to detect store locations names starting with [a-zA-Z] to build barecode prefixes
-	slr := regexp.MustCompile(`^\[(?P<groupone>[a-zA-Z]{1})\].*$`)
-	// finding group names
-	n := slr.SubexpNames()
-	// finding matches
-	ms := slr.FindAllStringSubmatch(s.StoreLocationName.String, -1)
-	// then building a map of matches
-	md := map[string]string{}
-	if len(ms) != 0 {
-		m = ms[0]
-		for i, j := range m {
-			md[n[i]] = j
-		}
-	}
-	if len(md) > 0 {
-		prefix = md["groupone"]
-	}
+// 	//
+// 	// prefix
+// 	//
+// 	// regex to detect store locations names starting with [a-zA-Z] to build barecode prefixes
+// 	slr := regexp.MustCompile(`^\[(?P<groupone>[a-zA-Z]{1})\].*$`)
+// 	// finding group names
+// 	n := slr.SubexpNames()
+// 	// finding matches
+// 	ms := slr.FindAllStringSubmatch(s.StoreLocationName.String, -1)
+// 	// then building a map of matches
+// 	md := map[string]string{}
+// 	if len(ms) != 0 {
+// 		m = ms[0]
+// 		for i, j := range m {
+// 			md[n[i]] = j
+// 		}
+// 	}
+// 	if len(md) > 0 {
+// 		prefix = md["groupone"]
+// 	}
 
-	//
-	// major
-	//
-	// getting the last storage barecode
-	// for the same product
-	// in the same entity
-	sqlr := `SELECT storage_barecode FROM storage 
-	WHERE NOT storage_barecode IS NULL AND product = ? AND storelocation = ? 
-	ORDER BY storage_barecode DESC`
-	if err = db.Select(&lastbc, sqlr, s.ProductID, s.StoreLocationID); err != nil && err != sql.ErrNoRows {
-		globals.Log.Error("error getting the last storage barecode")
-		return err
-	}
-	globals.Log.WithFields(logrus.Fields{"lastbc": lastbc}).Debug("GenerateAndUpdateStorageBarecode")
+// 	//
+// 	// major
+// 	//
+// 	// getting the last storage barecode
+// 	// for the same product
+// 	// in the same entity
+// 	sqlr := `SELECT storage_barecode FROM storage
+// 	WHERE NOT storage_barecode IS NULL AND product = ? AND storelocation = ?
+// 	ORDER BY storage_barecode DESC`
+// 	if err = db.Select(&lastbc, sqlr, s.ProductID, s.StoreLocationID); err != nil && err != sql.ErrNoRows {
+// 		globals.Log.Error("error getting the last storage barecode")
+// 		return err
+// 	}
+// 	globals.Log.WithFields(logrus.Fields{"lastbc": lastbc}).Debug("GenerateAndUpdateStorageBarecode")
 
-	// regex to extract the major and minor from a barecode
-	majorr := regexp.MustCompile(`^[a-zA-Z]{0,1}(?P<groupone>[0-9]+)\.(?P<grouptwo>[0-9]+)$`)
-	// finding group names
-	n = majorr.SubexpNames()
-	for _, bc := range lastbc {
+// 	// regex to extract the major and minor from a barecode
+// 	majorr := regexp.MustCompile(`^[a-zA-Z]{0,1}(?P<groupone>[0-9]+)\.(?P<grouptwo>[0-9]+)$`)
+// 	// finding group names
+// 	n = majorr.SubexpNames()
+// 	for _, bc := range lastbc {
 
-		// finding matches
-		ms = majorr.FindAllStringSubmatch(bc, -1)
-		if ms != nil {
+// 		// finding matches
+// 		ms = majorr.FindAllStringSubmatch(bc, -1)
+// 		if ms != nil {
 
-			// then building a map of matches
-			md = map[string]string{}
-			if len(ms) != 0 {
-				m = ms[0]
-				for i, j := range m {
-					md[n[i]] = j
-				}
-			}
-			major = md["groupone"]
-			minor = md["grouptwo"]
-			globals.Log.WithFields(logrus.Fields{"major": major, "minor": minor}).Debug("GenerateAndUpdateStorageBarecode")
+// 			// then building a map of matches
+// 			md = map[string]string{}
+// 			if len(ms) != 0 {
+// 				m = ms[0]
+// 				for i, j := range m {
+// 					md[n[i]] = j
+// 				}
+// 			}
+// 			major = md["groupone"]
+// 			minor = md["grouptwo"]
+// 			globals.Log.WithFields(logrus.Fields{"major": major, "minor": minor}).Debug("GenerateAndUpdateStorageBarecode")
 
-			break
+// 			break
 
-		}
-	}
+// 		}
+// 	}
 
-	if iminor, err = strconv.Atoi(minor); err != nil {
-		return err
-	}
-	iminor++
-	minor = strconv.Itoa(iminor)
-	barecode = prefix + major + "." + minor
-	globals.Log.WithFields(logrus.Fields{"barecode": barecode}).Debug("GenerateAndUpdateStorageBarecode")
+// 	if iminor, err = strconv.Atoi(minor); err != nil {
+// 		return err
+// 	}
+// 	iminor++
+// 	minor = strconv.Itoa(iminor)
+// 	barecode = prefix + major + "." + minor
+// 	globals.Log.WithFields(logrus.Fields{"barecode": barecode}).Debug("GenerateAndUpdateStorageBarecode")
 
-	// sqlr := `UPDATE storage
-	// SET storage_barecode = '` + prefix + `' || storage.product || '.' || (select count(*) from storage join storelocation on storage.storelocation = storelocation.storelocation_id join entity on storelocation.entity = entity.entity_id where storage.product = ? and entity_id = ?)
-	// WHERE storage_id = ?`
-	sqlr = `UPDATE storage 
-	SET storage_barecode = ? WHERE storage_id = ?`
-	if _, err = db.Exec(sqlr, barecode, s.StorageID.Int64); err != nil {
-		globals.Log.Error("error updating storage barecode")
-		return err
-	}
+// 	// sqlr := `UPDATE storage
+// 	// SET storage_barecode = '` + prefix + `' || storage.product || '.' || (select count(*) from storage join storelocation on storage.storelocation = storelocation.storelocation_id join entity on storelocation.entity = entity.entity_id where storage.product = ? and entity_id = ?)
+// 	// WHERE storage_id = ?`
+// 	sqlr = `UPDATE storage
+// 	SET storage_barecode = :barecode
+// 	WHERE storage_id = :storage`
+// 	if _, err = db.NamedExec(sqlr, map[string]interface{}{
+// 		"barecode": barecode,
+// 		"storage":  s.StorageID.Int64,
+// 	}); err != nil {
+// 		globals.Log.Error("error updating storage barecode")
+// 		return err
+// 	}
 
-	//
-	// qrcode
-	//
-	qr := strconv.FormatInt(s.StorageID.Int64, 10)
-	if png, err = qrcode.Encode(qr, qrcode.Medium, 512); err != nil {
-		return err
-	}
-	sqlr = `UPDATE storage 
-	SET storage_qrcode = ? 
-	WHERE storage_id = ?`
-	if _, err = db.Exec(sqlr, png, s.StorageID.Int64); err != nil {
-		globals.Log.Error("error updating storage qr code")
-		return err
-	}
+// 	//
+// 	// qrcode
+// 	//
+// 	qr := strconv.FormatInt(s.StorageID.Int64, 10)
+// 	if png, err = qrcode.Encode(qr, qrcode.Medium, 512); err != nil {
+// 		return err
+// 	}
+// 	sqlr = `UPDATE storage
+// 	SET storage_qrcode = ?
+// 	WHERE storage_id = ?`
+// 	if _, err = db.Exec(sqlr, png, s.StorageID.Int64); err != nil {
+// 		globals.Log.Error("error updating storage qr code")
+// 		return err
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
 // CreateStorage creates a new storage
 func (db *SQLiteDataStore) CreateStorage(s Storage) (int, error) {
 
 	var (
-		lastid   int64
-		tx       *sql.Tx
-		sqlr     string
-		res      sql.Result
-		sqla     []interface{}
-		ibuilder sq.InsertBuilder
-		err      error
+		lastid       int64
+		tx           *sql.Tx
+		sqlr         string
+		res          sql.Result
+		sqla         []interface{}
+		ibuilder     sq.InsertBuilder
+		err          error
+		prefix       string
+		major, minor string
 	)
 
-	// beginning transaction
+	// Default major.
+	major = strconv.Itoa(s.ProductID)
+
 	if tx, err = db.Begin(); err != nil {
 		return 0, err
+	}
+
+	// Generating barecode if empty.
+	if !(s.StorageBarecode.Valid) || s.StorageBarecode.String == "" {
+
+		//
+		// Getting the barecode prefix from the storelocation name.
+		//
+		// regex to detect store locations names starting with [_a-zA-Z] to build barecode prefixes
+		prefixRegex := regexp.MustCompile(`^\[(?P<groupone>[_a-zA-Z]{1})\].*$`)
+		groupNames := prefixRegex.SubexpNames()
+		matches := prefixRegex.FindAllStringSubmatch(s.StoreLocationName.String, -1)
+		// Building a map of matches.
+		matchesMap := map[string]string{}
+		if len(matches) != 0 {
+			for i, j := range matches[0] {
+				matchesMap[groupNames[i]] = j
+			}
+		}
+
+		if len(matchesMap) > 0 {
+			prefix = matchesMap["groupone"]
+		} else {
+			prefix = "_"
+		}
+
+		//
+		// Getting the storage barecodes matching the regex
+		// for the same product in the same entity.
+		//
+		sqlr := `SELECT storage_barecode FROM storage 
+		JOIN storelocation on storage.storelocation = storelocation.storelocation_id 
+		WHERE product = ? AND storelocation.entity = ? AND regexp('^[_a-zA-Z]{0,1}[0-9]+\.[0-9]+$', '' || storage_barecode || '') = true
+		ORDER BY storage_barecode desc`
+		var rows *sql.Rows
+		if rows, err = tx.Query(sqlr, s.ProductID, s.EntityID); err != nil && err != sql.ErrNoRows {
+			if errr := tx.Rollback(); errr != nil {
+				return 0, errr
+			}
+			return 0, err
+		}
+
+		var (
+			count    = 0
+			newMinor = 0
+		)
+		for rows.Next() {
+
+			var barecode string
+			if err = rows.Scan(&barecode); err != nil && err != sql.ErrNoRows {
+				if errr := tx.Rollback(); errr != nil {
+					return 0, errr
+				}
+				return 0, err
+			}
+
+			majorRegex := regexp.MustCompile(`^[_a-zA-Z]{0,1}(?P<groupone>[0-9]+)\.(?P<grouptwo>[0-9]+)$`)
+			groupNames = majorRegex.SubexpNames()
+			matches = majorRegex.FindAllStringSubmatch(barecode, -1)
+			// Building a map of matches.
+			matchesMap = map[string]string{}
+			if len(matches) != 0 {
+				for i, j := range matches[0] {
+					matchesMap[groupNames[i]] = j
+				}
+			}
+
+			if count == 0 {
+				// All of the major number are the same.
+				// Extracting it ones.
+				major = matchesMap["groupone"]
+			}
+			minor = matchesMap["grouptwo"]
+			var iminor int
+			if iminor, err = strconv.Atoi(minor); err != nil {
+				return 0, err
+			}
+
+			if iminor > newMinor {
+				newMinor = iminor
+			}
+
+			count++
+
+		}
+
+		newMinor++
+		minor = strconv.Itoa(newMinor)
+		s.StorageBarecode.String = prefix + major + "." + minor
+		s.StorageBarecode.Valid = true
+		globals.Log.WithFields(logrus.Fields{"s.StorageBarecode.String": s.StorageBarecode.String}).Debug("CreateStorage")
+
 	}
 
 	// if SupplierID = -1 then it is a new supplier
@@ -921,6 +1021,14 @@ func (db *SQLiteDataStore) CreateStorage(s Storage) (int, error) {
 		return 0, err
 	}
 
+	// getting the last inserted id
+	if lastid, err = res.LastInsertId(); err != nil {
+		if errr := tx.Rollback(); errr != nil {
+			return 0, errr
+		}
+		return 0, err
+	}
+
 	// committing changes
 	if err = tx.Commit(); err != nil {
 		if errr := tx.Rollback(); errr != nil {
@@ -929,13 +1037,6 @@ func (db *SQLiteDataStore) CreateStorage(s Storage) (int, error) {
 		return 0, err
 	}
 
-	// getting the last inserted id
-	if lastid, err = res.LastInsertId(); err != nil {
-		if errr := tx.Rollback(); errr != nil {
-			return 0, errr
-		}
-		return 0, err
-	}
 	s.StorageID = sql.NullInt64{Valid: true, Int64: lastid}
 	globals.Log.WithFields(logrus.Fields{"s": s}).Debug("CreateStorage")
 

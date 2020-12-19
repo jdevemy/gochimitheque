@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/mattn/go-sqlite3"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/sirupsen/logrus"
 	qrcode "github.com/skip2/go-qrcode"
@@ -29,6 +30,22 @@ import (
 // to store data in SQLite3
 type SQLiteDataStore struct {
 	*sqlx.DB
+}
+
+var (
+	regex = func(re, s string) bool {
+		m, _ := regexp.MatchString(re, s)
+		return m
+	}
+)
+
+func init() {
+	sql.Register("sqlite3_with_go_func",
+		&sqlite3.SQLiteDriver{
+			ConnectHook: func(conn *sqlite3.SQLiteConn) error {
+				return conn.RegisterFunc("regexp", regex, true)
+			},
+		})
 }
 
 // GetWelcomeAnnounce returns the welcome announce
@@ -90,7 +107,7 @@ func NewSQLiteDBstore(dataSourceName string) (*SQLiteDataStore, error) {
 	)
 
 	globals.Log.WithFields(logrus.Fields{"dbdriver": "sqlite3", "dataSourceName": dataSourceName}).Debug("NewDBstore")
-	if db, err = sqlx.Connect("sqlite3", dataSourceName+"?_journal=wal&_fk=1"); err != nil {
+	if db, err = sqlx.Connect("sqlite3_with_go_func", dataSourceName+"?_journal=wal&_fk=1"); err != nil {
 		return &SQLiteDataStore{}, err
 	}
 
