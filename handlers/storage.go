@@ -66,11 +66,6 @@ func (env *Env) ToogleStorageBorrowingHandler(w http.ResponseWriter, r *http.Req
 	s.Borrowing.Person.PersonID = c.PersonID
 
 	// toggling the borrowing
-	// if s.Borrowing.Borrower == nil {
-	// 	err = env.DB.DeleteStorageBorrowing(s)
-	// } else {
-	// 	err = env.DB.CreateStorageBorrowing(s)
-	// }
 	err = env.DB.ToogleStorageBorrowing(s)
 
 	if err != nil {
@@ -487,16 +482,6 @@ func (env *Env) CreateStorageHandler(w http.ResponseWriter, r *http.Request) *mo
 				Message: "create storage error",
 				Code:    http.StatusInternalServerError}
 		}
-		// // generating barecode if not specified
-		// if s.StorageBarecode.String == "" {
-		// 	s.StorageID = sql.NullInt64{Valid: true, Int64: int64(id)}
-		// 	if err = env.DB.GenerateAndUpdateStorageBarecode(&s); err != nil {
-		// 		return &models.AppError{
-		// 			Error:   err,
-		// 			Message: "generate storage barecode error",
-		// 			Code:    http.StatusInternalServerError}
-		// 	}
-		// }
 	}
 	s.StorageID = sql.NullInt64{Valid: true, Int64: int64(id)}
 
