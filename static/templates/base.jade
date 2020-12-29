@@ -108,25 +108,6 @@ html
                 }
             });
         }
-        //- function scanQRdone(result) {
-        //-     closeQR();
-        //-     window.location.href = result;
-        //- }
-        //- function closeQR() {
-        //-     window.qrScanner.destroy();
-        //-     window.qrScanner = null;
-        //-     $("#video").addClass("invisible")
-        //- }
-
-    script.
-        function loadContent(url, callback) {
-            $.ajax({
-                url: url,
-            }).done(function(data) {
-                $("div#content").html(data);
-                window[callback]();
-            });
-        }
 
     script.
         function ImagetoPrint(source, label)
