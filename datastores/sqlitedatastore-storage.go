@@ -900,14 +900,6 @@ func (db *SQLiteDataStore) CreateStorage(s Storage) (int, error) {
 
 	}
 
-	//
-	// qrcode
-	//
-	qr := strconv.FormatInt(s.StorageID.Int64, 10)
-	if s.StorageQRCode, err = qrcode.Encode(qr, qrcode.Medium, 512); err != nil {
-		return 0, err
-	}
-
 	// if SupplierID = -1 then it is a new supplier
 	if v, err := s.Supplier.SupplierID.Value(); s.Supplier.SupplierID.Valid && err == nil && v.(int64) == -1 {
 		sqlr = `INSERT INTO supplier (supplier_label) VALUES (?)`
@@ -986,7 +978,6 @@ func (db *SQLiteDataStore) CreateStorage(s Storage) (int, error) {
 	m["storage_creationdate"] = s.StorageCreationDate
 	m["storage_modificationdate"] = s.StorageModificationDate
 	m["storage_archive"] = false
-	m["storage_qrcode"] = s.StorageQRCode
 
 	// building column names/values
 	col := make([]string, 0, len(m))
@@ -1032,6 +1023,22 @@ func (db *SQLiteDataStore) CreateStorage(s Storage) (int, error) {
 
 	// getting the last inserted id
 	if lastid, err = res.LastInsertId(); err != nil {
+		if errr := tx.Rollback(); errr != nil {
+			return 0, errr
+		}
+		return 0, err
+	}
+
+	//
+	// qrcode
+	//
+	qr := strconv.FormatInt(lastid, 10)
+	if s.StorageQRCode, err = qrcode.Encode(qr, qrcode.Medium, 512); err != nil {
+		return 0, err
+	}
+
+	sqlr = `UPDATE storage SET storage_qrcode=? WHERE storage_id=?`
+	if _, err = tx.Exec(sqlr, s.StorageQRCode, lastid); err != nil {
 		if errr := tx.Rollback(); errr != nil {
 			return 0, errr
 		}
