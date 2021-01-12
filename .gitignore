@@ -8,3 +8,7 @@ rice-box.go
 
 static/jade/*
 !static/jade/funcs.go
+
+node_modules
+
+package-lock.json

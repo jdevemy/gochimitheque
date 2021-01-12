@@ -5,10 +5,6 @@
     font-weight: normal;
     font-style: normal;
 }
-/* table {
-    overflow-x: auto;
-    overflow-y: hidden;
-} */
 .bootstrap-table .fixed-table-container .fixed-table-body, .bootstrap-table .fixed-table-container {
     border: none;
     overflow-y: hidden;
@@ -17,24 +13,7 @@
 .iconlabel {
     font-family: economicaregular;
 }
-@keyframes blinker {
-    from {opacity: 1.0;}
-    to {opacity: 0.0;}
-}
-@-webkit-keyframes blinker {
-    from {opacity: 1.0;}
-    to {opacity: 0.0;}
-}
-.blink{
-    text-decoration: blink;
-    -webkit-animation-name: blinker;
-    -webkit-animation-duration: 0.6s;
-    -webkit-animation-iteration-count:infinite;
-    -webkit-animation-timing-function:ease-in-out;
-    -webkit-animation-direction: alternate;
-    animation-name: blinker;
-    animation-duration: 0.6s;
-    animation-iteration-count:infinite;
-    animation-timing-function:ease-in-out;
-    animation-direction: alternate;
+.verticaltext {
+    writing-mode: vertical-rl;
+    text-orientation: sideways;
 }

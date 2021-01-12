@@ -18,7 +18,8 @@ html
         link(href=c.ProxyPath + "css/select2.min.css",  rel="stylesheet" )
         link(href=c.ProxyPath + "css/trumbowyg.min.css",  rel="stylesheet" )
         link(href=c.ProxyPath + "css/trumbowyg.colors.min.css",  rel="stylesheet" )
-        
+        link(href=c.ProxyPath + "css/print.css",  rel="stylesheet" )
+
         link(rel="shortcut icon" href=c.ProxyPath + "img/favicon.ico" type="image/x-icon")
         link(rel="icon" href=c.ProxyPath + "img/favicon.ico" type="image/x-icon")
 
@@ -87,7 +88,8 @@ html
     script(src=c.ProxyPath + "js/jquery.validate.min.js" )
     script(src=c.ProxyPath + "js/jquery.validate.additional-methods.min.js" )
     script(src=c.ProxyPath + "js/select2.full.min.js" )
-    script(src=c.ProxyPath + "js/JSmol.lite.nojq.js" )
+    //script(src=c.ProxyPath + "js/JSmol.lite.nojq.js" )
+    script(src=c.ProxyPath + "js/print.js" )
     
     script(type="module").
         import QrScanner from '/js/qr-scanner.min.js';
@@ -107,25 +109,6 @@ html
                     Storage_closeQR();
                 }
             });
-        }
-
-    script.
-        function ImagetoPrint(source, label)
-        {
-            return "<html><head><scri"+"pt>function step1(){\n" +
-                    "setTimeout('step2()', 10);}\n" +
-                    "function step2(){window.print();window.close()}\n" +
-                    "</scri" + "pt></head><body onload='step1()'>\n" +
-                    "<div style='width: 12em;'><img width='128' height='128' src='" + source + "' /></div><div style='width: 12em;'><span>" + label+ "</span></div></body></html>";
-        }
-
-        function PrintImage(source, label)
-        {
-            var Pagelink = "about:blank";
-            var pwa = window.open(Pagelink, "_new");
-            pwa.document.open();
-            pwa.document.write(ImagetoPrint(source, label));
-            pwa.document.close();
         }
 
     script(src=c.ProxyPath + "wasm/wasm_exec.js")
