@@ -3,6 +3,9 @@
 - [Download](#download)
 - [Requirements](#requirements)
 - [Quick start](#quick-start)
+  - [With Docker](#with-docker)
+  - [Without Docker](#without-docker)
+  - [Connection](#connection)
 - [Production installation](#production-installation)
   - [The Docker way (recommended)](#the-docker-way-recommended)
     - [Configuration](#configuration)
@@ -66,10 +69,20 @@ Chimithèque is statically compiled and then does not require other dependencies
 
 # Quick start
 
+## With Docker
+
+```bash
+  docker run  -p 127.0.0.1:8081:8081 tbellembois/gochimitheque:latest
+```
+
+## Without Docker
 1. download the latest `gochimitheque` binary here <https://github.com/tbellembois/gochimitheque/releases/latest/download/gochimitheque>
 2. uncompress is in a directory
 3. run `./gochimitheque`
-4. open your web browser at `http://localhost:8081/login`
+
+## Connection
+
+Then open your web browser at `http://localhost:8081/login`
 
 Et voilà !
 
