@@ -270,7 +270,7 @@ func (env *Env) CreatePersonHandler(w http.ResponseWriter, r *http.Request) *mod
 	}
 
 	// sending the new mail
-	msgbody := fmt.Sprintf(globals.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "createperson_mailbody", PluralCount: 1}), globals.ApplicationFullURL+"login", p.PersonEmail)
+	msgbody := fmt.Sprintf(globals.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "createperson_mailbody", PluralCount: 1}), globals.ApplicationFullURL, p.PersonEmail)
 	msgsubject := globals.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "createperson_mailsubject", PluralCount: 1})
 	if err = utils.SendMail(p.PersonEmail, msgsubject, msgbody); err != nil {
 		globals.Log.Errorf("error sending email %s", err.Error)

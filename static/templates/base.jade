@@ -92,8 +92,8 @@ html
     script(src=c.ProxyPath + "js/print.js" )
     
     script(type="module").
-        import QrScanner from '/js/qr-scanner.min.js';
-        QrScanner.WORKER_PATH = '/js/qr-scanner-worker.min.js';
+        import QrScanner from './js/qr-scanner.min.js';
+        QrScanner.WORKER_PATH = './js/qr-scanner-worker.min.js';
         window.QrScanner = QrScanner;
 
     script.
@@ -114,7 +114,7 @@ html
     script(src=c.ProxyPath + "wasm/wasm_exec.js")
     script.
         const go = new Go();
-        WebAssembly.instantiateStreaming(fetch("/wasm/wasm"), go.importObject).then((result) => {
+        WebAssembly.instantiateStreaming(fetch("." + proxyPath + "/wasm/wasm"), go.importObject).then((result) => {
             go.run(result.instance);
         });
 

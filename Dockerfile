@@ -25,7 +25,11 @@ RUN go get -v github.com/GeertJohan/go.rice/rice
 
 # Getting wasm module sources.
 WORKDIR /go/src/github.com/tbellembois/
-RUN git clone -b devel https://github.com/tbellembois/gochimitheque-wasm.git
+# prod.
+#RUN git clone -b devel https://github.com/tbellembois/gochimitheque-wasm.git
+# devel. with:
+# sudo mount --bind ~/workspace/workspace_go/src/github.com/tbellembois/gochimitheque-wasm ./bind-gochimitheque-wasm
+COPY ./bind-gochimitheque-wasm ./gochimitheque-wasm
 
 # Copying Chimithèque sources.
 WORKDIR /go/src/github.com/tbellembois/gochimitheque/

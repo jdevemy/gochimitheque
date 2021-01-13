@@ -120,7 +120,7 @@ var LOCALES_EN = []byte(`
 [resetpassword2_text]
 	one = "reset my password, I am not a robot"
 [resetpassword_message_mailsentto]
-	one = "a reinitialization link has been sent to"
+	one = "a reinitialization link has been sent to %s"
 [resetpassword_areyourobot]
 	one = "are you a robot?"
 [resetpassword_mailbody1]

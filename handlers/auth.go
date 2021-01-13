@@ -179,9 +179,9 @@ func (env *Env) ResetHandler(w http.ResponseWriter, r *http.Request) *models.App
 	}
 
 	//w.WriteHeader(http.StatusOK)
-	// redirecting to login page
+	// redirecting to home page
 	msgdone := fmt.Sprintf(globals.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "resetpassword_done", PluralCount: 1}), p.PersonEmail)
-	http.Redirect(w, r, globals.ApplicationFullURL+"/login?message="+msgdone, http.StatusSeeOther)
+	http.Redirect(w, r, globals.ApplicationFullURL+"?message="+msgdone, http.StatusSeeOther)
 
 	return nil
 }

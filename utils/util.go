@@ -214,9 +214,10 @@ func SendMail(to string, subject string, body string) error {
 	// build message
 	message += fmt.Sprintf("From: %s\r\n", globals.MailServerSender)
 	message += fmt.Sprintf("To: %s\r\n", to)
+	message += "Content-Type: text/plain; charset=utf-8\r\n"
 	message += fmt.Sprintf("Date: %s\r\n", time.Now().Format(time.RFC1123Z))
 	message += fmt.Sprintf("Subject: %s\r\n", subject)
-	message += "\r\n" + body
+	message += "\r\n" + body + "\r\n"
 
 	globals.Log.WithFields(logrus.Fields{
 		"globals.MailServerAddress":       globals.MailServerAddress,
@@ -261,7 +262,6 @@ func SendMail(to string, subject string, body string) error {
 	if smtpw, e = client.Data(); e != nil {
 		return e
 	}
-	defer smtpw.Close()
 
 	// send message
 	globals.Log.Debug("sending message")
@@ -269,6 +269,7 @@ func SendMail(to string, subject string, body string) error {
 	if n, e = buf.WriteTo(smtpw); e != nil {
 		return e
 	}
+	smtpw.Close()
 	globals.Log.WithFields(logrus.Fields{"n": n}).Debug("sendMail")
 
 	// send quit command
