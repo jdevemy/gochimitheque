@@ -136,7 +136,7 @@ func main() {
 	if *proxyurl != "" {
 		globals.ApplicationFullURL = *proxyurl + *proxypath
 	} else {
-		globals.ApplicationFullURL = "http://localhost:" + *listenport + "/"
+		globals.ApplicationFullURL = "http://localhost:" + *listenport
 	}
 	globals.MailServerAddress = *mailServerAddress
 	globals.MailServerSender = *mailServerSender

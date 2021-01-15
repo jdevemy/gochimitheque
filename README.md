@@ -82,7 +82,7 @@ Chimithèque is statically compiled and then does not require other dependencies
 
 ## Connection
 
-Then open your web browser at `http://localhost:8081/login`
+Then open your web browser at `http://127.0.0.1:8081/chimitheque`
 
 Et voilà !
 
@@ -106,11 +106,12 @@ Create the data directories for the Nginx and Chimithèque containers:
   mkdir -p /data/docker-nginx/nginx-auth/certs
   mkdir -p /data/docker-nginx/nginx-templates
   mkdir -p /data/docker-chimitheque/chimitheque-db
+  chmod o+rwx /data/docker-chimitheque/chimitheque-db
 ```
 
 Retrieve the Nginx configuration:
 ```bash
-  wget https://raw.githubusercontent.com/tbellembois/gochimitheque/master/documents/system/nginx-chimitheque.conf -O /data/docker-nginx/nginx-templates/nginx-chimitheque.conf.template
+  wget https://raw.githubusercontent.com/tbellembois/gochimitheque/master/documents/system/nginx-chimitheque.conf -O /data/docker-nginx/nginx-templates/default.conf.template
 ```
 
 Start up:

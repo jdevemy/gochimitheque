@@ -90,10 +90,11 @@ html
     script(src=c.ProxyPath + "js/select2.full.min.js" )
     //script(src=c.ProxyPath + "js/JSmol.lite.nojq.js" )
     script(src=c.ProxyPath + "js/print.js" )
+    script(src=c.ProxyPath + "js/qr-scanner.min.js" )
     
-    script(type="module").
-        import QrScanner from './js/qr-scanner.min.js';
-        QrScanner.WORKER_PATH = './js/qr-scanner-worker.min.js';
+    script.
+        //import QrScanner from './js/qr-scanner.min.js';
+        QrScanner.WORKER_PATH = proxyPath + 'js/qr-scanner-worker.min.js';
         window.QrScanner = QrScanner;
 
     script.
@@ -110,11 +111,16 @@ html
                 }
             });
         }
+        function closeQR() {
+            $("div#video").html("");
+            window.qrScanner.destroy();
+            window.qrScanner = null;
+        }
 
     script(src=c.ProxyPath + "wasm/wasm_exec.js")
     script.
         const go = new Go();
-        WebAssembly.instantiateStreaming(fetch("." + proxyPath + "/wasm/wasm"), go.importObject).then((result) => {
+        WebAssembly.instantiateStreaming(fetch(proxyPath + "wasm/wasm"), go.importObject).then((result) => {
             go.run(result.instance);
         });
 

@@ -1,7 +1,7 @@
 //- extends ../base.jade
 include ../mixins
 block CONTENT
-    img(src="img/logo_chimitheque_small.png", alt="chimitheque_logo", title="Chimithèque")
+    img(src=c.ProxyPath + "img/logo_chimitheque_small.png", alt="chimitheque_logo", title="Chimithèque")
     :go:func
         Login(c ViewContainer)
     header
