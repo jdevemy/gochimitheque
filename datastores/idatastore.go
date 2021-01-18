@@ -105,7 +105,7 @@ type Datastore interface {
 	GetStoreLocationChildren(id int) ([]StoreLocation, error)
 	GetStoreLocationEntity(id int) (Entity, error)
 	DeleteStoreLocation(id int) error
-	CreateStoreLocation(s StoreLocation) (int, error)
+	CreateStoreLocation(s StoreLocation) (int64, error)
 	UpdateStoreLocation(s StoreLocation) error
 	IsStoreLocationEmpty(id int) (bool, error)
 	ComputeStockStorelocation(p Product, s *StoreLocation, u Unit) float64

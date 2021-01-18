@@ -2,126 +2,200 @@ package datastores
 
 import (
 	"database/sql"
-	"fmt"
-	"strings"
 
-	sq "github.com/Masterminds/squirrel"
-	"github.com/jmoiron/sqlx" // register sqlite3 driver
+	"github.com/huandu/go-sqlbuilder"
+	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
 	"github.com/tbellembois/gochimitheque/globals"
 	. "github.com/tbellembois/gochimitheque/models"
 )
 
-// buildFullPath builds the store location full path
-// the caller is responsible of opening and commiting the tx transaction
+// Return the store location full path.
+// The caller is responsible of opening and commiting the tx transaction.
 func (db *SQLiteDataStore) buildFullPath(s StoreLocation, tx *sqlx.Tx) string {
-	// parent
+
 	var (
-		pp  StoreLocation
-		err error
+		err    error
+		parent StoreLocation
+		sb     *sqlbuilder.SelectBuilder
 	)
 
 	globals.Log.WithFields(logrus.Fields{"s": s}).Debug("buildFullPath")
 
-	// getting the parent
+	// Recursively getting the parents.
 	if s.StoreLocation != nil && s.StoreLocation.StoreLocationID.Valid {
-		// retrieving the parent from db
-		sqlr := `SELECT s.storelocation_id, s.storelocation_name,
-		storelocation.storelocation_id AS "storelocation.storelocation_id",
-		storelocation.storelocation_name AS "storelocation.storelocation_name" 
-		FROM storelocation AS s
-		LEFT JOIN storelocation on s.storelocation = storelocation.storelocation_id
-		WHERE s.storelocation_id = ?`
-		r := tx.QueryRowx(sqlr, s.StoreLocation.StoreLocationID.Int64)
-		if err = r.StructScan(&pp); err != nil {
+
+		sb = sqlbuilder.NewSelectBuilder()
+
+		sb.Select("s.storelocation_id",
+			"s.storelocation_name",
+			sb.As("storelocation.storelocation_id", "storelocation.storelocation_id"),
+			sb.As("storelocation.storelocation_name", "storelocation.storelocation_name"),
+		)
+		sb.From(sb.As("storelocation", "s"))
+		sb.JoinWithOption(sqlbuilder.LeftJoin,
+			"storelocation",
+			sb.Equal("s.storelocation", "storelocation.storelocation_id"),
+		)
+		sb.Where(sb.Equal("s.storelocation_id", s.StoreLocation.StoreLocationID.Int64))
+		sql, args := sb.Build()
+
+		if err = tx.Get(&parent, sql, args...); err != nil {
 			globals.Log.Error(err)
 			return ""
 		}
 
-		// prepending the path with the parent name
-		return db.buildFullPath(pp, tx) + "/" + s.StoreLocationName.String
+		return db.buildFullPath(parent, tx) + "/" + s.StoreLocationName.String
+
 	}
 
 	return s.StoreLocationName.String
+
 }
 
-// GetStoreLocations returns the store locations matching the search criteria
-// order, offset and limit are passed to the sql request
+// GetStoreLocations return the store locations matching the p search criteria.
 func (db *SQLiteDataStore) GetStoreLocations(p DbselectparamStoreLocation) ([]StoreLocation, int, error) {
+
 	var (
-		storelocations                     []StoreLocation
-		count                              int
-		precreq, presreq, comreq, postsreq strings.Builder
-		cnstmt                             *sqlx.NamedStmt
-		snstmt                             *sqlx.NamedStmt
-		err                                error
+		err                         error
+		storelocations              []StoreLocation
+		count                       int
+		countBuilder, selectBuilder *sqlbuilder.SelectBuilder
 	)
+
 	globals.Log.WithFields(logrus.Fields{"p": p}).Debug("GetStoreLocations")
 
-	precreq.WriteString(" SELECT count(DISTINCT s.storelocation_id)")
-	presreq.WriteString(` SELECT s.storelocation_id AS "storelocation_id", 
-	s.storelocation_name AS "storelocation_name", 
-	s.storelocation_canstore, 
-	s.storelocation_color, 
-	s.storelocation_fullpath AS "storelocation_fullpath",
-	storelocation.storelocation_id AS "storelocation.storelocation_id",
-	storelocation.storelocation_name AS "storelocation.storelocation_name",
-	entity.entity_id AS "entity.entity_id", 
-	entity.entity_name AS "entity.entity_name"`)
-	comreq.WriteString(" FROM storelocation AS s")
-	comreq.WriteString(" JOIN entity ON s.entity = entity.entity_id")
-	comreq.WriteString(" LEFT JOIN storelocation on s.storelocation = storelocation.storelocation_id")
+	// Named statements.
+	personid := sql.Named("personid", p.GetLoggedPersonID())
+	entity := sql.Named("entity", p.GetEntity())
+	storelocation_canstore := sql.Named("storelocation_canstore", p.GetStoreLocationCanStore())
+	permission := sql.Named("permission", p.GetPermission())
+	search := sql.Named("search", p.GetSearch())
 
-	// filter by permissions
-	comreq.WriteString(` JOIN permission AS perm ON
-	perm.person = :personid and (perm.permission_item_name in ("all", "storages")) and (perm.permission_perm_name in ("all", :permission)) and (perm.permission_entity_id in (-1, entity.entity_id))
-	`)
-	comreq.WriteString(" WHERE s.storelocation_name LIKE :search")
+	// Select and count.
+	countBuilder = sqlbuilder.NewSelectBuilder()
+	selectBuilder = sqlbuilder.NewSelectBuilder()
+
+	countBuilder.Select("COUNT(s.storelocation_id)").Distinct()
+	selectBuilder.Select(selectBuilder.As("s.storelocation_id", "storelocation_id"),
+		selectBuilder.As("s.storelocation_name", "storelocation_name"),
+		selectBuilder.As("s.storelocation_fullpath", "storelocation_fullpath"),
+		selectBuilder.As("entity.entity_id", "entity.entity_id"),
+		selectBuilder.As("entity.entity_name", "entity.entity_name"),
+		"s.storelocation_canstore",
+		"s.storelocation_color",
+	)
+
+	// From.
+	fromBuilder := sqlbuilder.NewSelectBuilder()
+	fromBuilder.From(fromBuilder.As("storelocation", "s"))
+	fromBuilder.Join("entity", fromBuilder.Equal("s.entity", "entity.entity_id"))
+	fromBuilder.JoinWithOption(sqlbuilder.LeftJoin, "storelocation", fromBuilder.Equal("s.storelocation", "storelocation.storelocation_id"))
+	fromBuilder.Join(fromBuilder.As("permission", "perm"),
+		fromBuilder.And(fromBuilder.Equal("perm.person", personid),
+			fromBuilder.In("perm.permission_item_name", "all", "storages"),
+			fromBuilder.In("perm.permission_perm_name", "all", permission),
+			fromBuilder.In("perm.permission_entity_id", -1, "entity.entity_id"),
+		))
+
+	// Where.
+	whereBuilder := sqlbuilder.NewSelectBuilder()
+	whereAndExpression := []string{whereBuilder.Like("s.storelocation_name", search)}
 	if p.GetEntity() != -1 {
-		comreq.WriteString(" AND s.entity = :entity")
+		whereAndExpression = append(whereAndExpression, whereBuilder.Equal("s.entity", entity))
 	}
 	if p.GetStoreLocationCanStore() {
-		comreq.WriteString(" AND s.storelocation_canstore = :storelocation_canstore")
+		whereAndExpression = append(whereAndExpression, whereBuilder.Equal("s.storelocation_canstore", storelocation_canstore))
 	}
-	postsreq.WriteString(" GROUP BY s.storelocation_id")
-	postsreq.WriteString(" ORDER BY " + p.GetOrderBy() + " " + p.GetOrder())
+	whereBuilder.Where(whereBuilder.And(whereAndExpression...))
 
-	// limit
-	if p.GetLimit() != ^uint64(0) {
-		postsreq.WriteString(" LIMIT :limit OFFSET :offset")
-	}
+	// Order by, group by, limit, offset.
+	postBuilder := sqlbuilder.NewSelectBuilder()
+	postBuilder.GroupBy("s.storelocation_id")
+	postBuilder.OrderBy(p.GetOrderBy(), p.GetOrder())
+	postBuilder.Limit(int(p.GetLimit()))
+	postBuilder.Offset(int(p.GetOffset()))
 
-	// building count and select statements
-	if cnstmt, err = db.PrepareNamed(precreq.String() + comreq.String()); err != nil {
-		return nil, 0, err
-	}
-	if snstmt, err = db.PrepareNamed(presreq.String() + comreq.String() + postsreq.String()); err != nil {
-		return nil, 0, err
-	}
+	sqlSelect, argsSelect := sqlbuilder.Build("$? $? $? $?", selectBuilder, fromBuilder, whereBuilder, postBuilder).Build()
+	sqlCount, argsCount := sqlbuilder.Build("$? $? $?", countBuilder, fromBuilder, whereBuilder).Build()
 
-	// building argument map
-	m := map[string]interface{}{
-		"search":                 p.GetSearch(),
-		"storelocation_canstore": p.GetStoreLocationCanStore(),
-		"personid":               p.GetLoggedPersonID(),
-		"order":                  p.GetOrder(),
-		"limit":                  p.GetLimit(),
-		"offset":                 p.GetOffset(),
-		"entity":                 p.GetEntity(),
-		"permission":             p.GetPermission(),
-	}
+	globals.Log.Debug(sqlSelect)
+	globals.Log.Debug(argsSelect)
+	// precreq.WriteString(" SELECT count(DISTINCT s.storelocation_id)")
+	// presreq.WriteString(` SELECT s.storelocation_id AS "storelocation_id",
+	// s.storelocation_name AS "storelocation_name",
+	// s.storelocation_canstore,
+	// s.storelocation_color,
+	// s.storelocation_fullpath AS "storelocation_fullpath",
+	// storelocation.storelocation_id AS "storelocation.storelocation_id",
+	// storelocation.storelocation_name AS "storelocation.storelocation_name",
+	// entity.entity_id AS "entity.entity_id",
+	// entity.entity_name AS "entity.entity_name"`)
+	// comreq.WriteString(" FROM storelocation AS s")
+	// comreq.WriteString(" JOIN entity ON s.entity = entity.entity_id")
+	// comreq.WriteString(" LEFT JOIN storelocation on s.storelocation = storelocation.storelocation_id")
+
+	// // filter by permissions
+	// comreq.WriteString(` JOIN permission AS perm ON
+	// perm.person = :personid and (perm.permission_item_name in ("all", "storages")) and (perm.permission_perm_name in ("all", :permission)) and (perm.permission_entity_id in (-1, entity.entity_id))
+	// `)
+	// comreq.WriteString(" WHERE s.storelocation_name LIKE :search")
+	// if p.GetEntity() != -1 {
+	// 	comreq.WriteString(" AND s.entity = :entity")
+	// }
+	// if p.GetStoreLocationCanStore() {
+	// 	comreq.WriteString(" AND s.storelocation_canstore = :storelocation_canstore")
+	// }
+	// postsreq.WriteString(" GROUP BY s.storelocation_id")
+	// postsreq.WriteString(" ORDER BY " + p.GetOrderBy() + " " + p.GetOrder())
+
+	// // limit
+	// if p.GetLimit() != ^uint64(0) {
+	// 	postsreq.WriteString(" LIMIT :limit OFFSET :offset")
+	// }
+
+	// // building count and select statements
+	// if cnstmt, err = db.PrepareNamed(precreq.String() + comreq.String()); err != nil {
+	// 	return nil, 0, err
+	// }
+	// if snstmt, err = db.PrepareNamed(presreq.String() + comreq.String() + postsreq.String()); err != nil {
+	// 	return nil, 0, err
+	// }
+
+	// // building argument map
+	// m := map[string]interface{}{
+	// 	"search":                 p.GetSearch(),
+	// 	"storelocation_canstore": p.GetStoreLocationCanStore(),
+	// 	"personid":               p.GetLoggedPersonID(),
+	// 	"order":                  p.GetOrder(),
+	// 	"limit":                  p.GetLimit(),
+	// 	"offset":                 p.GetOffset(),
+	// 	"entity":                 p.GetEntity(),
+	// 	"permission":             p.GetPermission(),
+	// }
 	//globals.Log.Debug(presreq.String() + comreq.String() + postsreq.String())
 	//globals.Log.Debug(m)
 
 	// select
-	if err = snstmt.Select(&storelocations, m); err != nil {
+	// if err = snstmt.Select(&storelocations, m); err != nil {
+	// 	return nil, 0, err
+	// }
+	// // count
+	// if err = cnstmt.Get(&count, m); err != nil {
+	// 	return nil, 0, err
+	// }
+
+	if err = db.Select(&storelocations, sqlSelect, argsSelect...); err != nil {
+		globals.Log.Error(err)
 		return nil, 0, err
 	}
-	// count
-	if err = cnstmt.Get(&count, m); err != nil {
+	if err = db.Get(&count, sqlCount, argsCount...); err != nil {
+		globals.Log.Error(err)
 		return nil, 0, err
 	}
+
 	return storelocations, count, nil
+
 }
 
 // GetStoreLocation returns the store location with id "id"
@@ -211,146 +285,104 @@ func (db *SQLiteDataStore) DeleteStoreLocation(id int) error {
 	return nil
 }
 
-// CreateStoreLocation creates the given store location
-func (db *SQLiteDataStore) CreateStoreLocation(s StoreLocation) (int, error) {
+// CreateStoreLocation insert the storelocation s into the DB.
+func (db *SQLiteDataStore) CreateStoreLocation(s StoreLocation) (int64, error) {
+
 	var (
-		sqlr     string
-		res      sql.Result
-		lastid   int64
-		err      error
-		sqla     []interface{}
-		tx       *sqlx.Tx
-		ibuilder sq.InsertBuilder
+		err           error
+		tx            *sqlx.Tx
+		sqlResult     sql.Result
+		insertColumns []string
+		insertValues  []interface{}
+		insertBuilder *sqlbuilder.InsertBuilder
 	)
 
-	// beginning transaction
 	if tx, err = db.Beginx(); err != nil {
 		return 0, nil
 	}
 
-	// building full path
-	s.StoreLocationFullPath = db.buildFullPath(s, tx)
+	insertBuilder = sqlbuilder.NewInsertBuilder()
 
-	m := make(map[string]interface{})
+	// Buiding columns and values.
 	if s.StoreLocationCanStore.Valid {
-		m["storelocation_canstore"] = s.StoreLocationCanStore.Bool
+		insertColumns = append(insertColumns, "storelocation_canstore")
+		insertValues = append(insertValues, s.StoreLocationCanStore.Bool)
 	}
 	if s.StoreLocationColor.Valid {
-		m["storelocation_color"] = s.StoreLocationColor.String
+		insertColumns = append(insertColumns, "storelocation_color")
+		insertValues = append(insertValues, s.StoreLocationColor.String)
 	}
-	m["storelocation_name"] = s.StoreLocationName.String
 	if s.StoreLocation != nil {
-		m["storelocation"] = s.StoreLocation.StoreLocationID.Int64
+		insertColumns = append(insertColumns, "storelocation")
+		insertValues = append(insertValues, s.StoreLocation.StoreLocationID.Int64)
 	}
-	m["entity"] = s.EntityID
-	m["storelocation_fullpath"] = s.StoreLocationFullPath
+	insertColumns = append(insertColumns, "entity")
+	insertValues = append(insertValues, s.EntityID)
+	insertColumns = append(insertColumns, "storelocation_fullpath")
+	insertValues = append(insertValues, db.buildFullPath(s, tx))
 
-	// building column names/values
-	col := make([]string, 0, len(m))
-	val := make([]interface{}, 0, len(m))
-	for k, v := range m {
-		col = append(col, k)
+	// Buiding the query.
+	insertBuilder.InsertInto("storelocation")
+	insertBuilder.Cols(insertColumns...)
+	insertBuilder.Values(insertValues...)
+	sql, args := insertBuilder.Build()
 
-		switch t := v.(type) {
-		case int:
-			val = append(val, v.(int))
-		case string:
-			val = append(val, v.(string))
-		case bool:
-			val = append(val, v.(bool))
-		default:
-			panic(fmt.Sprintf("unknown type: %T", t))
-		}
-	}
-
-	ibuilder = sq.Insert("storelocation").Columns(col...).Values(val...)
-	if sqlr, sqla, err = ibuilder.ToSql(); err != nil {
-		if errr := tx.Rollback(); errr != nil {
-			return 0, errr
-		}
+	if sqlResult, err = tx.Exec(sql, args...); err != nil {
+		_ = tx.Rollback()
 		return 0, nil
 	}
 
-	if res, err = tx.Exec(sqlr, sqla...); err != nil {
-		if errr := tx.Rollback(); errr != nil {
-			return 0, errr
-		}
-		return 0, nil
-	}
-
-	// committing changes
 	if err = tx.Commit(); err != nil {
-		if errr := tx.Rollback(); errr != nil {
-			return 0, errr
-		}
 		return 0, nil
 	}
 
-	// getting the last inserted id
-	if lastid, err = res.LastInsertId(); err != nil {
-		return 0, nil
-	}
+	return sqlResult.LastInsertId()
 
-	return int(lastid), nil
 }
 
-// UpdateStoreLocation updates the given store location
+// UpdateStoreLocation update the storelocation s into the DB.
 func (db *SQLiteDataStore) UpdateStoreLocation(s StoreLocation) error {
+
 	var (
-		sqlr     string
-		sqla     []interface{}
-		tx       *sqlx.Tx
-		err      error
-		ubuilder sq.UpdateBuilder
+		err           error
+		tx            *sqlx.Tx
+		updateBuilder *sqlbuilder.UpdateBuilder
 	)
 
-	// beginning new transaction
 	if tx, err = db.Beginx(); err != nil {
 		return err
 	}
 
-	// building full path
-	s.StoreLocationFullPath = db.buildFullPath(s, tx)
+	updateBuilder = sqlbuilder.NewUpdateBuilder()
 
-	m := make(map[string]interface{})
+	// Buiding columns and values.
+	assignments := []string{}
 	if s.StoreLocationCanStore.Valid {
-		m["storelocation_canstore"] = s.StoreLocationCanStore.Bool
+		assignments = append(assignments, updateBuilder.Assign("storelocation_canstore", s.StoreLocationCanStore.Bool))
 	}
 	if s.StoreLocationColor.Valid {
-		m["storelocation_color"] = s.StoreLocationColor.String
+		assignments = append(assignments, updateBuilder.Assign("storelocation_color", s.StoreLocationColor.String))
 	}
-	m["storelocation_name"] = s.StoreLocationName.String
 	if s.StoreLocation != nil {
-		m["storelocation"] = s.StoreLocation.StoreLocationID.Int64
+		assignments = append(assignments, updateBuilder.Assign("storelocation", s.StoreLocation.StoreLocationID.Int64))
 	}
-	m["entity"] = s.EntityID
-	m["storelocation_fullpath"] = s.StoreLocationFullPath
+	assignments = append(assignments, updateBuilder.Assign("storelocation_name", s.StoreLocationName.String))
+	assignments = append(assignments, updateBuilder.Assign("entity", s.EntityID))
+	assignments = append(assignments, updateBuilder.Assign("storelocation_fullpath", db.buildFullPath(s, tx)))
 
-	ubuilder = sq.Update("storelocation").
-		SetMap(m).
-		Where(sq.Eq{"storelocation_id": s.StoreLocationID})
-	if sqlr, sqla, err = ubuilder.ToSql(); err != nil {
-		if errr := tx.Rollback(); errr != nil {
-			return errr
-		}
-		return err
-	}
-	if _, err = tx.Exec(sqlr, sqla...); err != nil {
-		if errr := tx.Rollback(); errr != nil {
-			return errr
-		}
+	// Buiding the query.
+	updateBuilder.Update("storelocation")
+	updateBuilder.Set(assignments...)
+	updateBuilder.Where(updateBuilder.Equal("storelocation_id", s.StoreLocationID))
+	sql, args := updateBuilder.Build()
+
+	if _, err = tx.Exec(sql, args...); err != nil {
+		_ = tx.Rollback()
 		return err
 	}
 
-	// committing changes
-	if err = tx.Commit(); err != nil {
-		if errr := tx.Rollback(); errr != nil {
-			return errr
-		}
-		return err
-	}
+	return tx.Commit()
 
-	return nil
 }
 
 // IsStoreLocationEmpty returns true is the store location is empty

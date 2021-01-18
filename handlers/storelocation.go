@@ -123,7 +123,7 @@ func (env *Env) CreateStoreLocationHandler(w http.ResponseWriter, r *http.Reques
 	var (
 		sl  models.StoreLocation
 		err error
-		id  int
+		id  int64
 	)
 
 	if err = json.NewDecoder(r.Body).Decode(&sl); err != nil {
@@ -133,34 +133,6 @@ func (env *Env) CreateStoreLocationHandler(w http.ResponseWriter, r *http.Reques
 			Code:    http.StatusInternalServerError}
 	}
 
-	// if err := r.ParseForm(); err != nil {
-	// 	return &models.AppError{
-	// 		Error:   err,
-	// 		Message: "form parsing error",
-	// 		Code:    http.StatusBadRequest}
-	// }
-
-	// if err := globals.Decoder.Decode(&sl, r.PostForm); err != nil {
-	// 	return &models.AppError{
-	// 		Error:   err,
-	// 		Message: "form decoding error",
-	// 		Code:    http.StatusBadRequest}
-	// }
-	// // processing storelocation not processed by Decode
-	// if r.FormValue("storelocation.storelocation.storelocation_id") != "" {
-	// 	var slid int
-	// 	slname := r.FormValue("storelocation.storelocation.storelocation_name")
-	// 	if slid, err = strconv.Atoi(r.FormValue("storelocation.storelocation.storelocation_id")); err != nil {
-	// 		return &models.AppError{
-	// 			Error:   err,
-	// 			Message: "slid atoi conversion",
-	// 			Code:    http.StatusInternalServerError}
-	// 	}
-	// 	sl.StoreLocation = &models.StoreLocation{
-	// 		StoreLocationID:   sql.NullInt64{Valid: true, Int64: int64(slid)},
-	// 		StoreLocationName: sql.NullString{Valid: true, String: slname},
-	// 	}
-	// }
 	globals.Log.WithFields(logrus.Fields{"sl": sl}).Debug("CreateStoreLocationHandler")
 
 	if id, err = env.DB.CreateStoreLocation(sl); err != nil {
@@ -169,7 +141,7 @@ func (env *Env) CreateStoreLocationHandler(w http.ResponseWriter, r *http.Reques
 			Message: "create store location error",
 			Code:    http.StatusInternalServerError}
 	}
-	sl.StoreLocationID = sql.NullInt64{Valid: true, Int64: int64(id)}
+	sl.StoreLocationID = sql.NullInt64{Valid: true, Int64: id}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)

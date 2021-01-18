@@ -16,6 +16,7 @@ require (
 	github.com/google/go-cmp v0.5.4
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/schema v1.2.0
+	github.com/huandu/go-sqlbuilder v1.10.0
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/justinas/alice v1.2.0
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
