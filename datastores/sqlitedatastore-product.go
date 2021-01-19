@@ -1555,6 +1555,7 @@ func (db *SQLiteDataStore) GetExposedProducts() ([]Product, int, error) {
 	p.product_restricted,
 	p.product_radioactive,
 	p.product_threedformula,
+	p.product_twodformula,
 	p.product_molformula,
 	p.product_disposalcomment,
 	p.product_remark,
@@ -1736,6 +1737,7 @@ func (db *SQLiteDataStore) GetProducts(p DbselectparamProduct) ([]Product, int, 
 	p.product_restricted,
 	p.product_radioactive,
 	p.product_threedformula,
+	p.product_twodformula,
 	p.product_molformula,
 	p.product_disposalcomment,
 	p.product_remark,
@@ -2233,6 +2235,7 @@ func (db *SQLiteDataStore) GetProduct(id int) (Product, error) {
 	product_restricted,
 	product_radioactive,
 	product_threedformula,
+	product_twodformula,
 	product_molformula,
 	product_disposalcomment,
 	product_remark,
@@ -2708,6 +2711,9 @@ func (db *SQLiteDataStore) CreateProduct(p Product) (int, error) {
 	if p.ProductThreeDFormula.Valid {
 		s["product_threedformula"] = p.ProductThreeDFormula.String
 	}
+	if p.ProductTwoDFormula.Valid {
+		s["product_twodformula"] = p.ProductTwoDFormula.String
+	}
 	if p.ProductDisposalComment.Valid {
 		s["product_disposalcomment"] = p.ProductDisposalComment.String
 	}
@@ -2751,6 +2757,8 @@ func (db *SQLiteDataStore) CreateProduct(p Product) (int, error) {
 		switch v.(type) {
 		case int:
 			val = append(val, v.(int))
+		case int64:
+			val = append(val, v.(int64))
 		case string:
 			val = append(val, v.(string))
 		case bool:
@@ -3177,6 +3185,9 @@ func (db *SQLiteDataStore) UpdateProduct(p Product) error {
 	}
 	if p.ProductThreeDFormula.Valid {
 		s["product_threedformula"] = p.ProductThreeDFormula.String
+	}
+	if p.ProductTwoDFormula.Valid {
+		s["product_twodformula"] = p.ProductTwoDFormula.String
 	}
 	if p.ProductDisposalComment.Valid {
 		s["product_disposalcomment"] = p.ProductDisposalComment.String

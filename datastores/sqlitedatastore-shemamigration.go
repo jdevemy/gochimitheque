@@ -186,6 +186,7 @@ CREATE TABLE IF NOT EXISTS new_product (
 	product_restricted boolean default 0,
 	product_radioactive boolean default 0,
 	product_threedformula string,
+	product_twodformula string,
 	product_molformula blob,
 	product_disposalcomment string,
 	product_remark string,

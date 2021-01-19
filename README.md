@@ -77,7 +77,7 @@ Chimithèque is statically compiled and then does not require other dependencies
 
 ## Without Docker
 1. download the latest `gochimitheque` binary here <https://github.com/tbellembois/gochimitheque/releases/latest/download/gochimitheque>
-2. uncompress is in a directory
+2. uncompress it in a directory
 3. run `./gochimitheque`
 
 ## Connection
@@ -106,7 +106,7 @@ Create the data directories for the Nginx and Chimithèque containers:
   mkdir -p /data/docker-nginx/nginx-auth/certs
   mkdir -p /data/docker-nginx/nginx-templates
   mkdir -p /data/docker-chimitheque/chimitheque-db
-  chmod o+rwx /data/docker-chimitheque/chimitheque-db
+  chmod o+rwx /data/docker-chimitheque
 ```
 
 Retrieve the Nginx configuration:

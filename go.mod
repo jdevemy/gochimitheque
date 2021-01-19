@@ -13,10 +13,11 @@ require (
 	github.com/dchest/authcookie v0.0.0-20190824115100-f900d2294c8e // indirect
 	github.com/dchest/passwordreset v0.0.0-20190826080013-4518b1f41006
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/doug-martin/goqu v5.0.0+incompatible
+	github.com/doug-martin/goqu/v9 v9.10.0
 	github.com/google/go-cmp v0.5.4
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/schema v1.2.0
-	github.com/huandu/go-sqlbuilder v1.10.0
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/justinas/alice v1.2.0
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
@@ -29,6 +30,7 @@ require (
 	golang.org/x/image v0.0.0-20201208152932-35266b937fa6 // indirect
 	golang.org/x/text v0.3.5
 	google.golang.org/appengine v1.6.7 // indirect
+	gopkg.in/doug-martin/goqu.v5 v5.0.0 // indirect
 	gopkg.in/russross/blackfriday.v2 v2.1.0
 )
 

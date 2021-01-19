@@ -58,8 +58,7 @@ block CONTENT
                 input#exactMatchTag(type="hidden")
                 input#exactMatchCategory(type="hidden")
 
-                // bio
-                .form-row.bio.collapse
+                .form-row
                     .form-group.col-sm-6
                         +select(label="category_label_title" name="category")
                     .form-group.col-sm-6
@@ -123,8 +122,13 @@ block CONTENT
                             = T("empirical_formula_convert", 1 )
 
                 .form-row.chem.collapse
+                    .form-group.col-sm-6
+                        +inputfile("product_twodformula_title", "product_twodformula")
+                        +inputhidden("product_twodformula_content", "")
+
+                .form-row.chem.collapse
                     .form-group.col-sm-12
-                        button.btn.btn-primary(type="button" onclick="noCASNumber()")
+                        button.btn.btn-primary(type="button" onclick="Product_noCas()")
                             span.mdi.mdi-24px.mdi-cursor-default-click-outline &nbsp;
                             = T("no_cas_number", 1 )
 

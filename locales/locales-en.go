@@ -394,6 +394,8 @@ var LOCALES_EN = []byte(`
 	one = "update product"
 [product_threedformula_title]
 	one = "3D formula"
+[product_twodformula_title]
+	one = "2D formula picture"
 [product_threedformula_mol_title]
 	one = "3D formula MOL file"
 [product_msds_title]

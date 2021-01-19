@@ -34,8 +34,7 @@ block CONTENT
         input#exactMatchTag(type="hidden")
         input#exactMatchCategory(type="hidden")
 
-        // bio
-        .form-row.bio.collapse
+        .form-row
             .form-group.col-sm-6
                 +select(label="category_label_title" name="category")
             .form-group.col-sm-6
@@ -98,6 +97,10 @@ block CONTENT
                     span.mr-sm-2.mdi.mdi-restart
                     = T("empirical_formula_convert", 1 )
 
+        .form-row.chem.collapse
+            .form-group.col-sm-6
+                +inputfile("product_twodformula_title", "product_twodformula")
+                +inputhidden("product_twodformula_content", "")
 
         .form-row.chem.collapse
             .form-group.col-sm-12
