@@ -29,6 +29,8 @@ func (db *SQLiteDataStore) ComputeStockStorelocation(p Product, s *StoreLocation
 	sqlr := `SELECT SUM(storage.storage_quantity * unit_multiplier) FROM storage
 	JOIN unit on storage.unit_quantity = unit.unit_id
 	WHERE storage.storelocation = ? AND
+	storage.storage IS NULL AND
+	storage.storage_archive = false AND
 	storage.storage_quantity IS NOT NULL AND
 	storage.product = ? AND
 	(storage.unit_quantity = ? OR storage.unit_quantity IN (select unit_id FROM unit WHERE unit.unit = ?))`
@@ -42,7 +44,11 @@ func (db *SQLiteDataStore) ComputeStockStorelocation(p Product, s *StoreLocation
 		c = nullc.Float64
 		t = nullc.Float64
 	}
-	globals.Log.WithFields(logrus.Fields{"p": p, "s": s, "u": u, "c": c}).Debug("ComputeStockStorelocation")
+	globals.Log.WithFields(logrus.Fields{
+		"p.ProductID":         p.ProductID,
+		"s.StoreLocationName": s.StoreLocationName,
+		"u.UnitLabel":         u.UnitLabel,
+		"c":                   c}).Debug("ComputeStockStorelocation")
 
 	// getting s children
 	if sdbchildren, err = db.GetStoreLocationChildren(int(s.StoreLocationID.Int64)); err != nil {
@@ -94,9 +100,11 @@ func (db *SQLiteDataStore) ComputeStockStorelocationNoUnit(p Product, s *StoreLo
 		err         error
 	)
 
-	sqlr := `SELECT count(*) FROM storage
+	sqlr := `SELECT SUM(storage.storage_quantity) FROM storage
 	LEFT JOIN unit on storage.unit_quantity = unit.unit_id
 	WHERE storage.storelocation = ? AND
+	storage.storage IS NULL AND
+	storage.storage_archive = false AND
 	storage.storage_quantity IS NOT NULL AND
 	storage.product = ? AND
 	storage.unit_quantity IS NULL`
@@ -110,7 +118,10 @@ func (db *SQLiteDataStore) ComputeStockStorelocationNoUnit(p Product, s *StoreLo
 		c = nullc.Float64
 		t = nullc.Float64
 	}
-	globals.Log.WithFields(logrus.Fields{"p": p, "s": s, "c": c}).Debug("ComputeStockStorelocationNoUnit")
+	globals.Log.WithFields(logrus.Fields{
+		"p.ProductID":         p.ProductID,
+		"s.StoreLocationName": s.StoreLocationName,
+		"c":                   c}).Debug("ComputeStockStorelocation")
 
 	// getting s children
 	if sdbchildren, err = db.GetStoreLocationChildren(int(s.StoreLocationID.Int64)); err != nil {
@@ -201,7 +212,7 @@ func (db *SQLiteDataStore) ComputeStockEntity(p Product, r *http.Request) []Stor
 			db.ComputeStockStorelocation(p, &storelocations[i], u)
 		}
 	}
-	// computing stocks for storages with units
+	// computing stocks for storages without units
 	for i := range storelocations {
 		db.ComputeStockStorelocationNoUnit(p, &storelocations[i])
 	}

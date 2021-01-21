@@ -4,7 +4,14 @@ block CONTENT
     :go:func
         Productcreate(c ViewContainer)
 
-    +titleicon(iconitem="tag" label="product_create_title")
+    //+titleicon(iconitem="tag" label="product_create_title")
+
+    button#save.btn.btn-link(type='button', onclick='Product_saveProduct()')
+        span.mdi.mdi-content-save.mdi-24px.iconlabel
+            = T("save", 1)
+    button.btn.btn-link(type='button', onclick="Menu_loadContent('product', 'v/products', 'Product_list')")
+        span.mdi.mdi-close-box.mdi-24px.iconlabel
+            = T("close", 1)
 
     .form-row
         .form-group.col-sm-4
@@ -20,6 +27,9 @@ block CONTENT
                             = T("biological_product", 1 )
 
     form#product
+        input#index(type='hidden', name='index', value='')
+        input#product_id(type='hidden', name='product_id', value='')
+
         input#exactMatchEmpiricalFormula(type="hidden")
         input#exactMatchLinearFormula(type="hidden")
         input#exactMatchCasNumber(type="hidden")
@@ -176,8 +186,11 @@ block CONTENT
             .form-group.col-sm-12
                 +inputtextarea("product_remark_title", "product_remark")
 
-        button#save.btn.btn-link(type='button', onclick='Product_saveProduct()')
-            span.mdi.mdi-content-save.mdi-24px.iconlabel
-                = T("save", 1)
+    button#save.btn.btn-link(type='button', onclick='Product_saveProduct()')
+        span.mdi.mdi-content-save.mdi-24px.iconlabel
+            = T("save", 1)
+    button.btn.btn-link(type='button', onclick="Menu_loadContent('product', 'v/products', 'Product_list')")
+        span.mdi.mdi-close-box.mdi-24px.iconlabel
+            = T("close", 1)
 
 block CONTENTJS

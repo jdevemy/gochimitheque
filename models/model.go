@@ -136,31 +136,32 @@ type Tag struct {
 
 // Storage is a product storage in a store location
 type Storage struct {
-	StorageID               sql.NullInt64   `db:"storage_id" json:"storage_id" schema:"storage_id"`
-	StorageCreationDate     time.Time       `db:"storage_creationdate" json:"storage_creationdate" schema:"storage_creationdate"`
-	StorageModificationDate time.Time       `db:"storage_modificationdate" json:"storage_modificationdate" schema:"storage_modificationdate"`
-	StorageEntryDate        sql.NullTime    `db:"storage_entrydate" json:"storage_entrydate" schema:"storage_entrydate"`
-	StorageExitDate         sql.NullTime    `db:"storage_exitdate" json:"storage_exitdate" schema:"storage_exitdate"`
-	StorageOpeningDate      sql.NullTime    `db:"storage_openingdate" json:"storage_openingdate" schema:"storage_openingdate"`
-	StorageExpirationDate   sql.NullTime    `db:"storage_expirationdate" json:"storage_expirationdate" schema:"storage_expirationdate"`
-	StorageComment          sql.NullString  `db:"storage_comment" json:"storage_comment" schema:"storage_comment"`
-	StorageReference        sql.NullString  `db:"storage_reference" json:"storage_reference" schema:"storage_reference"`
-	StorageBatchNumber      sql.NullString  `db:"storage_batchnumber" json:"storage_batchnumber" schema:"storage_batchnumber"`
-	StorageQuantity         sql.NullFloat64 `db:"storage_quantity" json:"storage_quantity" schema:"storage_quantity"`
-	StorageNbItem           int             `db:"-" json:"storage_nbitem" schema:"storage_nbitem"`
-	StorageBarecode         sql.NullString  `db:"storage_barecode" json:"storage_barecode" schema:"storage_barecode"`
-	StorageQRCode           []byte          `db:"storage_qrcode" json:"storage_qrcode" schema:"storage_qrcode"`
-	StorageToDestroy        sql.NullBool    `db:"storage_todestroy" json:"storage_todestroy" schema:"storage_todestroy"`
-	StorageArchive          sql.NullBool    `db:"storage_archive" json:"storage_archive" schema:"storage_archive"`
-	StorageConcentration    sql.NullInt64   `db:"storage_concentration" json:"storage_concentration" schema:"storage_concentration"`
-	Person                  `db:"person" json:"person" schema:"person"`
-	Product                 `db:"product" json:"product" schema:"product"`
-	StoreLocation           `db:"storelocation" json:"storelocation" schema:"storelocation"`
-	UnitQuantity            Unit `db:"unit_quantity" json:"unit_quantity" schema:"unit_quantity"`
-	UnitConcentration       Unit `db:"unit_concentration" json:"unit_concentration" schema:"unit_concentration"`
-	Supplier                `db:"supplier" json:"supplier" schema:"supplier"`
-	Storage                 *Storage   `db:"storage" json:"storage" schema:"storage"`       // history reference storage
-	Borrowing               *Borrowing `db:"borrowing" json:"borrowing" schema:"borrowing"` // not un db but sqlx requires the "db" entry
+	StorageID                sql.NullInt64   `db:"storage_id" json:"storage_id" schema:"storage_id"`
+	StorageCreationDate      time.Time       `db:"storage_creationdate" json:"storage_creationdate" schema:"storage_creationdate"`
+	StorageModificationDate  time.Time       `db:"storage_modificationdate" json:"storage_modificationdate" schema:"storage_modificationdate"`
+	StorageEntryDate         sql.NullTime    `db:"storage_entrydate" json:"storage_entrydate" schema:"storage_entrydate"`
+	StorageExitDate          sql.NullTime    `db:"storage_exitdate" json:"storage_exitdate" schema:"storage_exitdate"`
+	StorageOpeningDate       sql.NullTime    `db:"storage_openingdate" json:"storage_openingdate" schema:"storage_openingdate"`
+	StorageExpirationDate    sql.NullTime    `db:"storage_expirationdate" json:"storage_expirationdate" schema:"storage_expirationdate"`
+	StorageComment           sql.NullString  `db:"storage_comment" json:"storage_comment" schema:"storage_comment"`
+	StorageReference         sql.NullString  `db:"storage_reference" json:"storage_reference" schema:"storage_reference"`
+	StorageBatchNumber       sql.NullString  `db:"storage_batchnumber" json:"storage_batchnumber" schema:"storage_batchnumber"`
+	StorageQuantity          sql.NullFloat64 `db:"storage_quantity" json:"storage_quantity" schema:"storage_quantity"`
+	StorageNbItem            int             `db:"-" json:"storage_nbitem" schema:"storage_nbitem"`
+	StorageIdenticalBarecode sql.NullBool    `db:"-" json:"storage_identicalbarecode" schema:"storage_identicalbarecode"`
+	StorageBarecode          sql.NullString  `db:"storage_barecode" json:"storage_barecode" schema:"storage_barecode"`
+	StorageQRCode            []byte          `db:"storage_qrcode" json:"storage_qrcode" schema:"storage_qrcode"`
+	StorageToDestroy         sql.NullBool    `db:"storage_todestroy" json:"storage_todestroy" schema:"storage_todestroy"`
+	StorageArchive           sql.NullBool    `db:"storage_archive" json:"storage_archive" schema:"storage_archive"`
+	StorageConcentration     sql.NullInt64   `db:"storage_concentration" json:"storage_concentration" schema:"storage_concentration"`
+	Person                   `db:"person" json:"person" schema:"person"`
+	Product                  `db:"product" json:"product" schema:"product"`
+	StoreLocation            `db:"storelocation" json:"storelocation" schema:"storelocation"`
+	UnitQuantity             Unit `db:"unit_quantity" json:"unit_quantity" schema:"unit_quantity"`
+	UnitConcentration        Unit `db:"unit_concentration" json:"unit_concentration" schema:"unit_concentration"`
+	Supplier                 `db:"supplier" json:"supplier" schema:"supplier"`
+	Storage                  *Storage   `db:"storage" json:"storage" schema:"storage"`       // history reference storage
+	Borrowing                *Borrowing `db:"borrowing" json:"borrowing" schema:"borrowing"` // not un db but sqlx requires the "db" entry
 
 	// storage history count
 	StorageHC int `db:"storage_hc" json:"storage_hc" schema:"storage_hc"` // not in db but sqlx requires the "db" entry

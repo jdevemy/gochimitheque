@@ -319,7 +319,9 @@ func (db *SQLiteDataStore) GetStorages(p DbselectparamStorage) ([]Storage, int, 
 		if p.GetHistory() {
 			comreq.WriteString(" AND (s.storage = :storage OR s.storage_id = :storage)")
 		} else {
-			comreq.WriteString(" AND s.storage_id = :storage")
+			comreq.WriteString(" AND (s.storage_id = :storage")
+			// getting storages with identical barecode
+			comreq.WriteString(" OR (s.storage_barecode = (SELECT storage_barecode FROM storage WHERE storage_id = :storage)))")
 		}
 	}
 	if !p.GetHistory() {
@@ -892,7 +894,9 @@ func (db *SQLiteDataStore) CreateStorage(s Storage) (int, error) {
 
 		}
 
-		newMinor++
+		if !s.StorageIdenticalBarecode.Valid || !s.StorageIdenticalBarecode.Bool {
+			newMinor++
+		}
 		minor = strconv.Itoa(newMinor)
 		s.StorageBarecode.String = prefix + major + "." + minor
 		s.StorageBarecode.Valid = true

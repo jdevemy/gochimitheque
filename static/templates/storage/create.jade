@@ -6,11 +6,20 @@ block CONTENT
 
     +titleicon("forklift", "storage_create_title")
 
+    .btn-group
+        button#save.btn.btn-link(type='button', onclick='Storage_saveStorage()')
+            span.mdi.mdi-content-save.mdi-24px.iconlabel
+                = T("save", 1)
+        button.btn.btn-link(type='button', onclick="Menu_loadContent('product', 'v/products', 'Product_list')")
+            span.mdi.mdi-close-box.mdi-24px.iconlabel
+                = T("close", 1)
+
     .row
         .d-flex.justify-content-center
             #filter-product
 
     form#storage
+
         input#index(type='hidden', name='index', value='')
         input#product_id(type='hidden', name='product_id', value='')
         input#storage_id(type='hidden', name='storage_id', value='')
@@ -21,6 +30,9 @@ block CONTENT
             .col-sm-4
                 +inputnumber("nb_duplicate", "storage_nbitem", "1", "1", "50", "")
                 +inputcomment("nb_duplicate_comment")
+            .col-sm-4
+                +checkbox("identical_barecode", "storage_identicalbarecode")
+                +inputcomment("identical_barecode_comment")
         hr
         .form-group.row
             .form-group.col-sm-12
@@ -66,8 +78,12 @@ block CONTENT
             .col-sm-12
                 +checkbox("storage_todestroy_title", "storage_todestroy")
 
-    button#save.btn.btn-link(type='button', onclick='Storage_saveStorage()')
-        span.mdi.mdi-content-save.mdi-24px.iconlabel
-            = T("save", 1)
+    .btn-group
+        button#save.btn.btn-link(type='button', onclick='Storage_saveStorage()')
+            span.mdi.mdi-content-save.mdi-24px.iconlabel
+                = T("save", 1)
+        button.btn.btn-link(type='button', onclick='Utils_closeEdit();')
+            span.mdi.mdi-close-box.mdi-24px.iconlabel
+                = T("close", 1)
 
 block CONTENTJS

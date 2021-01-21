@@ -96,7 +96,11 @@ var LOCALES_FR = []byte(`
 [nb_duplicate]
 	one = "nombre d'éléments (bouteilles, boites...)"
 [nb_duplicate_comment]
-	one = "cela créera une fiche stockage par élément"
+	one = "créera une fiche stockage par élément avec un code barre différent (sauf si \"code barre identique\" est coché)"
+[identical_barecode]
+	one = "code barre identique"
+[identical_barecode_comment]
+	one = "génère le même code barre pour chaque fiche de stockage - scanner le qrcode d'une fiche stockage retournera aussi les stockages avec un code barre identique"
 
 [bt_loadingMessage]
 	one = "chargement..."
@@ -269,7 +273,7 @@ var LOCALES_FR = []byte(`
 [store]
 	one = "stocker"
 [storages]
-	one = "stockages (et stockages archivés)"
+	one = "stockages"
 [storage]
 	one = "stockage"
 [archives]
@@ -353,7 +357,7 @@ var LOCALES_FR = []byte(`
 [stock_storelocation_title]
 	one = "dans cet entrepôt"
 [stock_storelocation_sub_title]
-	one = "en incluant les sous entrepôts"
+	one = "avec les sous entrepôts"
 
 [empiricalformula_label_title]
 	one = "formule brute"

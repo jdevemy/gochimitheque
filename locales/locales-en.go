@@ -96,7 +96,11 @@ var LOCALES_EN = []byte(`
 [nb_duplicate]
 	one = "number of items (bottles, boxes...)"
 [nb_duplicate_comment]
-	one = "it will create one storage card per item"
+	one = "will create a storage card per item with a different barecode (except if \"identical barecode\" is checked)"
+[identical_barecode]
+	one = "identical barecode"
+[identical_barecode_comment]
+	one = "generate the same barecode for every storage card - scanning a storage card qrcode will also return the storages with the same barecode"
 
 [bt_loadingMessage]
 	one = "loading..."
@@ -269,7 +273,7 @@ var LOCALES_EN = []byte(`
 [store]
 	one = "store"
 [storages]
-	one = "storages (and archived storages)"
+	one = "storages"
 [storage]
 	one = "storage"
 [archives]
@@ -353,7 +357,7 @@ var LOCALES_EN = []byte(`
 [stock_storelocation_title]
 	one = "in this store location"
 [stock_storelocation_sub_title]
-	one = "including children store locations"
+	one = "with children store locations"
 
 [empiricalformula_label_title]
 	one = "empirical formula"

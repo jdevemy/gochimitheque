@@ -75,7 +75,7 @@ rsync -av ./node_modules/@popperjs/core/dist/umd/popper.min.js ./static/js/
 rsync -av ./node_modules/@popperjs/core/dist/umd/popper.min.js.map ./static/js/
 rsync -av ./node_modules/select2/dist/js/select2.full.min.js ./static/js/
 rsync -av ./node_modules/print-js/dist/print.js ./static/js/
-rsync -av ./node_modules/print-js/dist/print.map ./static/js/
+rsync -av ./node_modules/print-js/dist/print.map ./static/css/
 
 rsync -av ./node_modules/bootstrap/dist/css/bootstrap.min.css ./static/css/
 rsync -av ./node_modules/bootstrap/dist/css/bootstrap.min.css.map ./static/css/

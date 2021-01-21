@@ -70,18 +70,20 @@ include mixins
         button#s_storage_archive_button.btn.btn-link.collapse(type="button" data-toggle="button" aria-pressed="true" autocomplete="off")
             span.mdi.mdi-archive-outline.mdi-24px.iconlabel
                 = T("showdeleted_text", 1) 
+        button#s_storage_stock_button.btn.btn-link.collapse(type="button" data-toggle="button" aria-pressed="true" autocomplete="off")
+            span.mdi.mdi-sigma.mdi-24px.iconlabel
+                = T("totalstock_text", 1) 
         button#clearsearch.btn.btn-link.mr-sm-2(type="button" onclick="Common_clearSearch();")
             span.mdi.mdi-filter-off-outline.mdi-24px.iconlabel
                 = T("clearsearch_text", 1) 
-        //- TODO
-        #button-store
-        //- TODO
-        #button-stock
+
     .col-sm-6.card
         .card-body
             .card-title.mdi.mdi-filter-outline.iconlabel
                 = T("active_filter", 1) 
             .card-text#filter-item
+
+#stock
 
 #exportlink.modal.fade(role="dialog" tabindex="-1" aria-labelledby="exportlinkLabel" aria-hidden="true")
     .modal-dialog.modal-sm(role="document")
