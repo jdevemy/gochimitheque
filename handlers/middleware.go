@@ -363,8 +363,8 @@ func (env *Env) AuthorizeMiddleware(h http.Handler) http.Handler {
 						http.Error(w, err.Error(), http.StatusInternalServerError)
 						return
 					}
-					m, e1 := env.DB.IsEntityEmpty(itemidInt)
-					n, e2 := env.DB.HasEntityNoStorelocation(itemidInt)
+					m, e1 := env.DB.HasEntityMember(itemidInt)
+					n, e2 := env.DB.HasEntityStorelocation(itemidInt)
 					if e1 != nil {
 						globals.Log.WithFields(logrus.Fields{"err": err.Error()}).Error("AuthorizeMiddleware")
 						http.Error(w, e1.Error(), http.StatusUnauthorized)
@@ -375,11 +375,11 @@ func (env *Env) AuthorizeMiddleware(h http.Handler) http.Handler {
 						http.Error(w, e2.Error(), http.StatusUnauthorized)
 						return
 					}
-					if !m {
-						http.Error(w, "can not delete a non empty entity", http.StatusUnauthorized)
+					if m {
+						http.Error(w, "can not delete an entity with members", http.StatusUnauthorized)
 						return
 					}
-					if !n {
+					if n {
 						http.Error(w, "can not delete an entity with store locations", http.StatusUnauthorized)
 						return
 					}

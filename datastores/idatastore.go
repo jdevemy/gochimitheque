@@ -108,7 +108,6 @@ type Datastore interface {
 	CreateStoreLocation(s StoreLocation) (int64, error)
 	UpdateStoreLocation(s StoreLocation) error
 	IsStoreLocationEmpty(id int) (bool, error)
-	ComputeStockStorelocation(p Product, s *StoreLocation, u Unit) float64
 
 	// entities
 	ComputeStockEntity(p Product, r *http.Request) []StoreLocation
@@ -117,10 +116,10 @@ type Datastore interface {
 	GetEntity(id int) (Entity, error)
 	GetEntityPeople(id int) ([]Person, error)
 	DeleteEntity(id int) error
-	CreateEntity(e Entity) (int, error)
+	CreateEntity(e Entity) (int64, error)
 	UpdateEntity(e Entity) error
-	IsEntityEmpty(id int) (bool, error)
-	HasEntityNoStorelocation(id int) (bool, error)
+	HasEntityMember(id int) (bool, error)
+	HasEntityStorelocation(id int) (bool, error)
 
 	// people
 	GetPeople(DbselectparamPerson) ([]Person, int, error)
