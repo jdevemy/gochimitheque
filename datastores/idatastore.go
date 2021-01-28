@@ -94,7 +94,7 @@ type Datastore interface {
 	DeleteStorage(id int) error
 	ArchiveStorage(id int) error
 	RestoreStorage(id int) error
-	CreateStorage(s Storage) (int, error)
+	CreateStorage(s Storage, itemNumber int) (int, error)
 	UpdateStorage(s Storage) error
 	ToogleStorageBorrowing(s Storage) error
 	UpdateAllQRCodes() error

@@ -789,7 +789,7 @@ func (db *SQLiteDataStore) RestoreStorage(id int) error {
 // }
 
 // CreateStorage creates a new storage
-func (db *SQLiteDataStore) CreateStorage(s Storage) (int, error) {
+func (db *SQLiteDataStore) CreateStorage(s Storage, itemNumber int) (int, error) {
 
 	var (
 		lastid       int64
@@ -894,7 +894,7 @@ func (db *SQLiteDataStore) CreateStorage(s Storage) (int, error) {
 
 		}
 
-		if !s.StorageIdenticalBarecode.Valid || !s.StorageIdenticalBarecode.Bool {
+		if (!s.StorageIdenticalBarecode.Valid || !s.StorageIdenticalBarecode.Bool) || (s.StorageIdenticalBarecode.Valid && s.StorageIdenticalBarecode.Bool && itemNumber == 1) {
 			newMinor++
 		}
 		minor = strconv.Itoa(newMinor)

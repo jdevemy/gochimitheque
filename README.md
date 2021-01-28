@@ -27,6 +27,7 @@
   - [Classic installation](#classic-installation)
   - [Docker installation](#docker-installation)
 - [Support](#support)
+- [Use of categories and tags](#use-of-categories-and-tags)
 - [V1/V2 version](#v1v2-version)
 - [List of public database Chimithèque instances](#list-of-public-database-chimithèque-instances)
 - [Get the latest development compiled version](#get-the-latest-development-compiled-version)
@@ -34,9 +35,11 @@
 
 # Chimithèque
 
-Chimithèque is an open source *chemical product management* application started by the ENS-Lyon (France) and co-developped with the Université Clermont-Auvergne (France). It is written in *Golang*.
+Chimithèque is an open source *chemical product and biological reagent management* application started by the ENS-Lyon (France) and co-developped with the Université Clermont-Auvergne (France). It is written in *Golang*.
 
 *projet leader*: Delphine Pitrat (delphine[dot]pitrat[at]ens-lyon[dot]fr)
+*technical referent - chemistry*: Delphine Pitrat (delphine[dot]pitrat[at]ens-lyon[dot]fr)
+*technical referent - biology*: Antoine Goisnard (antoine[dot]goinard[at]uca[dot]fr)
 
 The project has started in 2015 and has moved to Github in 2017.
 
@@ -272,6 +275,12 @@ You may want to install [watchtower](https://github.com/containrrr/watchtower) t
 Please do not (never) contact the members of the Chimithèque development team directly.
 
 Subscribe to the mailing list: <https://groupes.renater.fr/sympa/subscribe/chimitheque?previous_action=info> or open a Github issue.
+
+# Use of categories and tags
+
+For chemical and biological reagents, there is now the possibility to class products in different categories in order to make easier product research. This solution is available when creating a new product sheet with a scrolling menu and suggest different preregistered product categories. It is possible to create a new category if concerned product does not feet with already existing suggestions. This solution allows in main menu, with advanced research, to show only products called with a specific category, and thus have a global vision on a specific class of products. 
+
+This solution is completed with the possibility to apply tags on chemical or biological reagents, also available in product sheet section. This allows to associate a product with various fields, methods, protocols, projects, or application domains. Like previously, preregistered tags are proposed in a scrolling menu with the possibility to create new tags. For example, a stem cell culture medium can be associated with Stem Cells, Cell Culture or Culture Medium tags. This function may reveal particularly useful to rapidly show products associated with a specific activity, projects or method in the advanced research of Chimithéque main menu. Moreover, it is a way to personalize and adapt product research according to a lab or a structure specific needs or habits. 
 
 # V1/V2 version
 
