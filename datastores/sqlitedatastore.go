@@ -382,8 +382,10 @@ func (db *SQLiteDataStore) CreateDatabase() error {
 	if c == 0 {
 		globals.Log.Info("  inserting admin user")
 		admin = &Person{PersonEmail: "admin@chimitheque.fr", Permissions: []*Permission{&Permission{PermissionPermName: "all", PermissionItemName: "all", PermissionEntityID: -1}}}
-		admin.PersonID, _ = db.CreatePerson(*admin)
+		var insertId int64
+		insertId, _ = db.CreatePerson(*admin)
 		admin.PersonPassword = "chimitheque"
+		admin.PersonID = int(insertId)
 		if err = db.UpdatePersonPassword(*admin); err != nil {
 			return err
 		}

@@ -1971,9 +1971,21 @@ func (db *SQLiteDataStore) GetProducts(p DbselectparamProduct) ([]Product, int, 
 		for i, pr := range products {
 			// note: do not modify p but products[i] instead
 			m := r.FindAllStringSubmatch(pr.ProductSL.String, -1)
-			// lazily adding only the first match
+
 			if len(m) > 0 {
-				products[i].ProductSL.String = m[0][1]
+				differentSL := false
+				mBackup := m[0][1]
+				for i := range m {
+					if (m[i][1]) != mBackup {
+						differentSL = true
+						break
+					}
+				}
+				if !differentSL {
+					products[i].ProductSL.String = m[0][1]
+				} else {
+					products[i].ProductSL.String = ""
+				}
 			} else {
 				products[i].ProductSL.String = ""
 			}

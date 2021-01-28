@@ -890,7 +890,7 @@ func (db *SQLiteDataStore) HasEntityMember(id int) (bool, error) {
 		return false, err
 	}
 
-	return !(count == 0), nil
+	return count != 0, nil
 
 }
 
@@ -922,6 +922,6 @@ func (db *SQLiteDataStore) HasEntityStorelocation(id int) (bool, error) {
 		return false, err
 	}
 
-	return !(count == 0), nil
+	return count != 0, nil
 
 }

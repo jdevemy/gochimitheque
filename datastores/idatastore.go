@@ -129,7 +129,7 @@ type Datastore interface {
 	GetPersonEntities(loggedpersonID int, id int) ([]Entity, error)
 	GetPersonManageEntities(id int) ([]Entity, error)
 	DoesPersonBelongsTo(id int, entities []Entity) (bool, error)
-	CreatePerson(p Person) (int, error)
+	CreatePerson(p Person) (int64, error)
 	UpdatePerson(p Person) error
 	UpdatePersonPassword(p Person) error
 	DeletePerson(id int) error
