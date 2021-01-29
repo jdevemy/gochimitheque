@@ -3,7 +3,7 @@ include mixins
 :go:func
     Search(c ViewContainer)
 
-#search.row.pt-sm-5.pb-sm-2.pl-sm-2.pr-sm-2.mt-sm-2.mb-sm-2.ml-sm-5.mr-sm-5.bg-light.border.rounded.collapse.show
+#search.row.pt-sm-3.pb-sm-1.pl-sm-2.pr-sm-2.mt-sm-2.mb-sm-2.ml-sm-4.mr-sm-4.collapse.show
 
     +inputhidden(name="s_entity" value="")
     +inputhidden(name="s_product" value="")
@@ -14,14 +14,14 @@ include mixins
 
     .col
         .row
-            .col-sm-6
-                +inputtextcompact("s_custom_name_part_of", "s_custom_name_part_of")
-            .col-sm-6
-                +selectcompact("s_casnumber", "s_casnumber")
-            .col-sm-6
-                +selectcompact("s_empiricalformula", "s_empiricalformula")
-            .col-sm-6
-                +inputtextcompact("s_storage_barecode", "s_storage_barecode")
+            .col-sm-3
+                +inputtextnolabel(T("s_custom_name_part_of", 1), "s_custom_name_part_of")
+            .col-sm-3
+                +inputtextnolabel(T("s_storage_barecode", 1), "s_storage_barecode")
+            .col-sm-3
+                +selectnolabel(T("s_casnumber", 1), "s_casnumber")
+            .col-sm-3
+                +selectnolabel(T("s_empiricalformula", 1),, "s_empiricalformula")
         .row.collapse#advancedsearch
             .col-sm-12
                 hr
@@ -48,40 +48,39 @@ include mixins
                         +checkbox("s_borrowing", "s_borrowing")
                     .form-group.col-sm-4
                         +checkbox("s_storage_to_destroy", "s_storage_to_destroy")
-        .row
-            .col.col-sm-9
-                button.btn.btn-link(data-toggle="collapse" href="#advancedsearch" aria-expanded="false")
+        .row.justify-content-center
+            .btn-group(role="group") 
+                button.btn.btn-outline-primary(data-toggle="collapse" href="#advancedsearch" aria-expanded="false")
                     span.mdi.mdi-magnify-plus-outline.mdi-24px.iconlabel
                         = T("advancedsearch_text", 1) 
-
-            .col.col-sm-3
-                button#search.btn.btn-lg.btn-link.mr-sm-2(type="button" onclick="Common_search();")
+                button#search.btn.btn-primary(type="button" onclick="Common_search();")
                     span.mdi.mdi-magnify.mdi-24px.iconlabel
                         = T("search_text", 1)
 
 .row#actions.collapse.show(role="group")
-    .col-sm-6.btn-group
-        button.btn.btn-link#switchview.invisible(type="button" onclick="Common_SwitchProductStorage()")
-            span.mdi.mdi-cube-unfolded.mdi-24px.iconlabel
-                = T("switchstorageview_text", 1)
-        button.btn.btn-link#export(type="button" onclick="Common_export();")
-            span.mdi.mdi-content-save.mdi-24px.iconlabel
-                = T("export_text", 1) 
-        button#s_storage_archive_button.btn.btn-link.collapse(type="button" data-toggle="button" aria-pressed="true" autocomplete="off")
-            span.mdi.mdi-archive-outline.mdi-24px.iconlabel
-                = T("showdeleted_text", 1) 
-        button#s_storage_stock_button.btn.btn-link.collapse(type="button" data-toggle="button" aria-pressed="true" autocomplete="off")
-            span.mdi.mdi-sigma.mdi-24px.iconlabel
-                = T("totalstock_text", 1) 
-        button#clearsearch.btn.btn-link.mr-sm-2(type="button" onclick="Common_clearSearch();")
-            span.mdi.mdi-filter-off-outline.mdi-24px.iconlabel
-                = T("clearsearch_text", 1) 
+    .col-sm-8
+        .btn-group
+            button.btn.btn-primary#switchview.invisible(type="button" onclick="Common_SwitchProductStorage()")
+                span.mdi.mdi-cube-unfolded.mdi-24px.iconlabel
+                    = T("switchstorageview_text", 1)
+            button.btn.btn-outline-primary#export(type="button" onclick="Common_export();")
+                span.mdi.mdi-content-save.mdi-24px.iconlabel
+                    = T("export_text", 1) 
+            button#s_storage_archive_button.btn.btn-outline-primary.collapse(type="button" data-toggle="button" aria-pressed="true" autocomplete="off")
+                span.mdi.mdi-archive-outline.mdi-24px.iconlabel
+                    = T("showdeleted_text", 1) 
+            button#s_storage_stock_button.btn.btn-outline-primary.collapse(type="button" data-toggle="button" aria-pressed="true" autocomplete="off")
+                span.mdi.mdi-sigma.mdi-24px.iconlabel
+                    = T("totalstock_text", 1) 
+            button#clearsearch.btn.btn-outline-primary(type="button" onclick="Common_clearSearch();")
+                span.mdi.mdi-filter-off-outline.mdi-24px.iconlabel
+                    = T("clearsearch_text", 1) 
 
-    .col-sm-6.card
-        .card-body
-            .card-title.mdi.mdi-filter-outline.iconlabel
+    .col-sm-4
+        div
+            span.iconlabel
                 = T("active_filter", 1) 
-            .card-text#filter-item
+        div#filter-item
 
 #stock
 

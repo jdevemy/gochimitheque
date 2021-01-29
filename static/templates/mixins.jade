@@ -47,6 +47,12 @@ mixin selectcompact(label,name)
         .col-sm-9
             select.form-control(style='width: 100% !important;' id=name name=name)
 
+mixin selectnolabel(placeholder,name)
+    .form-group.row
+        .col
+            select.form-control(style='width: 100% !important;' id=name name=name placeholder=placeholder)
+
+
 mixin selectmultiplecompact(label,name)
     .form-group.row
         label.col-sm-3.col-form-label-sm(for=name)
@@ -85,6 +91,11 @@ mixin inputpassword(label,name)
     label(for=name)
         = T(label, 1)
     input.form-control(type='password' id=name name=name title=name)
+
+mixin inputtextnolabel(placeholder,name)
+    .form-group.row
+        .col
+            input.form-control(type='text' id=name name=name title=name placeholder=placeholder)
 
 mixin inputtextcompact(label,name)
     .form-group.row

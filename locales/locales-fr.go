@@ -399,7 +399,7 @@ var LOCALES_FR = []byte(`
 [product_threedformula_title]
 	one = "formule 3D"
 [product_twodformula_title]
-	one = "image formule 2D"
+	one = "image molécule"
 [product_threedformula_mol_title]
 	one = "fichier MOL formule 3D"
 [product_msds_title]

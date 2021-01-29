@@ -229,12 +229,16 @@ func (db *SQLiteDataStore) GetStorages(p DbselectparamStorage) ([]Storage, int, 
 		casnumber.casnumber_id AS "product.casnumber.casnumber_id",
 		casnumber.casnumber_label AS "product.casnumber.casnumber_label",
 		borrowing.borrowing_id AS "borrowing.borrowing_id",
+		borrowing.borrowing_comment AS "borrowing.borrowing_comment",
 		storelocation.storelocation_id AS "storelocation.storelocation_id",
 		storelocation.storelocation_name AS "storelocation.storelocation_name",
 		storelocation.storelocation_color AS "storelocation.storelocation_color",
 		storelocation.storelocation_fullpath AS "storelocation.storelocation_fullpath",
 		entity.entity_id AS "storelocation.entity.entity_id"
 		`)
+
+	// borrower.person_id AS "borrowing.borrower.person_id",
+	// borrower.person_email AS "borrowing.borrower.person_email",
 
 	// common parts
 	comreq.WriteString(" FROM storage as s")
@@ -264,6 +268,7 @@ func (db *SQLiteDataStore) GetStorages(p DbselectparamStorage) ([]Storage, int, 
 	} else {
 		comreq.WriteString(" LEFT JOIN borrowing ON s.storage_id = borrowing.storage")
 	}
+	//comreq.WriteString(" LEFT JOIN person AS borrower ON borrowing.borrower = borrower.person_id")
 
 	// get name
 	//comreq.WriteString(" JOIN name ON product.name = name.name_id")
