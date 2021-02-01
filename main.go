@@ -63,31 +63,54 @@ func init() {
 	env = handlers.NewEnv()
 
 	// Configuration parameters.
-	paramListenPort = flag.String("listenport", "8081", "the port to listen")
-	paramDBPath = flag.String("dbpath", "./", "the application sqlite directory path")
-	env.ProxyURL = *flag.String("proxyurl", "", "the application url (without the path) if behind a proxy, with NO trailing /")
-	env.ProxyPath = *flag.String("proxypath", "/", "the application path if behind a proxy, with the trailing /")
-	mailer.MailServerAddress = *flag.String("mailserveraddress", "localhost", "the mail server address")
-	mailer.MailServerPort = *flag.String("mailserverport", "25", "the mail server port")
-	mailer.MailServerSender = *flag.String("mailserversender", "", "the mail server sender")
-	mailer.MailServerUseTLS = *flag.Bool("mailserverusetls", false, "use TLS? (optional)")
-	mailer.MailServerTLSSkipVerify = *flag.Bool("mailservertlsskipverify", false, "skip TLS verification? (optional)")
-	paramPublicProductsEndpoint = flag.Bool("enablepublicproductsendpoint", false, "enable public products endpoint (optional)")
-	paramAdminList = flag.String("admins", "", "the additional admins (comma separated email adresses) (optional) ")
-	paramLogFile = flag.String("logfile", "", "log to the given file (optional)")
-	paramDebug = flag.Bool("debug", false, "debug (verbose log), default is error")
-	paramDisableCache = flag.Bool("disablecache", false, "disable the cache (development only)")
+	flagListenPort := flag.String("listenport", "8081", "the port to listen")
+	flagDBPath := flag.String("dbpath", "./", "the application sqlite directory path")
+	flagProxyURL := flag.String("proxyurl", "", "the application url (without the path) if behind a proxy, with NO trailing /")
+	flagProxyPath := flag.String("proxypath", "/", "the application path if behind a proxy, with the trailing /")
+	flagMailServerAddress := flag.String("mailserveraddress", "localhost", "the mail server address")
+	flagMailServerPort := flag.String("mailserverport", "25", "the mail server port")
+	flagMailServerSender := flag.String("mailserversender", "", "the mail server sender")
+	flagMailServerUseTLS := flag.Bool("mailserverusetls", false, "use TLS? (optional)")
+	flagMailServerTLSSkipVerify := flag.Bool("mailservertlsskipverify", false, "skip TLS verification? (optional)")
+	flagPublicProductsEndpoint := flag.Bool("enablepublicproductsendpoint", false, "enable public products endpoint (optional)")
+	flagAdminList := flag.String("admins", "", "the additional admins (comma separated email adresses) (optional) ")
+	flagLogFile := flag.String("logfile", "", "log to the given file (optional)")
+	flagDebug := flag.Bool("debug", false, "debug (verbose log), default is error")
+	flagDisableCache := flag.Bool("disablecache", false, "disable the cache (development only)")
 
 	// One shot commands.
-	commandResetAdminPassword = flag.Bool("resetadminpassword", false, "reset the admin password to `chimitheque`")
-	commandUpdateQRCode = flag.Bool("updateqrcode", false, "regenerate storages QR codes")
-	commandVersion = flag.Bool("version", false, "display application version")
-	commandMailTest = flag.String("mailtest", "", "send a test mail")
-	commandImportV1From = flag.String("importv1from", "", "full path of the directory containing the Chimithèque v1 CSV to import")
-	commandImportFrom = flag.String("importfrom", "", "base URL of the external Chimithèque instance (running with -enablepublicproductsendpoint) to import products from")
-	commandGenLocaleJS = flag.Bool("genlocalejs", false, "generate JS locales (developper target)")
+	flagResetAdminPassword := flag.Bool("resetadminpassword", false, "reset the admin password to `chimitheque`")
+	flagUpdateQRCode := flag.Bool("updateqrcode", false, "regenerate storages QR codes")
+	flagVersion := flag.Bool("version", false, "display application version")
+	flagMailTest := flag.String("mailtest", "", "send a test mail")
+	flagImportV1From := flag.String("importv1from", "", "full path of the directory containing the Chimithèque v1 CSV to import")
+	flagImportFrom := flag.String("importfrom", "", "base URL of the external Chimithèque instance (running with -enablepublicproductsendpoint) to import products from")
+	flagGenLocaleJS := flag.Bool("genlocalejs", false, "generate JS locales (developper target)")
 
 	flag.Parse()
+
+	paramListenPort = flagListenPort
+	paramDBPath = flagDBPath
+	env.ProxyURL = *flagProxyURL
+	env.ProxyPath = *flagProxyPath
+	mailer.MailServerAddress = *flagMailServerAddress
+	mailer.MailServerPort = *flagMailServerPort
+	mailer.MailServerSender = *flagMailServerSender
+	mailer.MailServerUseTLS = *flagMailServerUseTLS
+	mailer.MailServerTLSSkipVerify = *flagMailServerTLSSkipVerify
+	paramPublicProductsEndpoint = flagPublicProductsEndpoint
+	paramAdminList = flagAdminList
+	paramLogFile = flagLogFile
+	paramDebug = flagDebug
+	paramDisableCache = flagDisableCache
+
+	commandResetAdminPassword = flagResetAdminPassword
+	commandUpdateQRCode = flagUpdateQRCode
+	commandVersion = flagVersion
+	commandMailTest = flagMailTest
+	commandImportV1From = flagImportV1From
+	commandImportFrom = flagImportFrom
+	commandGenLocaleJS = flagGenLocaleJS
 
 	if env.ProxyURL != "" {
 		env.ApplicationFullURL = env.ProxyURL + env.ProxyURL
@@ -155,9 +178,7 @@ func initDB() {
 	logger.Log.Info("- running maintenance job")
 	datastore.Maintenance()
 
-	env = handlers.Env{
-		DB: datastore,
-	}
+	env.DB = datastore
 
 }
 
@@ -289,6 +310,7 @@ func main() {
 
 	initLogger()
 
+	logger.Log.Debugf("- env: %+v", env)
 	logger.Log.Info("- application version: " + env.BuildID)
 	logger.Log.Info("- application endpoint: " + env.ApplicationFullURL)
 

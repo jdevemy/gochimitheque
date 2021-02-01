@@ -5,6 +5,7 @@ go 1.15
 require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/GeertJohan/go.rice v1.0.2
+	github.com/Joker/hpp v1.0.0 // indirect
 	github.com/Masterminds/squirrel v1.5.0
 	github.com/casbin/casbin/v2 v2.22.0
 	github.com/casbin/json-adapter/v2 v2.0.0
