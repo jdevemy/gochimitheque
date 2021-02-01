@@ -3,124 +3,17 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"regexp"
 	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"github.com/sirupsen/logrus"
-	"github.com/tbellembois/gochimitheque/globals"
+	"github.com/tbellembois/gochimitheque-utils/sort"
+	"github.com/tbellembois/gochimitheque-utils/validator"
+	"github.com/tbellembois/gochimitheque/locales"
+	"github.com/tbellembois/gochimitheque/logger"
 	"github.com/tbellembois/gochimitheque/models"
-	"github.com/tbellembois/gochimitheque/utils"
 )
-
-// IsCeNumber returns true if c is a valid ce number
-func IsCeNumber(c string) bool {
-
-	var (
-		err                error
-		checkdigit, checkd int
-	)
-
-	if c == "000-000-0" {
-		return true
-	}
-
-	// compiling regex
-	r := regexp.MustCompile("^(?P<groupone>[0-9]{3})-(?P<grouptwo>[0-9]{3})-(?P<groupthree>[0-9]{1})$")
-	// finding group names
-	n := r.SubexpNames()
-	// finding matches
-	ms := r.FindAllStringSubmatch(c, -1)
-	if len(ms) == 0 {
-		return false
-	}
-	m := ms[0]
-	// then building a map of matches
-	md := map[string]string{}
-	for i, j := range m {
-		md[n[i]] = j
-	}
-
-	if len(m) > 0 {
-		numberpart := md["groupone"] + md["grouptwo"]
-
-		// converting the check digit into int
-		if checkdigit, err = strconv.Atoi(string(md["groupthree"])); err != nil {
-			return false
-		}
-
-		// calculating the check digit
-		counter := 1  // loop counter
-		currentd := 0 // current processed digit in c
-
-		for i := 0; i < len(numberpart); i++ {
-			// converting digit into int
-			if currentd, err = strconv.Atoi(string(numberpart[i])); err != nil {
-				return false
-			}
-			checkd += counter * currentd
-			counter++
-			//fmt.Printf("counter: %d currentd: %d checkd: %d\n", counter, currentd, checkd)
-		}
-	}
-
-	return checkd%11 == checkdigit
-}
-
-// IsCasNumber returns true if c is a valid cas number
-func IsCasNumber(c string) bool {
-
-	var (
-		err                error
-		checkdigit, checkd int
-	)
-
-	if c == "0000-00-0" {
-		return true
-	}
-
-	// compiling regex
-	r := regexp.MustCompile("^(?P<groupone>[0-9]{1,7})-(?P<grouptwo>[0-9]{2})-(?P<groupthree>[0-9]{1})$")
-	// finding group names
-	n := r.SubexpNames()
-	// finding matches
-	ms := r.FindAllStringSubmatch(c, -1)
-	if len(ms) == 0 {
-		return false
-	}
-	m := ms[0]
-	// then building a map of matches
-	md := map[string]string{}
-	for i, j := range m {
-		md[n[i]] = j
-	}
-
-	if len(m) > 0 {
-		numberpart := md["groupone"] + md["grouptwo"]
-
-		// converting the check digit into int
-		if checkdigit, err = strconv.Atoi(string(md["groupthree"])); err != nil {
-			return false
-		}
-		//fmt.Printf("checkdigit: %d\n", checkdigit)
-
-		// calculating the check digit
-		counter := 1  // loop counter
-		currentd := 0 // current processed digit in c
-
-		for i := len(numberpart) - 1; i >= 0; i-- {
-			// converting digit into int
-			if currentd, err = strconv.Atoi(string(numberpart[i])); err != nil {
-				return false
-			}
-			checkd += counter * currentd
-			counter++
-			//fmt.Printf("counter: %d currentd: %d checkd: %d\n", counter, currentd, checkd)
-		}
-	}
-	return checkd%10 == checkdigit
-}
 
 // ValidatePersonEmailHandler checks that the person email does not already exist
 // if an id is given is the request the validator ignore the email of the person with this id
@@ -188,9 +81,9 @@ func (env *Env) ValidatePersonEmailHandler(w http.ResponseWriter, r *http.Reques
 		res = (person.PersonID != people[0].PersonID)
 	}
 
-	globals.Log.WithFields(logrus.Fields{"vars": vars, "res": res}).Debug("ValidatePersonEmailHandler")
+	logger.Log.WithFields(logrus.Fields{"vars": vars, "res": res}).Debug("ValidatePersonEmailHandler")
 	if res {
-		resp = globals.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "person_emailexist_validate", PluralCount: 1})
+		resp = locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "person_emailexist_validate", PluralCount: 1})
 	} else {
 		resp = "true"
 	}
@@ -272,9 +165,9 @@ func (env *Env) ValidateEntityNameHandler(w http.ResponseWriter, r *http.Request
 		res = (entity.EntityID != entities[0].EntityID)
 	}
 
-	globals.Log.WithFields(logrus.Fields{"vars": vars, "res": res}).Debug("ValidateEntityNameHandler")
+	logger.Log.WithFields(logrus.Fields{"vars": vars, "res": res}).Debug("ValidateEntityNameHandler")
 	if res {
-		resp = globals.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "entity_nameexist_validate", PluralCount: 1})
+		resp = locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "entity_nameexist_validate", PluralCount: 1})
 	} else {
 		resp = "true"
 	}
@@ -320,9 +213,9 @@ func (env *Env) ValidateProductEmpiricalFormulaHandler(w http.ResponseWriter, r 
 			Code:    http.StatusInternalServerError}
 	}
 	// validating it
-	_, err = utils.SortEmpiricalFormula(r.Form.Get("empiricalformula"))
+	_, err = sort.SortEmpiricalFormula(r.Form.Get("empiricalformula"))
 	if err != nil {
-		resp = globals.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "empiricalformula_validate", PluralCount: 1})
+		resp = locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "empiricalformula_validate", PluralCount: 1})
 	} else {
 		resp = "true"
 	}
@@ -353,7 +246,7 @@ func (env *Env) FormatProductEmpiricalFormulaHandler(w http.ResponseWriter, r *h
 			Code:    http.StatusInternalServerError}
 	}
 	// validating it
-	resp, err = utils.SortEmpiricalFormula(r.Form.Get("empiricalformula"))
+	resp, err = sort.SortEmpiricalFormula(r.Form.Get("empiricalformula"))
 
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -393,15 +286,15 @@ func (env *Env) ValidateProductCasNumberHandler(w http.ResponseWriter, r *http.R
 			Message: "form parsing",
 			Code:    http.StatusInternalServerError}
 	}
-	globals.Log.WithFields(logrus.Fields{"casnumber": r.Form.Get("casnumber")}).Debug("ValidateProductCasNumberHandler")
+	logger.Log.WithFields(logrus.Fields{"casnumber": r.Form.Get("casnumber")}).Debug("ValidateProductCasNumberHandler")
 
 	// validating it
-	v := IsCasNumber(r.Form.Get("casnumber"))
+	v := validator.IsCasNumber(r.Form.Get("casnumber"))
 
 	if v {
 		resp = "true"
 	} else {
-		resp = globals.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "casnumber_validate_wrongcas", PluralCount: 1})
+		resp = locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "casnumber_validate_wrongcas", PluralCount: 1})
 	}
 
 	// converting the id
@@ -438,7 +331,7 @@ func (env *Env) ValidateProductCasNumberHandler(w http.ResponseWriter, r *http.R
 		}
 
 		if nbProducts != 0 {
-			resp = globals.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "casnumber_validate_casspecificity", PluralCount: 1})
+			resp = locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "casnumber_validate_casspecificity", PluralCount: 1})
 		}
 	}
 
@@ -468,15 +361,15 @@ func (env *Env) ValidateProductCeNumberHandler(w http.ResponseWriter, r *http.Re
 			Message: "form parsing",
 			Code:    http.StatusInternalServerError}
 	}
-	globals.Log.WithFields(logrus.Fields{"cenumber": r.Form.Get("cenumber")}).Debug("ValidateProductCeNumberHandler")
+	logger.Log.WithFields(logrus.Fields{"cenumber": r.Form.Get("cenumber")}).Debug("ValidateProductCeNumberHandler")
 
 	// validating it
-	v := IsCeNumber(r.Form.Get("cenumber"))
+	v := validator.IsCeNumber(r.Form.Get("cenumber"))
 
 	if v {
 		resp = "true"
 	} else {
-		resp = globals.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "cenumber_validate", PluralCount: 1})
+		resp = locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "cenumber_validate", PluralCount: 1})
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")

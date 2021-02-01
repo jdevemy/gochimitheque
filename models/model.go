@@ -2,9 +2,15 @@ package models
 
 import (
 	"database/sql"
+	"encoding/csv"
+	"io/ioutil"
 	"net/http"
+	"os"
 	"strconv"
+	"strings"
 	"time"
+
+	"github.com/tbellembois/gochimitheque/logger"
 )
 
 // ChimithequeContextKey is the Go request context
@@ -414,4 +420,101 @@ func (s Storage) StorageToStringSlice() []string {
 	ret = append(ret, strconv.FormatBool(s.StorageArchive.Bool))
 
 	return ret
+}
+
+// ProductsToCSV returns a file name of the products prs
+// exported into CSV
+func ProductsToCSV(prs []Product) string {
+
+	header := []string{"product_id",
+		"product_name",
+		"product_synonyms",
+		"product_cas",
+		"product_ce",
+		"product_specificity",
+		"empirical_formula",
+		"linear_formula",
+		"3D_formula",
+		"MSDS",
+		"class_of_compounds",
+		"physical_state",
+		"signal_word",
+		"symbols",
+		"hazard_statements",
+		"precautionary_statements",
+		"remark",
+		"disposal_comment",
+		"restricted?",
+		"radioactive?"}
+
+	// create a temp file
+	tmpFile, err := ioutil.TempFile(os.TempDir(), "chimitheque-")
+	if err != nil {
+		logger.Log.Error("cannot create temporary file", err)
+	}
+	// creates a csv writer that uses the io buffer
+	csvwr := csv.NewWriter(tmpFile)
+	// write the header
+	_ = csvwr.Write(header)
+	for _, p := range prs {
+		_ = csvwr.Write(p.ProductToStringSlice())
+	}
+
+	csvwr.Flush()
+	return strings.Split(tmpFile.Name(), "chimitheque-")[1]
+}
+
+// StoragesToCSV returns a file name of the products prs
+// exported into CSV
+func StoragesToCSV(sts []Storage) (string, error) {
+
+	var (
+		err     error
+		tmpFile *os.File
+	)
+
+	header := []string{"storage_id",
+		"product_name",
+		"product_casnumber",
+		"product_specificity",
+		"storelocation",
+		"quantity",
+		"unit",
+		"barecode",
+		"supplier",
+		"creation_date",
+		"modification_date",
+		"entry_date",
+		"exit_date",
+		"opening_date",
+		"expiration_date",
+		"comment",
+		"reference",
+		"batch_number",
+		"to_destroy?",
+		"archive?"}
+
+	// create a temp file
+	if tmpFile, err = ioutil.TempFile(os.TempDir(), "chimitheque-"); err != nil {
+		logger.Log.Error("cannot create temporary file", err)
+		return "", err
+	}
+	// creates a csv writer that uses the io buffer
+	csvwr := csv.NewWriter(tmpFile)
+	// write the header
+	if err = csvwr.Write(header); err != nil {
+		logger.Log.Error("cannot write header", err)
+		return "", err
+	}
+
+	for _, s := range sts {
+		if err = csvwr.Write(s.StorageToStringSlice()); err != nil {
+			logger.Log.Error("cannot write entry", err)
+			return "", err
+		}
+	}
+
+	csvwr.Flush()
+
+	return strings.Split(tmpFile.Name(), "chimitheque-")[1], nil
 }

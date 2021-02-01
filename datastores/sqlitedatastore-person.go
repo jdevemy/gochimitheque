@@ -3,17 +3,13 @@ package datastores
 import (
 	"database/sql"
 	"strings"
-	"time"
-
-	"encoding/hex"
 
 	"github.com/doug-martin/goqu/v9"
 	_ "github.com/doug-martin/goqu/v9/dialect/sqlite3"
 	"github.com/jmoiron/sqlx"
 	"github.com/steambap/captcha"
-	"github.com/tbellembois/gochimitheque/globals"
+	"github.com/tbellembois/gochimitheque/logger"
 	. "github.com/tbellembois/gochimitheque/models"
-	"github.com/tbellembois/gochimitheque/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -38,7 +34,7 @@ func (db *SQLiteDataStore) ValidateCaptcha(token string, text string) (bool, err
 	)
 
 	if sqlr, args, err = sQuery.ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return false, err
 	}
 
@@ -52,22 +48,15 @@ func (db *SQLiteDataStore) ValidateCaptcha(token string, text string) (bool, err
 
 // InsertCaptcha generates and stores a unique captcha with a token
 // to be validated by a user, and returns the token.
-func (db *SQLiteDataStore) InsertCaptcha(data *captcha.Data) (token string, err error) {
+func (db *SQLiteDataStore) InsertCaptcha(token string, data *captcha.Data) (err error) {
 
 	var (
-		e    error
-		uuid []byte
 		sqlr string
 		args []interface{}
 	)
 
 	dialect := goqu.Dialect("sqlite3")
 	tableCaptcha := goqu.T("captcha")
-
-	if uuid, e = utils.GetPasswordHash(time.Now().Format("20060102150405")); e != nil {
-		return "", e
-	}
-	token = hex.EncodeToString(uuid)
 
 	if sqlr, args, err = dialect.Insert(tableCaptcha).Rows(
 		goqu.Record{
@@ -230,7 +219,7 @@ func (db *SQLiteDataStore) GetPerson(id int) (Person, error) {
 	)
 
 	if sqlr, args, err = sQuery.ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return Person{}, err
 	}
 
@@ -264,7 +253,7 @@ func (db *SQLiteDataStore) GetPersonByEmail(email string) (Person, error) {
 	)
 
 	if sqlr, args, err = sQuery.ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return Person{}, err
 	}
 
@@ -299,7 +288,7 @@ func (db *SQLiteDataStore) GetPersonPermissions(id int) ([]Permission, error) {
 	)
 
 	if sqlr, args, err = sQuery.ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return nil, err
 	}
 
@@ -336,7 +325,7 @@ func (db *SQLiteDataStore) GetPersonManageEntities(id int) ([]Entity, error) {
 	)
 
 	if sqlr, args, err = sQuery.ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return nil, err
 	}
 
@@ -451,7 +440,7 @@ func (db *SQLiteDataStore) GetPersonEntities(loggedPersonID int, personId int) (
 		goqu.I("e.entity_name"),
 		goqu.I("e.entity_description"),
 	).ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return nil, err
 	}
 
@@ -491,7 +480,7 @@ func (db *SQLiteDataStore) DoesPersonBelongsTo(id int, entities []Entity) (bool,
 	)
 
 	if sqlr, args, err = sQuery.ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return false, err
 	}
 
@@ -523,9 +512,9 @@ func (db *SQLiteDataStore) DeletePerson(id int) (err error) {
 
 	defer func() {
 		if err != nil {
-			globals.Log.Error(err)
+			logger.Log.Error(err)
 			if rbErr := tx.Rollback(); rbErr != nil {
-				globals.Log.Error(rbErr)
+				logger.Log.Error(rbErr)
 				err = rbErr
 				return
 			}
@@ -548,7 +537,7 @@ func (db *SQLiteDataStore) DeletePerson(id int) (err error) {
 	).Where(
 		goqu.I("person").Eq(id),
 	).ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return
 	}
 
@@ -564,7 +553,7 @@ func (db *SQLiteDataStore) DeletePerson(id int) (err error) {
 	).Where(
 		goqu.I("person").Eq(id),
 	).ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return
 	}
 
@@ -576,7 +565,7 @@ func (db *SQLiteDataStore) DeletePerson(id int) (err error) {
 	if sqlr, args, err = dialect.From(goqu.T("personentities")).Where(
 		goqu.I("personentities_person_id").Eq(id),
 	).Delete().ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return
 	}
 
@@ -589,7 +578,7 @@ func (db *SQLiteDataStore) DeletePerson(id int) (err error) {
 	if sqlr, args, err = dialect.From(goqu.T("entitypeople")).Where(
 		goqu.I("entitypeople_person_id").Eq(id),
 	).Delete().ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return
 	}
 
@@ -601,7 +590,7 @@ func (db *SQLiteDataStore) DeletePerson(id int) (err error) {
 	if sqlr, args, err = dialect.From(goqu.T("permission")).Where(
 		goqu.I("person").Eq(id),
 	).Delete().ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return
 	}
 
@@ -613,7 +602,7 @@ func (db *SQLiteDataStore) DeletePerson(id int) (err error) {
 	if sqlr, args, err = dialect.From(goqu.T("borrowing")).Where(
 		goqu.I("borrower").Eq(id),
 	).Delete().ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return
 	}
 
@@ -625,7 +614,7 @@ func (db *SQLiteDataStore) DeletePerson(id int) (err error) {
 	if sqlr, args, err = dialect.From(tablePerson).Where(
 		goqu.I("person_id").Eq(id),
 	).Delete().ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return
 	}
 
@@ -656,9 +645,9 @@ func (db *SQLiteDataStore) CreatePerson(p Person) (lastInsertId int64, err error
 
 	defer func() {
 		if err != nil {
-			globals.Log.Error(err)
+			logger.Log.Error(err)
 			if rbErr := tx.Rollback(); rbErr != nil {
-				globals.Log.Error(rbErr)
+				logger.Log.Error(rbErr)
 				err = rbErr
 				return
 			}
@@ -753,7 +742,7 @@ func (db *SQLiteDataStore) UpdatePersonPassword(p Person) error {
 	).Where(
 		goqu.I("person_id").Eq(p.PersonID),
 	).ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return err
 	}
 
@@ -784,9 +773,9 @@ func (db *SQLiteDataStore) UpdatePerson(p Person) (err error) {
 
 	defer func() {
 		if err != nil {
-			globals.Log.Error(err)
+			logger.Log.Error(err)
 			if rbErr := tx.Rollback(); rbErr != nil {
-				globals.Log.Error(rbErr)
+				logger.Log.Error(rbErr)
 				err = rbErr
 				return
 			}
@@ -802,7 +791,7 @@ func (db *SQLiteDataStore) UpdatePerson(p Person) (err error) {
 	).Where(
 		goqu.I("person_id").Eq(p.PersonID),
 	).ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return
 	}
 
@@ -814,7 +803,7 @@ func (db *SQLiteDataStore) UpdatePerson(p Person) (err error) {
 	if sqlr, args, err = dialect.From(goqu.T("personentities")).Where(
 		goqu.I("personentities_person_id").Eq(p.PersonID),
 	).Delete().ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return
 	}
 
@@ -826,7 +815,7 @@ func (db *SQLiteDataStore) UpdatePerson(p Person) (err error) {
 	if sqlr, args, err = dialect.From(goqu.T("permission")).Where(
 		goqu.I("person").Eq(p.PersonID),
 	).Delete().ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return
 	}
 
@@ -906,7 +895,7 @@ func (db *SQLiteDataStore) GetAdmins() ([]Person, error) {
 	)
 
 	if sqlr, args, err = sQuery.ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return nil, err
 	}
 
@@ -949,7 +938,7 @@ func (db *SQLiteDataStore) HasPersonReadRestrictedProductPermission(id int) (boo
 	)
 
 	if sqlr, args, err = sQuery.ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return false, err
 	}
 
@@ -988,7 +977,7 @@ func (db *SQLiteDataStore) IsPersonAdmin(id int) (bool, error) {
 	)
 
 	if sqlr, args, err = sQuery.ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return false, err
 	}
 
@@ -1022,7 +1011,7 @@ func (db *SQLiteDataStore) UnsetPersonAdmin(id int) error {
 	)
 
 	if sqlr, args, err = dQuery.ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return err
 	}
 
@@ -1085,7 +1074,7 @@ func (db *SQLiteDataStore) IsPersonManager(id int) (bool, error) {
 	)
 
 	if sqlr, args, err = sQuery.ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return false, err
 	}
 

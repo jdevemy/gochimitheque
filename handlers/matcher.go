@@ -3,25 +3,12 @@ package handlers
 import (
 	"database/sql"
 	"fmt"
-	"os"
 	"strconv"
 
 	"github.com/sirupsen/logrus"
-	"github.com/tbellembois/gochimitheque/globals"
+	"github.com/tbellembois/gochimitheque/logger"
 	"github.com/tbellembois/gochimitheque/models"
 )
-
-func (env *Env) ReloadPolicy() {
-	var err error
-	if globals.JSONAdapterData, err = env.DB.ToCasbinJSONAdapter(); err != nil {
-		globals.Log.Error("error getting json adapter data: " + err.Error())
-		os.Exit(1)
-	}
-	if err = globals.Enforcer.LoadPolicy(); err != nil {
-		globals.Log.Error("enforcer policy load error: " + err.Error())
-		os.Exit(1)
-	}
-}
 
 func (env *Env) matchPeople(personId string, itemId string, entityId string) bool {
 	var (
@@ -31,16 +18,16 @@ func (env *Env) matchPeople(personId string, itemId string, entityId string) boo
 	)
 
 	if pid, err = strconv.Atoi(personId); err != nil {
-		globals.Log.Fatal("matchPeople: " + err.Error())
+		logger.Log.Fatal("matchPeople: " + err.Error())
 		return false
 	}
 	if iid, err = strconv.Atoi(itemId); err != nil {
-		globals.Log.Fatal("matchPeople: " + err.Error())
+		logger.Log.Fatal("matchPeople: " + err.Error())
 		return false
 	}
 
 	if ent, err = env.DB.GetPersonEntities(pid, iid); err != nil {
-		globals.Log.Fatal("matchPeople: " + err.Error())
+		logger.Log.Fatal("matchPeople: " + err.Error())
 		return false
 	}
 	found := false
@@ -63,36 +50,36 @@ func (env *Env) MatchPeopleFunc(args ...interface{}) (interface{}, error) {
 
 func (env *Env) matchStorelocation(personId string, itemId string, entityId string) bool {
 	var (
-		pid, iid int
-		err      error
-		m        bool
-		ent      models.Entity
+		pid, iid      int
+		err           error
+		m             bool
+		storelocation models.StoreLocation
 	)
-	globals.Log.WithFields(logrus.Fields{"personId": personId, "itemId": itemId, "entityId": entityId}).Debug("matchStorelocation")
+	logger.Log.WithFields(logrus.Fields{"personId": personId, "itemId": itemId, "entityId": entityId}).Debug("matchStorelocation")
 
 	if pid, err = strconv.Atoi(personId); err != nil {
-		globals.Log.Fatal("matchStorelocation: " + err.Error())
+		logger.Log.Fatal("matchStorelocation: " + err.Error())
 		return false
 	}
 	if iid, err = strconv.Atoi(itemId); err != nil {
-		globals.Log.Fatal("matchStorelocation: " + err.Error())
+		logger.Log.Fatal("matchStorelocation: " + err.Error())
 		return false
 	}
-	if ent, err = env.DB.GetStoreLocationEntity(iid); err != nil && err != sql.ErrNoRows {
-		globals.Log.Fatal("matchStorelocation: " + err.Error())
+	if storelocation, err = env.DB.GetStoreLocation(iid); err != nil && err != sql.ErrNoRows {
+		logger.Log.Fatal("matchStorelocation: " + err.Error())
 		return false
 	}
 	if err == sql.ErrNoRows {
 		return false
 	}
-	if strconv.Itoa(ent.EntityID) != entityId {
+	if strconv.Itoa(storelocation.EntityID) != entityId {
 		return false
 	}
-	if m, err = env.DB.DoesPersonBelongsTo(pid, []models.Entity{ent}); err != nil {
-		globals.Log.Fatal("matchStorelocation: " + err.Error())
+	if m, err = env.DB.DoesPersonBelongsTo(pid, []models.Entity{storelocation.Entity}); err != nil {
+		logger.Log.Fatal("matchStorelocation: " + err.Error())
 		return false
 	}
-	globals.Log.WithFields(logrus.Fields{"m": m}).Debug("matchStorelocation")
+	logger.Log.WithFields(logrus.Fields{"m": m}).Debug("matchStorelocation")
 
 	return m
 }
@@ -114,26 +101,26 @@ func (env *Env) matchStorage(personId string, itemId string, entityId string) bo
 	)
 
 	if pid, err = strconv.Atoi(personId); err != nil {
-		globals.Log.Fatal("matchStorage: " + err.Error())
+		logger.Log.Fatal("matchStorage: " + err.Error())
 		return false
 	}
 	if iid, err = strconv.Atoi(itemId); err != nil {
-		globals.Log.Fatal("matchStorage: " + err.Error())
+		logger.Log.Fatal("matchStorage: " + err.Error())
 		return false
 	}
 
 	if ent, err = env.DB.GetStorageEntity(iid); err != nil {
-		globals.Log.Fatal(fmt.Sprintf("matchStorage: %v %s", ent, err.Error()))
+		logger.Log.Fatal(fmt.Sprintf("matchStorage: %v %s", ent, err.Error()))
 		return false
 	}
 	if strconv.Itoa(ent.EntityID) != entityId {
 		return false
 	}
 	if m, err = env.DB.DoesPersonBelongsTo(pid, []models.Entity{ent}); err != nil {
-		globals.Log.Fatal(fmt.Sprintf("matchStorage: %v %s", ent, err.Error()))
+		logger.Log.Fatal(fmt.Sprintf("matchStorage: %v %s", ent, err.Error()))
 		return false
 	}
-	globals.Log.WithFields(logrus.Fields{"m": m}).Debug("matchStorage")
+	logger.Log.WithFields(logrus.Fields{"m": m}).Debug("matchStorage")
 
 	return m
 }
@@ -154,18 +141,18 @@ func (env *Env) matchEntity(personId string, entityId string) bool {
 	)
 
 	if pid, err = strconv.Atoi(personId); err != nil {
-		globals.Log.Fatal("matchEntity: " + err.Error())
+		logger.Log.Fatal("matchEntity: " + err.Error())
 		return false
 	}
 	if eid, err = strconv.Atoi(entityId); err != nil {
-		globals.Log.Fatal("matchEntity: " + err.Error())
+		logger.Log.Fatal("matchEntity: " + err.Error())
 		return false
 	}
 	if m, err = env.DB.DoesPersonBelongsTo(pid, []models.Entity{{EntityID: eid}}); err != nil {
-		globals.Log.Fatal("matchEntity: " + err.Error())
+		logger.Log.Fatal("matchEntity: " + err.Error())
 		return false
 	}
-	globals.Log.WithFields(logrus.Fields{"personId": personId, "entityId": entityId, "m": m}).Debug("matchEntity")
+	logger.Log.WithFields(logrus.Fields{"personId": personId, "entityId": entityId, "m": m}).Debug("matchEntity")
 
 	return m
 }

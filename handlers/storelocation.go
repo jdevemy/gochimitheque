@@ -8,7 +8,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
-	"github.com/tbellembois/gochimitheque/globals"
+	"github.com/tbellembois/gochimitheque/logger"
 	"github.com/tbellembois/gochimitheque/models"
 	"github.com/tbellembois/gochimitheque/static/jade"
 )
@@ -43,7 +43,7 @@ func (env *Env) VCreateStoreLocationHandler(w http.ResponseWriter, r *http.Reque
 
 // GetStoreLocationsHandler returns a json list of the store locations matching the search criteria
 func (env *Env) GetStoreLocationsHandler(w http.ResponseWriter, r *http.Request) *models.AppError {
-	globals.Log.Debug("GetStoreLocationsHandler")
+	logger.Log.Debug("GetStoreLocationsHandler")
 
 	var (
 		err   error
@@ -104,7 +104,7 @@ func (env *Env) GetStoreLocationHandler(w http.ResponseWriter, r *http.Request) 
 			Message: "error getting the store location",
 		}
 	}
-	globals.Log.WithFields(logrus.Fields{"storelocation": storelocation}).Debug("GetStoreLocationHandler")
+	logger.Log.WithFields(logrus.Fields{"storelocation": storelocation}).Debug("GetStoreLocationHandler")
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
@@ -119,7 +119,7 @@ func (env *Env) GetStoreLocationHandler(w http.ResponseWriter, r *http.Request) 
 
 // CreateStoreLocationHandler creates the store location from the request form
 func (env *Env) CreateStoreLocationHandler(w http.ResponseWriter, r *http.Request) *models.AppError {
-	globals.Log.Debug("CreateStoreLocationHandler")
+	logger.Log.Debug("CreateStoreLocationHandler")
 	var (
 		sl  models.StoreLocation
 		err error
@@ -133,7 +133,7 @@ func (env *Env) CreateStoreLocationHandler(w http.ResponseWriter, r *http.Reques
 			Code:    http.StatusInternalServerError}
 	}
 
-	globals.Log.WithFields(logrus.Fields{"sl": sl}).Debug("CreateStoreLocationHandler")
+	logger.Log.WithFields(logrus.Fields{"sl": sl}).Debug("CreateStoreLocationHandler")
 
 	if id, err = env.DB.CreateStoreLocation(sl); err != nil {
 		return &models.AppError{
@@ -197,7 +197,7 @@ func (env *Env) UpdateStoreLocationHandler(w http.ResponseWriter, r *http.Reques
 	// 		StoreLocationName: sql.NullString{Valid: true, String: slname},
 	// 	}
 	// }
-	globals.Log.WithFields(logrus.Fields{"sl": sl}).Debug("UpdateStoreLocationHandler")
+	logger.Log.WithFields(logrus.Fields{"sl": sl}).Debug("UpdateStoreLocationHandler")
 
 	if id, err = strconv.Atoi(vars["id"]); err != nil {
 		return &models.AppError{
@@ -218,7 +218,7 @@ func (env *Env) UpdateStoreLocationHandler(w http.ResponseWriter, r *http.Reques
 	updatedsl.StoreLocationCanStore = sl.StoreLocationCanStore
 	updatedsl.StoreLocation = sl.StoreLocation
 	updatedsl.Entity = sl.Entity
-	globals.Log.WithFields(logrus.Fields{"updatedsl": updatedsl}).Debug("UpdateStoreLocationHandler")
+	logger.Log.WithFields(logrus.Fields{"updatedsl": updatedsl}).Debug("UpdateStoreLocationHandler")
 
 	if err := env.DB.UpdateStoreLocation(updatedsl); err != nil {
 		return &models.AppError{

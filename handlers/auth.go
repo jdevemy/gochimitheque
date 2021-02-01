@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"bytes"
+	"crypto/hmac"
+	"crypto/sha256"
 	"database/sql"
 	"encoding/base64"
 	"encoding/hex"
@@ -16,10 +18,11 @@ import (
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"github.com/sirupsen/logrus"
 	"github.com/steambap/captcha"
-	"github.com/tbellembois/gochimitheque/globals"
+	"github.com/tbellembois/gochimitheque/locales"
+	"github.com/tbellembois/gochimitheque/logger"
+	"github.com/tbellembois/gochimitheque/mailer"
 	"github.com/tbellembois/gochimitheque/models"
 	"github.com/tbellembois/gochimitheque/static/jade"
-	"github.com/tbellembois/gochimitheque/utils"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -27,6 +30,18 @@ import (
 /*
 	views handlers
 */
+
+// GetPasswordHash return password hash for the login,
+func GetPasswordHash(login string) ([]byte, error) {
+
+	h := hmac.New(sha256.New, []byte("secret"))
+	if _, err := h.Write([]byte(login)); err != nil {
+		return nil, err
+	}
+
+	return h.Sum(nil), nil
+
+}
 
 // VSearchHandler returns the search page
 func (env *Env) VSearchHandler(w http.ResponseWriter, r *http.Request) *models.AppError {
@@ -88,8 +103,18 @@ func (env *Env) CaptchaHandler(w http.ResponseWriter, r *http.Request) *models.A
 		}
 	}
 
+	// create a token
+	var uuid []byte
+	if uuid, e = GetPasswordHash(time.Now().Format("20060102150405")); e != nil {
+		return &models.AppError{
+			Code:    http.StatusInternalServerError,
+			Message: e.Error(),
+		}
+	}
+	re.UID = hex.EncodeToString(uuid)
+
 	// saving it, retrieving its uuid
-	if re.UID, e = env.DB.InsertCaptcha(data); e != nil {
+	if e = env.DB.InsertCaptcha(re.UID, data); e != nil {
 		return &models.AppError{
 			Code:    http.StatusInternalServerError,
 			Message: e.Error(),
@@ -137,7 +162,7 @@ func (env *Env) ResetHandler(w http.ResponseWriter, r *http.Request) *models.App
 	}
 	token = t[0]
 
-	if login, err = passwordreset.VerifyToken(token, utils.GetPasswordHash, []byte("secret")); err != nil {
+	if login, err = passwordreset.VerifyToken(token, GetPasswordHash, []byte("secret")); err != nil {
 		return &models.AppError{
 			Code:    http.StatusForbidden,
 			Error:   err,
@@ -155,7 +180,7 @@ func (env *Env) ResetHandler(w http.ResponseWriter, r *http.Request) *models.App
 	}
 
 	// generating a random password using the login
-	brp, _ := utils.GetPasswordHash(login)
+	brp, _ := GetPasswordHash(login)
 	p.PersonPassword = hex.EncodeToString(brp)
 
 	// updating the person password
@@ -168,9 +193,9 @@ func (env *Env) ResetHandler(w http.ResponseWriter, r *http.Request) *models.App
 	}
 
 	// sending the new mail
-	msgbody := fmt.Sprintf(globals.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "resetpassword_mailbody1", PluralCount: 1}), p.PersonPassword)
-	msgsubject := globals.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "resetpassword_mailsubject1", PluralCount: 1})
-	if err = utils.SendMail(login, msgsubject, msgbody); err != nil {
+	msgbody := fmt.Sprintf(locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "resetpassword_mailbody1", PluralCount: 1}), p.PersonPassword)
+	msgsubject := locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "resetpassword_mailsubject1", PluralCount: 1})
+	if err = mailer.SendMail(login, msgsubject, msgbody); err != nil {
 		return &models.AppError{
 			Code:    http.StatusInternalServerError,
 			Error:   err,
@@ -180,8 +205,8 @@ func (env *Env) ResetHandler(w http.ResponseWriter, r *http.Request) *models.App
 
 	//w.WriteHeader(http.StatusOK)
 	// redirecting to home page
-	msgdone := fmt.Sprintf(globals.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "resetpassword_done", PluralCount: 1}), p.PersonEmail)
-	http.Redirect(w, r, globals.ApplicationFullURL+"?message="+msgdone, http.StatusSeeOther)
+	msgdone := fmt.Sprintf(locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "resetpassword_done", PluralCount: 1}), p.PersonEmail)
+	http.Redirect(w, r, env.ApplicationFullURL+"?message="+msgdone, http.StatusSeeOther)
 
 	return nil
 }
@@ -221,7 +246,7 @@ func (env *Env) ResetPasswordHandler(w http.ResponseWriter, r *http.Request) *mo
 	// 		Message: "error decoding form",
 	// 	}
 	// }
-	globals.Log.WithFields(logrus.Fields{
+	logger.Log.WithFields(logrus.Fields{
 		"person.PersonEmail": person.PersonEmail,
 		"person.CaptchaUID":  person.CaptchaUID,
 		"person.CaptchaText": person.CaptchaText}).Debug("ResetPasswordHandler")
@@ -234,7 +259,7 @@ func (env *Env) ResetPasswordHandler(w http.ResponseWriter, r *http.Request) *mo
 			Message: "error validating captcha",
 		}
 	}
-	globals.Log.WithFields(logrus.Fields{"v": v}).Debug("ResetPasswordHandler")
+	logger.Log.WithFields(logrus.Fields{"v": v}).Debug("ResetPasswordHandler")
 	if !v {
 		return &models.AppError{
 			Code:    http.StatusBadRequest,
@@ -260,7 +285,7 @@ func (env *Env) ResetPasswordHandler(w http.ResponseWriter, r *http.Request) *mo
 	}
 
 	// generating a password hash
-	if hash, e = utils.GetPasswordHash(person.PersonEmail); e != nil {
+	if hash, e = GetPasswordHash(person.PersonEmail); e != nil {
 		return &models.AppError{
 			Code:    http.StatusInternalServerError,
 			Error:   e,
@@ -271,11 +296,11 @@ func (env *Env) ResetPasswordHandler(w http.ResponseWriter, r *http.Request) *mo
 	// generating the reinitialization token
 	token := passwordreset.NewToken(person.PersonEmail, 12*time.Hour, hash, []byte("secret"))
 	// and the mail body
-	msgbody := fmt.Sprintf(globals.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "resetpassword_mailbody2", PluralCount: 1}), globals.ProxyURL, globals.ProxyPath, token)
-	msgsubject := globals.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "resetpassword_mailsubject2", PluralCount: 1})
+	msgbody := fmt.Sprintf(locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "resetpassword_mailbody2", PluralCount: 1}), env.ProxyURL, env.ProxyPath, token)
+	msgsubject := locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "resetpassword_mailsubject2", PluralCount: 1})
 
 	// sending the reinitialisation email
-	if e = utils.SendMail(person.PersonEmail, msgsubject, msgbody); e != nil {
+	if e = mailer.SendMail(person.PersonEmail, msgsubject, msgbody); e != nil {
 		return &models.AppError{
 			Code:    http.StatusInternalServerError,
 			Error:   e,
@@ -290,7 +315,7 @@ func (env *Env) ResetPasswordHandler(w http.ResponseWriter, r *http.Request) *mo
 
 // DeleteTokenHandler actually reset the token cookie
 func (env *Env) DeleteTokenHandler(w http.ResponseWriter, r *http.Request) *models.AppError {
-	globals.Log.Debug("DeleteTokenHandler")
+	logger.Log.Debug("DeleteTokenHandler")
 	ctoken := http.Cookie{
 		Name:  "token",
 		Value: "",
@@ -303,7 +328,7 @@ func (env *Env) DeleteTokenHandler(w http.ResponseWriter, r *http.Request) *mode
 	http.SetCookie(w, &cemail)
 
 	//w.WriteHeader(http.StatusOK)
-	http.Redirect(w, r, globals.ApplicationFullURL, 307)
+	http.Redirect(w, r, env.ApplicationFullURL, 307)
 	return nil
 }
 
@@ -323,7 +348,7 @@ func (env *Env) GetTokenHandler(w http.ResponseWriter, r *http.Request) *models.
 			Code:    http.StatusInternalServerError}
 	}
 
-	globals.Log.WithFields(logrus.Fields{"person": person}).Debug("GetTokenHandler")
+	logger.Log.WithFields(logrus.Fields{"person": person}).Debug("GetTokenHandler")
 
 	// authenticating the person
 	if p, e = env.DB.GetPersonByEmail(person.PersonEmail); e != nil {
@@ -340,13 +365,13 @@ func (env *Env) GetTokenHandler(w http.ResponseWriter, r *http.Request) *models.
 			Message: "error getting user",
 		}
 	}
-	globals.Log.WithFields(logrus.Fields{"db p": p}).Debug("GetTokenHandler")
+	logger.Log.WithFields(logrus.Fields{"db p": p}).Debug("GetTokenHandler")
 
 	if e = bcrypt.CompareHashAndPassword([]byte(p.PersonPassword), []byte(person.PersonPassword)); e != nil {
 		return &models.AppError{
 			Code:    http.StatusUnauthorized,
 			Error:   e,
-			Message: globals.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "invalid_password", PluralCount: 1}),
+			Message: locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "invalid_password", PluralCount: 1}),
 		}
 	}
 
@@ -362,7 +387,7 @@ func (env *Env) GetTokenHandler(w http.ResponseWriter, r *http.Request) *models.
 	claims["exp"] = time.Now().Add(time.Hour * 8).Unix()
 
 	// sign the token with our secret
-	tokenString, _ := token.SignedString(globals.TokenSignKey)
+	tokenString, _ := token.SignedString(env.TokenSignKey)
 
 	// finally, write the token to the browser window
 	//w.WriteHeader(http.StatusOK)

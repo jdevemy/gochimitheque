@@ -103,18 +103,17 @@ type Datastore interface {
 	GetStoreLocations(DbselectparamStoreLocation) ([]StoreLocation, int, error)
 	GetStoreLocation(id int) (StoreLocation, error)
 	GetStoreLocationChildren(id int) ([]StoreLocation, error)
-	GetStoreLocationEntity(id int) (Entity, error)
 	DeleteStoreLocation(id int) error
 	CreateStoreLocation(s StoreLocation) (int64, error)
 	UpdateStoreLocation(s StoreLocation) error
-	IsStoreLocationEmpty(id int) (bool, error)
+	HasStorelocationStorage(id int) (bool, error)
 
 	// entities
 	ComputeStockEntity(p Product, r *http.Request) []StoreLocation
 
 	GetEntities(DbselectparamEntity) ([]Entity, int, error)
 	GetEntity(id int) (Entity, error)
-	GetEntityPeople(id int) ([]Person, error)
+	GetEntityManager(id int) ([]Person, error)
 	DeleteEntity(id int) error
 	CreateEntity(e Entity) (int64, error)
 	UpdateEntity(e Entity) error
@@ -141,6 +140,6 @@ type Datastore interface {
 	HasPersonReadRestrictedProductPermission(id int) (bool, error)
 
 	// captcha
-	InsertCaptcha(*captcha.Data) (string, error)
+	InsertCaptcha(string, *captcha.Data) error
 	ValidateCaptcha(token string, text string) (bool, error)
 }

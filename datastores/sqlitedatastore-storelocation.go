@@ -9,7 +9,7 @@ import (
 	_ "github.com/doug-martin/goqu/v9/dialect/sqlite3"
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
-	"github.com/tbellembois/gochimitheque/globals"
+	"github.com/tbellembois/gochimitheque/logger"
 	. "github.com/tbellembois/gochimitheque/models"
 )
 
@@ -24,7 +24,7 @@ func (db *SQLiteDataStore) buildFullPath(s StoreLocation, tx *sqlx.Tx) string {
 		parent StoreLocation
 	)
 
-	globals.Log.WithFields(logrus.Fields{"s": s}).Debug("buildFullPath")
+	logger.Log.WithFields(logrus.Fields{"s": s}).Debug("buildFullPath")
 
 	// Recursively getting the parents.
 	if s.StoreLocation != nil && s.StoreLocation.StoreLocationID.Valid {
@@ -47,12 +47,12 @@ func (db *SQLiteDataStore) buildFullPath(s StoreLocation, tx *sqlx.Tx) string {
 		)
 
 		if sqlr, args, err = sQuery.ToSQL(); err != nil {
-			globals.Log.Error(err)
+			logger.Log.Error(err)
 			return ""
 		}
 
 		if err = tx.Get(&parent, sqlr, args...); err != nil {
-			globals.Log.Error(err)
+			logger.Log.Error(err)
 			return ""
 		}
 
@@ -68,7 +68,7 @@ func (db *SQLiteDataStore) buildFullPath(s StoreLocation, tx *sqlx.Tx) string {
 // and visible by the connected user.
 func (db *SQLiteDataStore) GetStoreLocations(p DbselectparamStoreLocation) ([]StoreLocation, int, error) {
 
-	globals.Log.WithFields(logrus.Fields{"p": p}).Debug("GetStoreLocations")
+	logger.Log.WithFields(logrus.Fields{"p": p}).Debug("GetStoreLocations")
 
 	var err error
 
@@ -150,10 +150,10 @@ func (db *SQLiteDataStore) GetStoreLocations(p DbselectparamStoreLocation) ([]St
 		return nil, 0, err
 	}
 
-	// globals.Log.Debug(selectSql)
-	// globals.Log.Debug(selectArgs)
-	// globals.Log.Debug(countSql)
-	// globals.Log.Debug(countArgs)
+	// logger.Log.Debug(selectSql)
+	// logger.Log.Debug(selectArgs)
+	// logger.Log.Debug(countSql)
+	// logger.Log.Debug(countArgs)
 
 	var (
 		storelocations []StoreLocation
@@ -175,7 +175,7 @@ func (db *SQLiteDataStore) GetStoreLocations(p DbselectparamStoreLocation) ([]St
 // GetStoreLocation select the store location by id.
 func (db *SQLiteDataStore) GetStoreLocation(id int) (StoreLocation, error) {
 
-	globals.Log.WithFields(logrus.Fields{"id": id}).Debug("GetStoreLocation")
+	logger.Log.WithFields(logrus.Fields{"id": id}).Debug("GetStoreLocation")
 
 	dialect := goqu.Dialect("sqlite3")
 	tableStorelocation := goqu.T("storelocation")
@@ -208,7 +208,7 @@ func (db *SQLiteDataStore) GetStoreLocation(id int) (StoreLocation, error) {
 	)
 
 	if sqlr, args, err = sQuery.ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return StoreLocation{}, err
 	}
 
@@ -216,7 +216,7 @@ func (db *SQLiteDataStore) GetStoreLocation(id int) (StoreLocation, error) {
 		return StoreLocation{}, err
 	}
 
-	globals.Log.WithFields(logrus.Fields{"ID": id, "storelocation": storelocation}).Debug("GetStoreLocation")
+	logger.Log.WithFields(logrus.Fields{"ID": id, "storelocation": storelocation}).Debug("GetStoreLocation")
 
 	return storelocation, nil
 
@@ -257,7 +257,7 @@ func (db *SQLiteDataStore) GetStoreLocationChildren(id int) ([]StoreLocation, er
 	)
 
 	if sqlr, args, err = sQuery.ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return nil, err
 	}
 
@@ -266,44 +266,6 @@ func (db *SQLiteDataStore) GetStoreLocationChildren(id int) ([]StoreLocation, er
 	}
 
 	return storelocations, nil
-
-}
-
-// GetStoreLocationEntity select the store location entity.
-func (db *SQLiteDataStore) GetStoreLocationEntity(id int) (Entity, error) {
-
-	globals.Log.WithFields(logrus.Fields{"id": id}).Debug("GetStoreLocationEntity")
-
-	dialect := goqu.Dialect("sqlite3")
-	tableStorelocation := goqu.T("storelocation")
-
-	sQuery := dialect.From(tableStorelocation.As("s")).Join(
-		goqu.T("entity"),
-		goqu.On(goqu.Ex{"s.entity": goqu.I("entity.entity_id")}),
-	).Where(
-		goqu.I("s.storelocation_id").Eq(id),
-	).Select(
-		goqu.I("entity.entity_id").As("entity_id"),
-		goqu.I("entity.entity_name").As("entity_name"),
-	)
-
-	var (
-		err    error
-		sqlr   string
-		args   []interface{}
-		entity Entity
-	)
-
-	if sqlr, args, err = sQuery.ToSQL(); err != nil {
-		globals.Log.Error(err)
-		return Entity{}, err
-	}
-
-	if err = db.Get(&entity, sqlr, args...); err != nil {
-		return Entity{}, err
-	}
-
-	return entity, nil
 
 }
 
@@ -324,7 +286,7 @@ func (db *SQLiteDataStore) DeleteStoreLocation(id int) error {
 	)
 
 	if sqlr, args, err = dQuery.ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return err
 	}
 
@@ -343,7 +305,7 @@ func (db *SQLiteDataStore) CreateStoreLocation(s StoreLocation) (lastInsertId in
 		tx *sqlx.Tx
 	)
 
-	globals.Log.WithFields(logrus.Fields{"s": fmt.Sprintf("%+v", s)}).Debug("CreateStoreLocation")
+	logger.Log.WithFields(logrus.Fields{"s": fmt.Sprintf("%+v", s)}).Debug("CreateStoreLocation")
 
 	dialect := goqu.Dialect("sqlite3")
 	tableStorelocation := goqu.T("storelocation")
@@ -354,9 +316,9 @@ func (db *SQLiteDataStore) CreateStoreLocation(s StoreLocation) (lastInsertId in
 
 	defer func() {
 		if err != nil {
-			globals.Log.Error(err)
+			logger.Log.Error(err)
 			if rbErr := tx.Rollback(); rbErr != nil {
-				globals.Log.Error(rbErr)
+				logger.Log.Error(rbErr)
 				err = rbErr
 				return
 			}
@@ -419,9 +381,9 @@ func (db *SQLiteDataStore) UpdateStoreLocation(s StoreLocation) (err error) {
 
 	defer func() {
 		if err != nil {
-			globals.Log.Error(err)
+			logger.Log.Error(err)
 			if rbErr := tx.Rollback(); rbErr != nil {
-				globals.Log.Error(rbErr)
+				logger.Log.Error(rbErr)
 				err = rbErr
 				return
 			}
@@ -460,7 +422,7 @@ func (db *SQLiteDataStore) UpdateStoreLocation(s StoreLocation) (err error) {
 	).Where(
 		goqu.I("storelocation_id").Eq(s.StoreLocationID),
 	).ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return
 	}
 
@@ -472,8 +434,8 @@ func (db *SQLiteDataStore) UpdateStoreLocation(s StoreLocation) (err error) {
 
 }
 
-// IsStoreLocationEmpty returns true is the store location is empty.
-func (db *SQLiteDataStore) IsStoreLocationEmpty(id int) (bool, error) {
+// HasStorelocationStorage returns true is the store location is empty.
+func (db *SQLiteDataStore) HasStorelocationStorage(id int) (bool, error) {
 
 	var (
 		err   error
@@ -492,7 +454,7 @@ func (db *SQLiteDataStore) IsStoreLocationEmpty(id int) (bool, error) {
 	)
 
 	if sqlr, args, err = sQuery.ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return false, err
 	}
 

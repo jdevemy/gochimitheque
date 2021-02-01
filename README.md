@@ -31,7 +31,6 @@
 - [V1/V2 version](#v1v2-version)
 - [List of public database Chimithèque instances](#list-of-public-database-chimithèque-instances)
 - [Get the latest development compiled version](#get-the-latest-development-compiled-version)
-- [Compile from sources](#compile-from-sources)
 
 # Chimithèque
 
@@ -249,7 +248,12 @@ This will generate one CSV file per table.
 You can then import to the V2 version with:
 
 ```bash
-    /path/to/gochimitheque -proxyurl=https://appserver.foo.fr -importv1from=/path/to/csv
+  /path/to/gochimitheque -proxyurl=https://appserver.foo.fr -importv1from=/path/to/csv
+```
+
+And then generate the QRCodes with:
+```bash
+  /path/to/gochimitheque -updateqrcode
 ```
 
 This is important to specify the correct `-proxyurl` parameter as it will be used to generate the storages qr codes.
@@ -303,28 +307,3 @@ You can retrieve the latest auto-compiled version from the trunk.
 This is strongly not recommended in a production environment except if you know what you do.
 
 Go in the [action](https://github.com/tbellembois/gochimitheque/actions) tab of the project. Click on the last (top of the list) successfull workflow. Download the `chimitheque` artifacts zip. The `gochimitheque` binary is in the zip file. 
-
-# Compile from sources
-
-Install [Go](https://golang.org/doc/install).
-
-Install `go1.12.16` for GopherJS:
-```bash
-    go get golang.org/dl/go1.12.16
-    go1.12.16 download
-    export GOPHERJS_GOROOT=/root/sdk/go1.12.16
-```
-
-Go get the code:
-```bash
-    go get github.com/tbellembois/gochimitheque
-```
-
-You will find the source code in the `$GOPATH/src/github.com/tbellembois/gochimitheque` and the binary in `$GOPATH/bin/gochimitheque`.
-
-You can modify/recompile the code with:
-```bash
-  cd $GOPATH/src/github.com/tbellembois/gochimitheque
-  go generate
-  go build
-```

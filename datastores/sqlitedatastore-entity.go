@@ -7,7 +7,7 @@ import (
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/sirupsen/logrus"
-	"github.com/tbellembois/gochimitheque/globals"
+	"github.com/tbellembois/gochimitheque/logger"
 	. "github.com/tbellembois/gochimitheque/models"
 )
 
@@ -45,13 +45,13 @@ func (db *SQLiteDataStore) computeStockStorelocation(p Product, s *StoreLocation
 	)
 
 	if sqlr, args, err = sQuery.ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return 0
 	}
 
 	var nullableFloat64 sql.NullFloat64
 	if err = db.Get(&nullableFloat64, sqlr, args...); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return 0
 	}
 
@@ -61,7 +61,7 @@ func (db *SQLiteDataStore) computeStockStorelocation(p Product, s *StoreLocation
 		currentStock = nullableFloat64.Float64
 		totalStock = nullableFloat64.Float64
 	}
-	globals.Log.WithFields(logrus.Fields{
+	logger.Log.WithFields(logrus.Fields{
 		"p.ProductID":         p.ProductID,
 		"s.StoreLocationName": s.StoreLocationName,
 		"u.UnitLabel":         u.UnitLabel,
@@ -69,7 +69,7 @@ func (db *SQLiteDataStore) computeStockStorelocation(p Product, s *StoreLocation
 
 	// Getting the children store locations.
 	if storelocationChildren, err = db.GetStoreLocationChildren(int(s.StoreLocationID.Int64)); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return 0
 	}
 
@@ -139,13 +139,13 @@ func (db *SQLiteDataStore) computeStockStorelocationNoUnit(p Product, s *StoreLo
 	)
 
 	if sqlr, args, err = sQuery.ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return 0
 	}
 
 	var nullableFloat64 sql.NullFloat64
 	if err = db.Get(&nullableFloat64, sqlr, args...); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return 0
 	}
 
@@ -155,14 +155,14 @@ func (db *SQLiteDataStore) computeStockStorelocationNoUnit(p Product, s *StoreLo
 		currentStock = nullableFloat64.Float64
 		totalStock = nullableFloat64.Float64
 	}
-	globals.Log.WithFields(logrus.Fields{
+	logger.Log.WithFields(logrus.Fields{
 		"p.ProductID":         p.ProductID,
 		"s.StoreLocationName": s.StoreLocationName,
 		"currentStock":        currentStock}).Debug("ComputeStockStorelocation")
 
 	// Getting the children store locations.
 	if storelocationChildren, err = db.GetStoreLocationChildren(int(s.StoreLocationID.Int64)); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return 0
 	}
 
@@ -218,7 +218,7 @@ func (db *SQLiteDataStore) ComputeStockEntity(p Product, r *http.Request) []Stor
 	// Getting the entities (GetEntities returns only entities the connected user can see).
 	h, _ := NewdbselectparamEntity(r, nil)
 	if entities, _, err = db.GetEntities(h); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return []StoreLocation{}
 	}
 	for _, e := range entities {
@@ -235,12 +235,12 @@ func (db *SQLiteDataStore) ComputeStockEntity(p Product, r *http.Request) []Stor
 		goqu.I("unit.unit_id"),
 		goqu.I("unit.unit_label"),
 	).ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return []StoreLocation{}
 	}
 
 	if err = db.Select(&units, sqlr, args...); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return []StoreLocation{}
 	}
 
@@ -256,12 +256,12 @@ func (db *SQLiteDataStore) ComputeStockEntity(p Product, r *http.Request) []Stor
 	)
 
 	if sqlr, args, err = sQuery.ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return []StoreLocation{}
 	}
 
 	if err = db.Select(&storelocations, sqlr, args...); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return []StoreLocation{}
 	}
 
@@ -292,7 +292,7 @@ func (db *SQLiteDataStore) GetEntities(p DbselectparamEntity) ([]Entity, int, er
 		countArgs, selectArgs []interface{}
 	)
 
-	globals.Log.WithFields(logrus.Fields{"p": p}).Debug("GetEntities")
+	logger.Log.WithFields(logrus.Fields{"p": p}).Debug("GetEntities")
 
 	dialect := goqu.Dialect("sqlite3")
 	entityTable := goqu.T("entity")
@@ -378,7 +378,7 @@ func (db *SQLiteDataStore) GetEntities(p DbselectparamEntity) ([]Entity, int, er
 			args []interface{}
 		)
 		if sqlr, args, err = sQuery.ToSQL(); err != nil {
-			globals.Log.Error(err)
+			logger.Log.Error(err)
 			return nil, 0, err
 		}
 
@@ -404,7 +404,7 @@ func (db *SQLiteDataStore) GetEntities(p DbselectparamEntity) ([]Entity, int, er
 			args []interface{}
 		)
 		if sqlr, args, err = sQuery.ToSQL(); err != nil {
-			globals.Log.Error(err)
+			logger.Log.Error(err)
 			return nil, 0, err
 		}
 
@@ -430,7 +430,7 @@ func (db *SQLiteDataStore) GetEntities(p DbselectparamEntity) ([]Entity, int, er
 			args []interface{}
 		)
 		if sqlr, args, err = sQuery.ToSQL(); err != nil {
-			globals.Log.Error(err)
+			logger.Log.Error(err)
 			return nil, 0, err
 		}
 
@@ -440,7 +440,7 @@ func (db *SQLiteDataStore) GetEntities(p DbselectparamEntity) ([]Entity, int, er
 
 	}
 
-	globals.Log.WithFields(logrus.Fields{"entities": entities, "count": count}).Debug("GetEntities")
+	logger.Log.WithFields(logrus.Fields{"entities": entities, "count": count}).Debug("GetEntities")
 	return entities, count, nil
 
 }
@@ -454,7 +454,7 @@ func (db *SQLiteDataStore) GetEntity(id int) (Entity, error) {
 		args   []interface{}
 		entity Entity
 	)
-	globals.Log.WithFields(logrus.Fields{"id": id}).Debug("GetEntity")
+	logger.Log.WithFields(logrus.Fields{"id": id}).Debug("GetEntity")
 
 	dialect := goqu.Dialect("sqlite3")
 	tableEntity := goqu.T("entity")
@@ -469,7 +469,7 @@ func (db *SQLiteDataStore) GetEntity(id int) (Entity, error) {
 	)
 
 	if sqlr, args, err = sQuery.ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return Entity{}, err
 	}
 
@@ -492,7 +492,7 @@ func (db *SQLiteDataStore) GetEntity(id int) (Entity, error) {
 	)
 
 	if sqlr, args, err = sQuery.ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return Entity{}, err
 	}
 
@@ -500,14 +500,14 @@ func (db *SQLiteDataStore) GetEntity(id int) (Entity, error) {
 		return Entity{}, err
 	}
 
-	globals.Log.WithFields(logrus.Fields{"ID": id, "entity": entity}).Debug("GetEntity")
+	logger.Log.WithFields(logrus.Fields{"ID": id, "entity": entity}).Debug("GetEntity")
 
 	return entity, nil
 
 }
 
-// GetEntityPeople select the entity managers.
-func (db *SQLiteDataStore) GetEntityPeople(id int) ([]Person, error) {
+// GetEntityManager select the entity managers.
+func (db *SQLiteDataStore) GetEntityManager(id int) ([]Person, error) {
 
 	var (
 		err    error
@@ -531,7 +531,7 @@ func (db *SQLiteDataStore) GetEntityPeople(id int) ([]Person, error) {
 	)
 
 	if sqlr, args, err = sQuery.ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return []Person{}, err
 	}
 
@@ -539,7 +539,7 @@ func (db *SQLiteDataStore) GetEntityPeople(id int) ([]Person, error) {
 		return []Person{}, err
 	}
 
-	globals.Log.WithFields(logrus.Fields{"ID": id, "people": people}).Debug("GetEntityPeople")
+	logger.Log.WithFields(logrus.Fields{"ID": id, "people": people}).Debug("GetEntityPeople")
 	return people, nil
 
 }
@@ -561,7 +561,7 @@ func (db *SQLiteDataStore) DeleteEntity(id int) error {
 	).Delete()
 
 	if sqlr, args, err = sQuery.ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return err
 	}
 
@@ -583,7 +583,7 @@ func (db *SQLiteDataStore) CreateEntity(e Entity) (lastInsertId int64, err error
 		res  sql.Result
 	)
 
-	globals.Log.WithFields(logrus.Fields{"e": e}).Debug("CreateEntity")
+	logger.Log.WithFields(logrus.Fields{"e": e}).Debug("CreateEntity")
 
 	dialect := goqu.Dialect("sqlite3")
 	tableEntity := goqu.T("entity")
@@ -594,9 +594,9 @@ func (db *SQLiteDataStore) CreateEntity(e Entity) (lastInsertId int64, err error
 
 	defer func() {
 		if err != nil {
-			globals.Log.Error(err)
+			logger.Log.Error(err)
 			if rbErr := tx.Rollback(); rbErr != nil {
-				globals.Log.Error(rbErr)
+				logger.Log.Error(rbErr)
 				err = rbErr
 				return
 			}
@@ -628,7 +628,7 @@ func (db *SQLiteDataStore) CreateEntity(e Entity) (lastInsertId int64, err error
 	// Setting up the managers.
 	for _, m := range e.Managers {
 
-		globals.Log.WithFields(logrus.Fields{"m": m}).Debug("CreateEntity")
+		logger.Log.WithFields(logrus.Fields{"m": m}).Debug("CreateEntity")
 
 		// Adding the managers.
 		if sqlr, args, err = dialect.Insert(goqu.T("entitypeople")).Rows(
@@ -721,9 +721,9 @@ func (db *SQLiteDataStore) UpdateEntity(e Entity) (err error) {
 
 	defer func() {
 		if err != nil {
-			globals.Log.Error(err)
+			logger.Log.Error(err)
 			if rbErr := tx.Rollback(); rbErr != nil {
-				globals.Log.Error(rbErr)
+				logger.Log.Error(rbErr)
 				err = rbErr
 				return
 			}
@@ -745,7 +745,7 @@ func (db *SQLiteDataStore) UpdateEntity(e Entity) (err error) {
 	).Where(
 		goqu.I("entity_id").Eq(e.EntityID),
 	).ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return
 	}
 
@@ -775,7 +775,7 @@ func (db *SQLiteDataStore) UpdateEntity(e Entity) (err error) {
 	).Delete()
 
 	if sqlr, args, err = dQuery.ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return err
 	}
 
@@ -882,7 +882,7 @@ func (db *SQLiteDataStore) HasEntityMember(id int) (bool, error) {
 	)
 
 	if sqlr, args, err = sQuery.ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return false, err
 	}
 
@@ -914,7 +914,7 @@ func (db *SQLiteDataStore) HasEntityStorelocation(id int) (bool, error) {
 	)
 
 	if sqlr, args, err = sQuery.ToSQL(); err != nil {
-		globals.Log.Error(err)
+		logger.Log.Error(err)
 		return false, err
 	}
 

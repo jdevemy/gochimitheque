@@ -7,7 +7,6 @@ import (
 
 	"regexp"
 
-	"github.com/tbellembois/gochimitheque/globals"
 	"github.com/tbellembois/gochimitheque/locales"
 )
 
@@ -75,7 +74,7 @@ func GenerateLocalJS() {
 	// opening output file
 	f, err := os.Create("static/templates/localejs.jade")
 	if err != nil {
-		globals.Log.Fatal(err)
+		panic(err)
 	}
 	defer f.Close()
 
