@@ -51,37 +51,14 @@ html
     
     -
         json, _ := json.Marshal(c)
-
-        var out string
-        for key, value := range c.URLValues {
-            out += fmt.Sprintf("URLValues.set(%s, %s)\n", key, value)
-        }
     
     script.           
         //
         // global variables init
         //
 
-        // query parameters saved - used for the storages<>products views switch
-        var lastQueryParams;
-
-        // proxy path
-        var proxyPath = "!{ c.ProxyPath }";
-        
-        // version
-        var buildID = "!{ c.BuildID }";
-        
-        // disable cache
-        var disableCache = "!{ c.DisableCache }";
-
         // request context
-        var container = !{fmt.Sprintf("%s", json)};
-
-        // url parameters
-        var URLValues = new Map();
-
-        // initializing query parameters map
-        !{out}
+        var c = !{fmt.Sprintf("%s", json)};       
 
     script(src=c.ProxyPath + "js/bootstrap-table.min.js" )
     script(src=c.ProxyPath + "js/bootstrap-colorpicker.min.js" )                      
@@ -92,8 +69,7 @@ html
     script(src=c.ProxyPath + "js/qr-scanner.umd.min.js" )
     
     script.
-        //import QrScanner from './js/qr-scanner.min.js';
-        QrScanner.WORKER_PATH = proxyPath + 'js/qr-scanner-worker.min.js';
+        QrScanner.WORKER_PATH = c.ProxyPath + 'js/qr-scanner-worker.min.js';
         window.QrScanner = QrScanner;
 
     script.
@@ -105,7 +81,7 @@ html
                 if (hasCamera) {
                     window.qrScanner.start();
                 } else {
-                    alert(Utils_translate("nocamera", container.PersonLanguage));
+                    alert(Utils_translate("nocamera", c.PersonLanguage));
                     Storage_closeQR();
                 }
             });
@@ -140,7 +116,7 @@ html
     script(src=c.ProxyPath + "wasm/wasm_exec.js")
     script.
         const go = new Go();
-        WebAssembly.instantiateStreaming(fetch(proxyPath + "wasm/wasm"), go.importObject).then((result) => {
+        WebAssembly.instantiateStreaming(fetch(c.ProxyPath + "wasm/wasm"), go.importObject).then((result) => {
             go.run(result.instance);
         });
 

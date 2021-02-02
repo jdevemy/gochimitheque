@@ -84,7 +84,7 @@ nav.navbar.navbar-expand-lg.navbar-light.border-bottom
                     a#menu_update_welcomeannounce.dropdown-item(href="#", onclick="Menu_loadContent('welcome', '" + c.ProxyPath + "v/welcomeannounce', 'WelcomeAnnounce_list')").collapse
                         span.mdi.mdi-information-outline.mdi-36px.iconlabel
                                 = T("menu_welcomeannounce", 1)
-                    a.dropdown-item(onclick="localStorage.clear();" href="delete-token")
+                    a.dropdown-item(onclick="localStorage.clear();" href=c.ProxyPath + "delete-token")
                         span.mdi.mdi-logout.mdi-36px.iconlabel
                                 = T("menu_logout", 1 )
                     a.dropdown-item(href="#", onclick="Menu_loadContent('about', '" + c.ProxyPath + "about', 'About_list')")
