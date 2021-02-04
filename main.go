@@ -142,7 +142,7 @@ func initLogger() {
 		} else {
 			logger.Log.SetOutput(commandLineLogFile)
 		}
-		defer commandLineLogFile.Close()
+		//defer commandLineLogFile.Close()
 
 	}
 
@@ -153,7 +153,7 @@ func initLogger() {
 		logger.LogInternal.SetOutput(internalServerErrorLogFile)
 		logger.LogInternal.SetReportCaller(true)
 	}
-	defer internalServerErrorLogFile.Close()
+	//defer internalServerErrorLogFile.Close()
 
 }
 

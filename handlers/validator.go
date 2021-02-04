@@ -15,10 +15,22 @@ import (
 	"github.com/tbellembois/gochimitheque/models"
 )
 
+func sendResponse(w http.ResponseWriter, response string) {
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+
+	// TODO: check error
+	_ = json.NewEncoder(w).Encode(response)
+
+}
+
 // ValidatePersonEmailHandler checks that the person email does not already exist
 // if an id is given is the request the validator ignore the email of the person with this id
 func (env *Env) ValidatePersonEmailHandler(w http.ResponseWriter, r *http.Request) *models.AppError {
+
 	vars := mux.Vars(r)
+
 	var (
 		err       error
 		aerr      *models.AppError
@@ -33,36 +45,46 @@ func (env *Env) ValidatePersonEmailHandler(w http.ResponseWriter, r *http.Reques
 	c := models.ContainerFromRequestContext(r)
 
 	// init db request parameters
-	if dspp, aerr = models.NewdbselectparamPerson(r, nil); err != nil {
-		return aerr
+	if dspp, aerr = models.NewdbselectparamPerson(r, nil); aerr != nil {
+
+		logger.Log.Error("NewdbselectparamPerson error")
+		resp = locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "person_emailexist_validate", PluralCount: 1})
+		sendResponse(w, resp)
+		return nil
+
 	}
 	dspp.SetLoggedPersonID(c.PersonID)
 
 	// converting the id
 	if person_id, err = strconv.Atoi(vars["id"]); err != nil {
-		return &models.AppError{
-			Error:   err,
-			Message: "id atoi conversion",
-			Code:    http.StatusInternalServerError}
+
+		logger.Log.Error("strconv error")
+		resp = locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "person_emailexist_validate", PluralCount: 1})
+		sendResponse(w, resp)
+		return nil
+
 	}
 
 	// getting the email
 	if err = r.ParseForm(); err != nil {
-		return &models.AppError{
-			Error:   err,
-			Message: "form parsing",
-			Code:    http.StatusInternalServerError}
+
+		logger.Log.Error("ParseForm error")
+		resp = locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "person_emailexist_validate", PluralCount: 1})
+		sendResponse(w, resp)
+		return nil
+
 	}
 	dspp.SetSearch(r.Form.Get("person_email"))
 
 	// getting the people matching the email
 	people, count, err := env.DB.GetPeople(dspp)
 	if err != nil {
-		return &models.AppError{
-			Error:   err,
-			Code:    http.StatusInternalServerError,
-			Message: "error getting the people",
-		}
+
+		logger.Log.Error("GetPeople error")
+		resp = locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "person_emailexist_validate", PluralCount: 1})
+		sendResponse(w, resp)
+		return nil
+
 	}
 
 	if count == 0 {
@@ -72,11 +94,12 @@ func (env *Env) ValidatePersonEmailHandler(w http.ResponseWriter, r *http.Reques
 	} else {
 		// getting the person
 		if person, err = env.DB.GetPerson(person_id); err != nil {
-			return &models.AppError{
-				Error:   err,
-				Code:    http.StatusBadRequest,
-				Message: "error looking for person by email",
-			}
+
+			logger.Log.Error("GetPerson error")
+			resp = locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "person_emailexist_validate", PluralCount: 1})
+			sendResponse(w, resp)
+			return nil
+
 		}
 		res = (person.PersonID != people[0].PersonID)
 	}
@@ -88,21 +111,17 @@ func (env *Env) ValidatePersonEmailHandler(w http.ResponseWriter, r *http.Reques
 		resp = "true"
 	}
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
-	if err = json.NewEncoder(w).Encode(resp); err != nil {
-		return &models.AppError{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		}
-	}
+	sendResponse(w, resp)
 	return nil
+
 }
 
 // ValidateEntityNameHandler checks that the entity name does not already exist
 // if an id != -1 is given is the request the validator ignore the name of the entity with this id
 func (env *Env) ValidateEntityNameHandler(w http.ResponseWriter, r *http.Request) *models.AppError {
+
 	vars := mux.Vars(r)
+
 	var (
 		err       error
 		aerr      *models.AppError
@@ -117,36 +136,46 @@ func (env *Env) ValidateEntityNameHandler(w http.ResponseWriter, r *http.Request
 	c := models.ContainerFromRequestContext(r)
 
 	// init db request parameters
-	if dspe, aerr = models.NewdbselectparamEntity(r, nil); err != nil {
-		return aerr
+	if dspe, aerr = models.NewdbselectparamEntity(r, nil); aerr != nil {
+
+		logger.Log.Error("NewdbselectparamEntity error")
+		resp = locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "entity_nameexist_validate", PluralCount: 1})
+		sendResponse(w, resp)
+		return nil
+
 	}
 	dspe.SetLoggedPersonID(c.PersonID)
 
 	// converting the id
 	if entity_id, err = strconv.Atoi(vars["id"]); err != nil {
-		return &models.AppError{
-			Error:   err,
-			Message: "id atoi conversion",
-			Code:    http.StatusInternalServerError}
+
+		logger.Log.Error("strconv error")
+		resp = locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "entity_nameexist_validate", PluralCount: 1})
+		sendResponse(w, resp)
+		return nil
+
 	}
 
 	// getting the name
 	if err = r.ParseForm(); err != nil {
-		return &models.AppError{
-			Error:   err,
-			Message: "form parsing",
-			Code:    http.StatusInternalServerError}
+
+		logger.Log.Error("ParseForm error")
+		resp = locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "entity_nameexist_validate", PluralCount: 1})
+		sendResponse(w, resp)
+		return nil
+
 	}
 	dspe.SetSearch(r.Form.Get("entity_name"))
 
 	// getting the entities matching the name
 	entities, count, err := env.DB.GetEntities(dspe)
 	if err != nil {
-		return &models.AppError{
-			Error:   err,
-			Code:    http.StatusInternalServerError,
-			Message: "error getting the entities",
-		}
+
+		logger.Log.Error("GetEntities error")
+		resp = locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "entity_nameexist_validate", PluralCount: 1})
+		sendResponse(w, resp)
+		return nil
+
 	}
 
 	if count == 0 {
@@ -156,11 +185,12 @@ func (env *Env) ValidateEntityNameHandler(w http.ResponseWriter, r *http.Request
 	} else {
 		// getting the entity
 		if entity, err = env.DB.GetEntity(entity_id); err != nil {
-			return &models.AppError{
-				Error:   err,
-				Code:    http.StatusBadRequest,
-				Message: "error looking for entity by id",
-			}
+
+			logger.Log.Error("GetEntity error")
+			resp = locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "entity_nameexist_validate", PluralCount: 1})
+			sendResponse(w, resp)
+			return nil
+
 		}
 		res = (entity.EntityID != entities[0].EntityID)
 	}
@@ -172,34 +202,23 @@ func (env *Env) ValidateEntityNameHandler(w http.ResponseWriter, r *http.Request
 		resp = "true"
 	}
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
-	if err = json.NewEncoder(w).Encode(resp); err != nil {
-		return &models.AppError{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		}
-	}
+	sendResponse(w, resp)
 	return nil
+
 }
 
 // ValidateProductNameHandler checks that the product name is valid
 // FIXME: not used yet
 func (env *Env) ValidateProductNameHandler(w http.ResponseWriter, r *http.Request) *models.AppError {
-	resp := "true"
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		return &models.AppError{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		}
-	}
+
+	sendResponse(w, "true")
 	return nil
+
 }
 
 // ValidateProductEmpiricalFormulaHandler checks that the product empirical formula is valid
 func (env *Env) ValidateProductEmpiricalFormulaHandler(w http.ResponseWriter, r *http.Request) *models.AppError {
+
 	var (
 		err  error
 		resp string
@@ -207,11 +226,14 @@ func (env *Env) ValidateProductEmpiricalFormulaHandler(w http.ResponseWriter, r 
 
 	// getting the empirical formula
 	if err = r.ParseForm(); err != nil {
-		return &models.AppError{
-			Error:   err,
-			Message: "form parsing",
-			Code:    http.StatusInternalServerError}
+
+		logger.Log.Error("ParseForm error")
+		resp = locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "empiricalformula_validate", PluralCount: 1})
+		sendResponse(w, resp)
+		return nil
+
 	}
+
 	// validating it
 	_, err = sort.SortEmpiricalFormula(r.Form.Get("empiricalformula"))
 	if err != nil {
@@ -220,19 +242,14 @@ func (env *Env) ValidateProductEmpiricalFormulaHandler(w http.ResponseWriter, r 
 		resp = "true"
 	}
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
-	if err = json.NewEncoder(w).Encode(resp); err != nil {
-		return &models.AppError{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		}
-	}
+	sendResponse(w, resp)
 	return nil
+
 }
 
 // FormatProductEmpiricalFormulaHandler returns the sorted formula
 func (env *Env) FormatProductEmpiricalFormulaHandler(w http.ResponseWriter, r *http.Request) *models.AppError {
+
 	var (
 		err  error
 		resp string
@@ -261,14 +278,18 @@ func (env *Env) FormatProductEmpiricalFormulaHandler(w http.ResponseWriter, r *h
 			Message: err.Error(),
 		}
 	}
+
 	return nil
+
 }
 
 // ValidateProductCasNumberHandler checks that:
 // - the cas number is valid
 // - a product with the cas number and specificity does not already exist
 func (env *Env) ValidateProductCasNumberHandler(w http.ResponseWriter, r *http.Request) *models.AppError {
+
 	vars := mux.Vars(r)
+
 	var (
 		err        error
 		resp       string
@@ -281,10 +302,12 @@ func (env *Env) ValidateProductCasNumberHandler(w http.ResponseWriter, r *http.R
 
 	// getting the cas number
 	if err = r.ParseForm(); err != nil {
-		return &models.AppError{
-			Error:   err,
-			Message: "form parsing",
-			Code:    http.StatusInternalServerError}
+
+		logger.Log.Error("ParseForm error")
+		resp = locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "casnumber_validate_wrongcas", PluralCount: 1})
+		sendResponse(w, resp)
+		return nil
+
 	}
 	logger.Log.WithFields(logrus.Fields{"casnumber": r.Form.Get("casnumber")}).Debug("ValidateProductCasNumberHandler")
 
@@ -299,35 +322,50 @@ func (env *Env) ValidateProductCasNumberHandler(w http.ResponseWriter, r *http.R
 
 	// converting the id
 	if product_id, err = strconv.Atoi(vars["id"]); err != nil {
-		return &models.AppError{
-			Error:   err,
-			Message: "id atoi conversion",
-			Code:    http.StatusInternalServerError}
+
+		logger.Log.Error("strconv error")
+		resp = locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "casnumber_validate_wrongcas", PluralCount: 1})
+		sendResponse(w, resp)
+		return nil
+
 	}
 
 	// check pair cas/specificity only on create
 	if product_id == -1 {
+
 		// get cas number id
 		if cas, err = env.DB.GetProductsCasNumberByLabel(r.Form.Get("casnumber")); err != nil {
-			return &models.AppError{
-				Error:   err,
-				Message: "get cas number",
-				Code:    http.StatusInternalServerError}
+
+			logger.Log.Error("GetProductsCasNumberByLabel error")
+			resp = locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "casnumber_validate_wrongcas", PluralCount: 1})
+			sendResponse(w, resp)
+			return nil
+
 		}
+
 		// init db request parameters
-		if dspp, aerr = models.NewdbselectparamProduct(r, nil); err != nil {
-			return aerr
+		if dspp, aerr = models.NewdbselectparamProduct(r, nil); aerr != nil {
+
+			logger.Log.Error("NewdbselectparamProduct error")
+			resp = locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "casnumber_validate_wrongcas", PluralCount: 1})
+			sendResponse(w, resp)
+			return nil
+
 		}
+
 		if cas.CasNumberID.Valid {
 			dspp.SetCasNumber(int(cas.CasNumberID.Int64))
 		}
 		dspp.SetProductSpecificity(r.Form.Get("product_specificity"))
+
 		// getting the products matching the cas and specificity
 		if _, nbProducts, err = env.DB.GetProducts(dspp); err != nil {
-			return &models.AppError{
-				Error:   err,
-				Message: "get products",
-				Code:    http.StatusInternalServerError}
+
+			logger.Log.Error("GetProducts error")
+			resp = locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "casnumber_validate_wrongcas", PluralCount: 1})
+			sendResponse(w, resp)
+			return nil
+
 		}
 
 		if nbProducts != 0 {
@@ -335,20 +373,15 @@ func (env *Env) ValidateProductCasNumberHandler(w http.ResponseWriter, r *http.R
 		}
 	}
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
-	if err = json.NewEncoder(w).Encode(resp); err != nil {
-		return &models.AppError{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		}
-	}
+	sendResponse(w, resp)
 	return nil
+
 }
 
 // ValidateProductCeNumberHandler checks that:
 // - the ce number is valid
 func (env *Env) ValidateProductCeNumberHandler(w http.ResponseWriter, r *http.Request) *models.AppError {
+
 	var (
 		err  error
 		resp string
@@ -356,10 +389,12 @@ func (env *Env) ValidateProductCeNumberHandler(w http.ResponseWriter, r *http.Re
 
 	// getting the ce number
 	if err = r.ParseForm(); err != nil {
-		return &models.AppError{
-			Error:   err,
-			Message: "form parsing",
-			Code:    http.StatusInternalServerError}
+
+		logger.Log.Error("ParseForm error")
+		resp = locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "cenumber_validate", PluralCount: 1})
+		sendResponse(w, resp)
+		return nil
+
 	}
 	logger.Log.WithFields(logrus.Fields{"cenumber": r.Form.Get("cenumber")}).Debug("ValidateProductCeNumberHandler")
 
@@ -372,13 +407,7 @@ func (env *Env) ValidateProductCeNumberHandler(w http.ResponseWriter, r *http.Re
 		resp = locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "cenumber_validate", PluralCount: 1})
 	}
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
-	if err = json.NewEncoder(w).Encode(resp); err != nil {
-		return &models.AppError{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		}
-	}
+	sendResponse(w, resp)
 	return nil
+
 }

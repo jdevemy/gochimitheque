@@ -207,7 +207,8 @@ func (db *SQLiteDataStore) GetProductsCeNumberByLabel(label string) (CeNumber, e
 
 	sqlr = `SELECT cenumber.cenumber_id, cenumber.cenumber_label
 	FROM cenumber
-	WHERE cenumber_label = ?`
+	WHERE cenumber_label = ?
+	ORDER BY cenumber.cenumber_label`
 	if err = db.Get(&ce, sqlr, label); err != nil {
 		return CeNumber{}, err
 	}
@@ -296,7 +297,8 @@ func (db *SQLiteDataStore) GetProductsEmpiricalFormulaByLabel(label string) (Emp
 
 	sqlr = `SELECT empiricalformula.empiricalformula_id, empiricalformula.empiricalformula_label
 	FROM empiricalformula
-	WHERE empiricalformula.empiricalformula_label = ?`
+	WHERE empiricalformula.empiricalformula_label = ?
+	ORDER BY empiricalformula.empiricalformula_label`
 	if err = db.Get(&ef, sqlr, label); err != nil {
 		return EmpiricalFormula{}, err
 	}
@@ -385,7 +387,8 @@ func (db *SQLiteDataStore) GetProductsLinearFormulaByLabel(label string) (Linear
 
 	sqlr = `SELECT linearformula.linearformula_id, linearformula.linearformula_label
 	FROM linearformula
-	WHERE linearformula.linearformula_label = ?`
+	WHERE linearformula.linearformula_label = ?
+	ORDER BY linearformula.linearformula_label`
 	if err = db.Get(&lf, sqlr, label); err != nil {
 		return LinearFormula{}, err
 	}
@@ -474,7 +477,8 @@ func (db *SQLiteDataStore) GetProductsClassOfCompoundByLabel(label string) (Clas
 
 	sqlr = `SELECT classofcompound.classofcompound_id, classofcompound.classofcompound_label
 	FROM classofcompound
-	WHERE classofcompound.classofcompound_label = ?`
+	WHERE classofcompound.classofcompound_label = ?
+	ORDER BY classofcompound.classofcompound_label`
 	if err = db.Get(&coc, sqlr, strings.ToUpper(label)); err != nil {
 		return ClassOfCompound{}, err
 	}
@@ -969,7 +973,8 @@ func (db *SQLiteDataStore) GetProductsEmpiricalFormula(id int) (EmpiricalFormula
 
 	sqlr = `SELECT empiricalformula.empiricalformula_id, empiricalformula.empiricalformula_label
 	FROM empiricalformula
-	WHERE empiricalformula_id = ?`
+	WHERE empiricalformula_id = ?
+	ORDER BY empiricalformula.empiricalformula_label`
 	if err = db.Get(&ef, sqlr, id); err != nil {
 		return EmpiricalFormula{}, err
 	}
@@ -1268,7 +1273,8 @@ func (db *SQLiteDataStore) GetProductsHazardStatementByReference(r string) (Haza
 
 	sqlr := `SELECT hazardstatement_id, hazardstatement_label, hazardstatement_reference
 	FROM hazardstatement
-	WHERE hazardstatement_reference = ?`
+	WHERE hazardstatement_reference = ?
+	ORDER BY hazardstatement_reference`
 	if err = db.Get(&hs, sqlr, r); err != nil {
 		return HazardStatement{}, err
 	}
@@ -1292,7 +1298,7 @@ func (db *SQLiteDataStore) GetProductsHazardStatements(p Dbselectparam) ([]Hazar
 
 	comreq.WriteString(" FROM hazardstatement")
 	comreq.WriteString(" WHERE hazardstatement_reference LIKE :search")
-	postsreq.WriteString(" ORDER BY hazardstatement_label  " + p.GetOrder())
+	postsreq.WriteString(" ORDER BY hazardstatement_reference  " + p.GetOrder())
 
 	// limit
 	if p.GetLimit() != ^uint64(0) {
@@ -1336,7 +1342,8 @@ func (db *SQLiteDataStore) GetProductsPrecautionaryStatementByReference(r string
 
 	sqlr := `SELECT precautionarystatement_id, precautionarystatement_label, precautionarystatement_reference
 	FROM precautionarystatement
-	WHERE precautionarystatement_reference = ?`
+	WHERE precautionarystatement_reference = ?
+	ORDER BY precautionarystatement_reference`
 	if err = db.Get(&ps, sqlr, r); err != nil {
 		return PrecautionaryStatement{}, err
 	}
@@ -1360,7 +1367,7 @@ func (db *SQLiteDataStore) GetProductsPrecautionaryStatements(p Dbselectparam) (
 
 	comreq.WriteString(" FROM precautionarystatement")
 	comreq.WriteString(" WHERE precautionarystatement_reference LIKE :search")
-	postsreq.WriteString(" ORDER BY precautionarystatement_label  " + p.GetOrder())
+	postsreq.WriteString(" ORDER BY precautionarystatement_reference  " + p.GetOrder())
 
 	// limit
 	if p.GetLimit() != ^uint64(0) {
@@ -1476,7 +1483,8 @@ func (db *SQLiteDataStore) GetProductsPhysicalStateByLabel(label string) (Physic
 
 	sqlr = `SELECT physicalstate.physicalstate_id, physicalstate.physicalstate_label
 	FROM physicalstate
-	WHERE physicalstate.physicalstate_label = ?`
+	WHERE physicalstate.physicalstate_label = ?
+	ORDER BY physicalstate.physicalstate_label`
 	if err = db.Get(&ps, sqlr, label); err != nil {
 		return PhysicalState{}, err
 	}

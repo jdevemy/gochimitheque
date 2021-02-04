@@ -443,6 +443,25 @@ func (db *SQLiteDataStore) GetStorages(p DbselectparamStorage) ([]Storage, int, 
 		}
 	}
 
+	//
+	// getting borrower for each storage
+	//
+	for i, st := range storages {
+		reqhc.Reset()
+		reqhc.WriteString(`SELECT borrowing_id, 
+		borrowing_comment, 
+		person.person_email AS "borrower.person_email" 
+		from borrowing 
+		JOIN person 
+		ON borrowing.borrower = person.person_id 
+		WHERE borrowing.storage = ?`)
+		var borrowing Borrowing
+		if err = db.Get(&borrowing, reqhc.String(), st.StorageID); err != nil && err != sql.ErrNoRows {
+			return nil, 0, err
+		}
+		storages[i].Borrowing = &borrowing
+	}
+
 	return storages, count, nil
 }
 
