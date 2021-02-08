@@ -27,20 +27,20 @@ include mixins
                 hr
                 .form-row
                     .col-sm-12
-                        +selectcompact("s_storelocation", "s_storelocation")
+                        +select("s_storelocation", "s_storelocation")
                 .form-row
                     .col-sm-12
-                        +selectcompact("s_name", "s_name")
+                        +select("s_name", "s_name")
                 .form-row
                     .form-group.col-sm-6
-                        +selectcompact("s_signalword", "s_signalword")
+                        +select("s_signalword", "s_signalword")
                     .form-group.col-sm-6
-                        +selectmultiplecompact("s_symbols", "s_symbols")
+                        +selectmultiple("s_symbols", "s_symbols")
                 .form-row
                     .form-group.col-sm-6
-                        +selectmultiplecompact("s_hazardstatements", "s_hazardstatements")
+                        +selectmultiple("s_hazardstatements", "s_hazardstatements")
                     .form-group.col-sm-6
-                        +selectmultiplecompact("s_precautionarystatements", "s_precautionarystatements")
+                        +selectmultiple("s_precautionarystatements", "s_precautionarystatements")
                 .form-row
                     .form-group.col-sm-4
                         +checkbox("s_casnumber_cmr", "s_casnumber_cmr")
@@ -66,10 +66,10 @@ include mixins
             button.btn.btn-outline-primary#export(type="button" onclick="Common_export();")
                 span.mdi.mdi-content-save.mdi-24px.iconlabel
                     = T("export_text", 1) 
-            button#s_storage_archive_button.btn.btn-outline-primary.collapse(type="button" data-toggle="button" aria-pressed="true" autocomplete="off")
+            button#s_storage_archive_button.btn.btn-outline-primary.invisible(type="button" data-toggle="button" aria-pressed="true" autocomplete="off")
                 span.mdi.mdi-archive-outline.mdi-24px.iconlabel
                     = T("showdeleted_text", 1) 
-            button#s_storage_stock_button.btn.btn-outline-primary.collapse(type="button" data-toggle="button" aria-pressed="true" autocomplete="off")
+            button#s_storage_stock_button.btn.btn-outline-primary.invisible(type="button" data-toggle="button" aria-pressed="true" autocomplete="off")
                 span.mdi.mdi-sigma.mdi-24px.iconlabel
                     = T("totalstock_text", 1) 
             button#clearsearch.btn.btn-outline-primary(type="button" onclick="Common_clearSearch();")

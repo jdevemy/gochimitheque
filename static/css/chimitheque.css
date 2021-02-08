@@ -5,13 +5,28 @@
     font-weight: normal;
     font-style: normal;
 }
+@font-face {
+    font-family: 'oswald';
+    src: url('../fonts/Oswald-ExtraLight.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'opensans';
+    src: url('../fonts/OpenSans-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+body {
+    font-family: opensans;
+}
 .bootstrap-table .fixed-table-container .fixed-table-body, .bootstrap-table .fixed-table-container {
     border: none;
     overflow-y: hidden;
 	height: auto !important;
 }
 .iconlabel {
-    font-family: economicaregular;
+    font-family: oswald;
 }
 .verticaltext {
     writing-mode: vertical-rl;

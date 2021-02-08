@@ -76,6 +76,17 @@ mixin inputtext(label,name)
         = T(label, 1)
     input.form-control(type='text' id=name name=name title=name)
 
+mixin inputtexttest(label, name, help)
+    //- var inputId = name + 'input';
+    //- var helpId = name + 'help';
+    .form-group
+        label(for=name + 'input')
+            = T(label, 1)
+        input.form-control(id=name + 'input' type="email" aria-describedby=name + 'help')
+        if help != ""
+            small.form-text.text-muted(id=name + 'help')
+                = help
+
 mixin inputtextrequired(label,name)
     span.badge.badge-pill.badge-danger.collapse.show(id=name)  &nbsp;
     label(for=name)

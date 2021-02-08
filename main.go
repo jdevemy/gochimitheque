@@ -1,8 +1,7 @@
-// +build go1.12,linux,amd64
+// +build go1.16,linux,amd64
 
 //go:generate jade -writer -basedir static/templates -d ./static/jade welcomeannounce/index.jade home/index.jade login/index.jade about/index.jade entity/index.jade entity/create.jade product/index.jade product/create.jade storage/index.jade storage/create.jade storelocation/index.jade storelocation/create.jade person/index.jade person/create.jade person/pupdate.jade search.jade menu.jade
 //go:generate go run . -genlocalejs
-//go:generate rice embed-go
 package main
 
 // build with
@@ -10,6 +9,7 @@ package main
 
 import (
 	"database/sql"
+	"embed"
 	"flag"
 	"fmt"
 	"net/http"
@@ -18,7 +18,6 @@ import (
 	"strings"
 	"time"
 
-	rice "github.com/GeertJohan/go.rice"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"github.com/tbellembois/gochimitheque/datastores"
@@ -47,6 +46,13 @@ var (
 	commandVersion,
 	commandGenLocaleJS,
 	paramDisableCache *bool
+
+	//go:embed models/model.conf
+	embedModel string
+	//go:embed wasm/*
+	embedWasmBox embed.FS
+	//go:embed static/*
+	embedStaticBox embed.FS
 )
 
 // TimeTrack displays the run time of the function "name"
@@ -242,51 +248,10 @@ func initAdmins() {
 
 func initStaticResources(router *mux.Router) {
 
-	casbinModelBox := rice.MustFindBox("models")
-	modelf, e := casbinModelBox.Open("model.conf")
-	if e != nil {
-		logger.Log.Error("model.conf load from box error: " + e.Error())
-		os.Exit(1)
-	}
-	models, e := modelf.Stat()
-	if e != nil {
-		logger.Log.Error("model.conf stat error: " + e.Error())
-		os.Exit(1)
-	}
+	env.CasbinModel = embedModel
 
-	modelb := make([]byte, models.Size()-1)
-	_, e = modelf.Read(modelb)
-	if e != nil {
-		logger.Log.Error("model.conf load error: " + e.Error())
-		os.Exit(1)
-	}
-
-	env.CasbinModel = string(modelb)
-
-	webfontsBox := rice.MustFindBox("static/webfonts")
-	webfontsFileServer := http.StripPrefix("/webfonts/", http.FileServer(webfontsBox.HTTPBox()))
-	http.Handle("/webfonts/", webfontsFileServer)
-
-	fontsBox := rice.MustFindBox("static/fonts")
-	fontsFileServer := http.StripPrefix("/fonts/", http.FileServer(fontsBox.HTTPBox()))
-	http.Handle("/fonts/", fontsFileServer)
-
-	cssBox := rice.MustFindBox("static/css")
-	cssFileServer := http.StripPrefix("/css/", http.FileServer(cssBox.HTTPBox()))
-	http.Handle("/css/", cssFileServer)
-
-	jsBox := rice.MustFindBox("static/js")
-	jsFileServer := http.StripPrefix("/js/", http.FileServer(jsBox.HTTPBox()))
-	http.Handle("/js/", jsFileServer)
-
-	imgBox := rice.MustFindBox("static/img")
-	imgFileServer := http.StripPrefix("/img/", http.FileServer(imgBox.HTTPBox()))
-	http.Handle("/img/", imgFileServer)
-
-	wasmBox := rice.MustFindBox("wasm")
-	wasmFileServer := http.StripPrefix("/wasm/", http.FileServer(wasmBox.HTTPBox()))
-	http.Handle("/wasm/", wasmFileServer)
-
+	http.Handle("/wasm/", http.FileServer(http.FS(embedWasmBox)))
+	http.Handle("/static/", http.FileServer(http.FS(embedStaticBox)))
 	http.Handle("/", router)
 
 }

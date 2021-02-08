@@ -1,7 +1,7 @@
 //- extends ../base.jade
 include ../mixins
 block CONTENT
-    img(src=c.ProxyPath + "img/logo_chimitheque_small.png", alt="chimitheque_logo", title="Chimithèque")
+    img(src=c.ProxyPath + "static/img/logo_chimitheque_small.png", alt="chimitheque_logo", title="Chimithèque")
     :go:func
         Login(c ViewContainer)
     header
@@ -47,7 +47,7 @@ block CONTENT
         #wannounce.col.col-sm-4.offset-sm-4.iconlabel
 
     a(href="https://github.com/tbellembois/gochimitheque")
-        img(style="position: absolute; top: 0; right: 0; border: 0;" src=c.ProxyPath + "img/forkme_right_darkblue_121621.png" alt="Fork me on GitHub")
+        img(style="position: absolute; top: 0; right: 0; border: 0;" src=c.ProxyPath + "static/img/forkme_right_darkblue_121621.png" alt="Fork me on GitHub")
 
     .fixed-bottom.row
         .col.col-sm-12.d-flex.justify-content-center
