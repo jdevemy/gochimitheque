@@ -403,7 +403,7 @@ var LOCALES_EN = []byte(`
 [product_threedformula_mol_title]
 	one = "3D formula MOL file"
 [product_msds_title]
-	one = "MSDS"
+	one = "MSDS link"
 [product_sheet_title]
 	one = "producer product cheet"
 [product_temperature_title]
@@ -499,6 +499,8 @@ var LOCALES_EN = []byte(`
 	one = "password"
 [person_entity_title]
 	one = "entity(ies)"
+[person_permission_title]
+	one = "permissions"
 [person_email_table_header]
 	one = "email"
 [person_can_not_remove_entity_manager]
@@ -511,6 +513,13 @@ var LOCALES_EN = []byte(`
 	one = "password updated"
 [person_entity_placeholder]
 	one = "select entity(ies)"
+
+[permission_none]
+	one = "no permission"
+[permission_read]
+	one = "view only"
+[permission_crud]
+	one = "view, modify, create and delete"
 
 [storelocation_create_title]
 	one = "create a store location"

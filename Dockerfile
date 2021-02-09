@@ -1,4 +1,4 @@
-FROM golang:1.15-buster
+FROM golang:1.16-rc-buster
 LABEL author="Thomas Bellembois"
 
 #
@@ -15,9 +15,10 @@ RUN mkdir /data && chown www-data /data
 # Creating www directory.
 RUN mkdir /var/www-data && chown www-data /var/www-data
 
-# Installing Jade and Rice commands.
-RUN go get -v github.com/Joker/jade/cmd/jade
-RUN go get -v github.com/GeertJohan/go.rice/rice
+# Installing Jade command.
+# TODO: fixme
+#RUN go get -v github.com/Joker/jade/cmd/jade
+COPY jade /go/bin/
 
 #
 # Sources.
@@ -41,7 +42,7 @@ COPY . .
 
 # Building wasm module.
 WORKDIR /go/src/github.com/tbellembois/gochimitheque-wasm
-RUN go get -v -d ./...
+RUN GOOS=js GOARCH=wasm go get -v -d ./...
 RUN GOOS=js GOARCH=wasm go build -o wasm .
 
 # Copying WASM module into sources.

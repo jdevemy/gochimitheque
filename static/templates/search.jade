@@ -15,39 +15,40 @@ include mixins
     .col
         .row
             .col-sm-3
-                +inputtextnolabel(T("s_custom_name_part_of", 1), "s_custom_name_part_of")
+                +inputtext(name="s_custom_name_part_of", label="", htmltype="text", placeholder=T("s_custom_name_part_of", 1))
             .col-sm-3
-                +inputtextnolabel(T("s_storage_barecode", 1), "s_storage_barecode")
+                +inputtext(name="s_storage_barecode", label="", htmltype="text", placeholder=T("s_storage_barecode", 1))
             .col-sm-3
-                +selectnolabel(T("s_casnumber", 1), "s_casnumber")
+                +inputselect(name="s_casnumber", label="", ismultiple=false, placeholder=T("s_casnumber", 1))
             .col-sm-3
-                +selectnolabel(T("s_empiricalformula", 1),, "s_empiricalformula")
+                +inputselect(name="s_empiricalformula", label="", ismultiple=false, placeholder=T("s_empiricalformula", 1))
         .row.collapse#advancedsearch
-            .col-sm-12
-                hr
-                .form-row
+            .card.mx-auto.w-75
+                .card-body
                     .col-sm-12
-                        +select("s_storelocation", "s_storelocation")
-                .form-row
-                    .col-sm-12
-                        +select("s_name", "s_name")
-                .form-row
-                    .form-group.col-sm-6
-                        +select("s_signalword", "s_signalword")
-                    .form-group.col-sm-6
-                        +selectmultiple("s_symbols", "s_symbols")
-                .form-row
-                    .form-group.col-sm-6
-                        +selectmultiple("s_hazardstatements", "s_hazardstatements")
-                    .form-group.col-sm-6
-                        +selectmultiple("s_precautionarystatements", "s_precautionarystatements")
-                .form-row
-                    .form-group.col-sm-4
-                        +checkbox("s_casnumber_cmr", "s_casnumber_cmr")
-                    .form-group.col-sm-4
-                        +checkbox("s_borrowing", "s_borrowing")
-                    .form-group.col-sm-4
-                        +checkbox("s_storage_to_destroy", "s_storage_to_destroy")
+                        .form-row
+                            .col-sm-12
+                                +inputselect(name="s_storelocation", label="s_storelocation")
+                        .form-row
+                            .col-sm-12
+                                +inputselect(name="s_name", label="s_name")
+                        .form-row
+                            .form-group.col-sm-6
+                                +inputselect(name="s_signalword", label="s_signalword")
+                            .form-group.col-sm-6
+                                +inputselect(name="s_symbols", label="s_symbols", ismultiple=true)
+                        .form-row
+                            .form-group.col-sm-6
+                                +inputselect(name="s_hazardstatements", label="s_hazardstatements", ismultiple=true)
+                            .form-group.col-sm-6
+                                +inputselect(name="s_precautionarystatements", label="s_precautionarystatements", ismultiple=true)
+                        .form-row
+                            .form-group.col-sm-4
+                                +checkbox(name="s_casnumber_cmr", label="s_casnumber_cmr")
+                            .form-group.col-sm-4
+                                +checkbox(name="s_borrowing", label="s_borrowing")
+                            .form-group.col-sm-4
+                                +checkbox(name="s_storage_to_destroy", label="s_storage_to_destroy")
         .row.justify-content-center
             .btn-group(role="group") 
                 button.btn.btn-outline-primary(data-toggle="collapse" href="#advancedsearch" aria-expanded="false")

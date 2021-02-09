@@ -403,7 +403,7 @@ var LOCALES_FR = []byte(`
 [product_threedformula_mol_title]
 	one = "fichier MOL formule 3D"
 [product_msds_title]
-	one = "FDS"
+	one = "lien FDS"
 [product_sheet_title]
 	one = "fiche produit fabriquant"
 [product_temperature_title]
@@ -499,6 +499,8 @@ var LOCALES_FR = []byte(`
 	one = "mot de passe"
 [person_entity_title]
 	one = "entité(s)"
+[person_permission_title]
+	one = "permissions"
 [person_email_table_header]
 	one = "mail"
 [person_can_not_remove_entity_manager]
@@ -511,6 +513,13 @@ var LOCALES_FR = []byte(`
 	one = "mot de passe mis à jour"
 [person_entity_placeholder]
 	one = "sélectionnez une ou plusieurs entité(s)"
+
+[permission_none]
+	one = "aucune permission"
+[permission_read]
+	one = "voir seulement"
+[permission_crud]
+	one = "voir, modifier, créer et supprimer"
 
 [storelocation_create_title]
 	one = "créer un entrepôt"

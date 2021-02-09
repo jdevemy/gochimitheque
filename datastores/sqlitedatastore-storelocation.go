@@ -100,7 +100,7 @@ func (db *SQLiteDataStore) GetStoreLocations(p DbselectparamStoreLocation) ([]St
 			goqu.Ex{
 				"perm.person":               p.GetLoggedPersonID(),
 				"perm.permission_item_name": []string{"all", "storages"},
-				"perm.permission_perm_name": []string{"all", p.GetPermission()},
+				"perm.permission_perm_name": []string{"r", "w", "all"},
 				"perm.permission_entity_id": []interface{}{-1, goqu.I("entity.entity_id")},
 			},
 		),
