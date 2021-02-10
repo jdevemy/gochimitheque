@@ -119,7 +119,7 @@ func init() {
 	commandGenLocaleJS = flagGenLocaleJS
 
 	if env.ProxyURL != "" {
-		env.ApplicationFullURL = env.ProxyURL + env.ProxyURL
+		env.ApplicationFullURL = env.ProxyURL + env.ProxyPath
 	} else {
 		env.ApplicationFullURL = "http://localhost:" + *paramListenPort
 	}
