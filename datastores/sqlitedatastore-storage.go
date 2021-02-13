@@ -308,6 +308,17 @@ func (db *SQLiteDataStore) GetStorages(p DbselectparamStorage) ([]Storage, int, 
 	perm.person = :personid and (perm.permission_item_name in ("all", "storages")) and (perm.permission_perm_name in ("all", "r", "w")) and (perm.permission_entity_id in (-1, e.entity_id))
 	`)
 	comreq.WriteString(" WHERE 1")
+	if len(p.GetIds()) > 0 {
+		comreq.WriteString(" AND s.storage_id in (")
+
+		for _, id := range p.GetIds() {
+			comreq.WriteString(fmt.Sprintf("%d,", id))
+		}
+		// to complete the last comma
+		comreq.WriteString("-1")
+		comreq.WriteString(" )")
+
+	}
 	if p.GetStorageToDestroy() {
 		comreq.WriteString(" AND s.storage_todestroy = true")
 	}
@@ -404,6 +415,7 @@ func (db *SQLiteDataStore) GetStorages(p DbselectparamStorage) ([]Storage, int, 
 
 	// building argument map
 	m := map[string]interface{}{
+		"ids":                 p.GetIds(),
 		"search":              p.GetSearch(),
 		"personid":            p.GetLoggedPersonID(),
 		"order":               p.GetOrder(),

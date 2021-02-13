@@ -97,6 +97,7 @@ type dbselectparamProduct struct {
 // DbselectparamStorage contains the parameters of the GetStorages function
 type DbselectparamStorage interface {
 	Dbselectparam
+	SetIds([]int)
 	SetEntity(int)
 	SetProduct(int)
 	SetStorelocation(int)
@@ -118,6 +119,7 @@ type DbselectparamStorage interface {
 	SetBorrowing(bool)
 	SetStorageToDestroy(bool)
 
+	GetIds() []int
 	GetEntity() int
 	GetProduct() int
 	GetStorelocation() int
@@ -141,6 +143,7 @@ type DbselectparamStorage interface {
 }
 type dbselectparamStorage struct {
 	dbselectparam
+	Ids            []int
 	Entity         int // id
 	Product        int // id
 	Storelocation  int // id
@@ -496,6 +499,14 @@ func (d *dbselectparamProduct) GetStorageToDestroy() bool {
 //
 // dbselectparamStorage functions
 //
+func (d *dbselectparamStorage) SetIds(i []int) {
+	d.Ids = i
+}
+
+func (d *dbselectparamStorage) GetIds() []int {
+	return d.Ids
+}
+
 func (d *dbselectparamStorage) SetEntity(i int) {
 	d.Entity = i
 }
@@ -947,6 +958,19 @@ func NewdbselectparamStorage(r *http.Request, f func(string) (string, error)) (*
 	dsps.dbselectparam = *dsp
 
 	if r != nil {
+		if ids, ok := r.URL.Query()["ids"]; ok {
+			for _, id := range ids {
+				idInt, err := strconv.Atoi(id)
+				if err != nil {
+					return nil, &AppError{
+						Error:   err,
+						Code:    http.StatusInternalServerError,
+						Message: "ids atoi conversion",
+					}
+				}
+				dsps.Ids = append(dsps.Ids, idInt)
+			}
+		}
 		if o, ok := r.URL.Query()["sort"]; ok {
 			switch o[0] {
 			case "product.name.name_label":

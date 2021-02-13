@@ -537,11 +537,12 @@ func (db *SQLiteDataStore) DeletePerson(id int) (err error) {
 	).Where(
 		goqu.I("person").Eq(id),
 	).ToSQL(); err != nil {
-		logger.Log.Error(err)
+		logger.Log.Errorf("prepare update storage ownership: %s", err)
 		return
 	}
 
 	if _, err = tx.Exec(sqlr, args...); err != nil {
+		logger.Log.Errorf("update storage ownership: %s", err)
 		return
 	}
 
@@ -553,11 +554,12 @@ func (db *SQLiteDataStore) DeletePerson(id int) (err error) {
 	).Where(
 		goqu.I("person").Eq(id),
 	).ToSQL(); err != nil {
-		logger.Log.Error(err)
+		logger.Log.Errorf("prepare update product ownership: %s", err)
 		return
 	}
 
 	if _, err = tx.Exec(sqlr, args...); err != nil {
+		logger.Log.Errorf("update product ownership: %s", err)
 		return
 	}
 
@@ -565,24 +567,26 @@ func (db *SQLiteDataStore) DeletePerson(id int) (err error) {
 	if sqlr, args, err = dialect.From(goqu.T("personentities")).Where(
 		goqu.I("personentities_person_id").Eq(id),
 	).Delete().ToSQL(); err != nil {
-		logger.Log.Error(err)
+		logger.Log.Errorf("prepare delete entity membership: %s", err)
 		return
 	}
 
 	if _, err = tx.Exec(sqlr, args...); err != nil {
+		logger.Log.Errorf("delete entity membership: %s", err)
 		return
 	}
 
 	// Remove manager.
-	// Normally not used as we can not delete a manager.
+	// Should not be used as we can not delete a manager.
 	if sqlr, args, err = dialect.From(goqu.T("entitypeople")).Where(
 		goqu.I("entitypeople_person_id").Eq(id),
 	).Delete().ToSQL(); err != nil {
-		logger.Log.Error(err)
+		logger.Log.Errorf("prepare remove manager: %s", err)
 		return
 	}
 
 	if _, err = tx.Exec(sqlr, args...); err != nil {
+		logger.Log.Errorf("remove manager: %s", err)
 		return
 	}
 
@@ -590,11 +594,12 @@ func (db *SQLiteDataStore) DeletePerson(id int) (err error) {
 	if sqlr, args, err = dialect.From(goqu.T("permission")).Where(
 		goqu.I("person").Eq(id),
 	).Delete().ToSQL(); err != nil {
-		logger.Log.Error(err)
+		logger.Log.Errorf("prepare remove permissions: %s", err)
 		return
 	}
 
 	if _, err = tx.Exec(sqlr, args...); err != nil {
+		logger.Log.Errorf("remove permissions: %s", err)
 		return
 	}
 
@@ -602,11 +607,25 @@ func (db *SQLiteDataStore) DeletePerson(id int) (err error) {
 	if sqlr, args, err = dialect.From(goqu.T("borrowing")).Where(
 		goqu.I("borrower").Eq(id),
 	).Delete().ToSQL(); err != nil {
-		logger.Log.Error(err)
+		logger.Log.Errorf("prepare remove borrowings: %s", err)
 		return
 	}
 
 	if _, err = tx.Exec(sqlr, args...); err != nil {
+		logger.Log.Errorf("remove borrowings: %s", err)
+		return
+	}
+
+	// Remove bookmarks.
+	if sqlr, args, err = dialect.From(goqu.T("bookmark")).Where(
+		goqu.I("person").Eq(id),
+	).Delete().ToSQL(); err != nil {
+		logger.Log.Errorf("prepare remove bookmarks: %s", err)
+		return
+	}
+
+	if _, err = tx.Exec(sqlr, args...); err != nil {
+		logger.Log.Errorf("remove bookmarks: %s", err)
 		return
 	}
 
@@ -614,11 +633,12 @@ func (db *SQLiteDataStore) DeletePerson(id int) (err error) {
 	if sqlr, args, err = dialect.From(tablePerson).Where(
 		goqu.I("person_id").Eq(id),
 	).Delete().ToSQL(); err != nil {
-		logger.Log.Error(err)
+		logger.Log.Errorf("prepare delete person: %s", err)
 		return
 	}
 
 	if _, err = tx.Exec(sqlr, args...); err != nil {
+		logger.Log.Errorf("delete person: %s", err)
 		return
 	}
 

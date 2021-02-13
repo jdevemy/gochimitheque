@@ -474,6 +474,7 @@ func (env *Env) CreateStorageHandler(w http.ResponseWriter, r *http.Request) *mo
 		s.StorageNbItem = 1
 	}
 
+	var result []models.Storage
 	for i := 1; i <= s.StorageNbItem; i++ {
 		if id, err = env.DB.CreateStorage(s, i); err != nil {
 			return &models.AppError{
@@ -481,12 +482,15 @@ func (env *Env) CreateStorageHandler(w http.ResponseWriter, r *http.Request) *mo
 				Message: "create storage error",
 				Code:    http.StatusInternalServerError}
 		}
+		result = append(result, models.Storage{
+			StorageID: sql.NullInt64{Valid: true, Int64: int64(id)},
+		})
 	}
 	s.StorageID = sql.NullInt64{Valid: true, Int64: int64(id)}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
-	if err = json.NewEncoder(w).Encode(s); err != nil {
+	if err = json.NewEncoder(w).Encode(result); err != nil {
 		return &models.AppError{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
