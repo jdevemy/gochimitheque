@@ -4,9 +4,11 @@
 //go:generate go run . -genlocalejs
 package main
 
-// build with
-//go build -trimpath -ldflags "-X globals.BuildID=$(git tag | head -1)" -o gochimitheque
-
+// compile with:
+// development version:
+// GIT_COMMIT=$(git rev-list -1 HEAD) && go build -ldflags "-X main.GitCommit=$GIT_COMMIT"
+// production version:
+// GIT_COMMIT="v2.0.6" && go build -ldflags "-X main.GitCommit=$GIT_COMMIT"
 import (
 	"database/sql"
 	"embed"
@@ -16,7 +18,6 @@ import (
 	"os"
 	"path"
 	"strings"
-	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
@@ -46,6 +47,7 @@ var (
 	commandVersion,
 	commandGenLocaleJS,
 	paramDisableCache *bool
+	GitCommit string
 
 	//go:embed models/model.conf
 	embedModel string
@@ -124,8 +126,10 @@ func init() {
 		env.ApplicationFullURL = "http://localhost:" + *paramListenPort
 	}
 
-	if env.BuildID == "" {
-		env.BuildID = time.Now().Format("2006-02-01")
+	if GitCommit == "" {
+		env.BuildID = "developer"
+	} else {
+		env.BuildID = GitCommit
 	}
 
 }

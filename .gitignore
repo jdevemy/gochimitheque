@@ -1,5 +1,7 @@
 *.log
 
+gochimitheque
+
 storage.*
 
 wasm/wasm

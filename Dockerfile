@@ -35,6 +35,7 @@ COPY ./bind-gochimitheque-wasm ./gochimitheque-wasm
 # Copying Chimithèque sources.
 WORKDIR /go/src/github.com/tbellembois/gochimitheque/
 COPY . .
+COPY .git/ ./.git/
 
 #
 # Build.
@@ -56,7 +57,7 @@ RUN go get -v -d ./...
 RUN go generate
 
 # Building Chimithèque.
-RUN go build .
+RUN if [ ! -z "$GitCommit" ]; then export GIT_COMMIT=$GitCommit; else export GIT_COMMIT=$(git rev-list -1 HEAD); fi; echo "version=$GIT_COMMIT" ;go build -ldflags "-X main.GitCommit=$GIT_COMMIT"
 
 #
 # Install.

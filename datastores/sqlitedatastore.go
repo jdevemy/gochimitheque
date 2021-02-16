@@ -785,7 +785,8 @@ func CSVToMap(reader io.Reader) []map[string]string {
 			break
 		}
 		if err != nil {
-			logger.Log.Fatal(err)
+			logger.Log.Error(err)
+			return nil
 		}
 		if header == nil {
 			header = record
@@ -896,30 +897,6 @@ func (db *SQLiteDataStore) ImportV1(dir string) error {
 		description := k["description"]
 		manager := k["manager"]
 
-		// csvReader = csv.NewReader(bufio.NewReader(csvFile))
-		// i = 0
-		// for {
-		// 	line, error := csvReader.Read()
-
-		// 	// skip header
-		// 	if i == 0 {
-		// 		i++
-		// 		continue
-		// 	}
-
-		// 	if error == io.EOF {
-		// 		break
-		// 	} else if error != nil {
-		// 		if errr := tx.Rollback(); errr != nil {
-		// 			return errr
-		// 		}
-		// 		return err
-		// 	}
-		// 	id := line[0]
-		// 	role := line[1]
-		// 	description := line[2]
-		// 	manager := line[3]
-
 		// finding web2py like manager ids
 		ms := rnumber.FindAllString(manager, -1)
 		for _, m := range ms {
@@ -969,34 +946,6 @@ func (db *SQLiteDataStore) ImportV1(dir string) error {
 		parent := k["parent"]
 		canStore := k["can_store"]
 		color := k["color"]
-		// csvReader = csv.NewReader(bufio.NewReader(csvFile))
-		// i = 0
-		// for {
-		// 	line, error := csvReader.Read()
-
-		// 	// skip header
-		// 	if i == 0 {
-		// 		i++
-		// 		continue
-		// 	}
-
-		// 	if error == io.EOF {
-		// 		break
-		// 	} else if error != nil {
-		// 		if errr := tx.Rollback(); errr != nil {
-		// 			return errr
-		// 		}
-		// 		return err
-		// 	}
-		// 	id := line[0]
-		// 	label := line[1]
-		// 	entity := line[2]
-		// 	parent := line[3]
-		// 	canStore := false
-		// 	if line[4] == "T" {
-		// 		canStore = true
-		// 	}
-		// 	color := line[5]
 
 		newentity := mONentity[entity]
 		newparent := sql.NullString{}
@@ -1040,28 +989,6 @@ func (db *SQLiteDataStore) ImportV1(dir string) error {
 		id := k["id"]
 		email := k["email"]
 		password := k["password"]
-		// csvReader = csv.NewReader(bufio.NewReader(csvFile))
-		// i = 0
-		// for {
-		// 	line, error := csvReader.Read()
-
-		// 	// skip header
-		// 	if i == 0 {
-		// 		i++
-		// 		continue
-		// 	}
-
-		// 	if error == io.EOF {
-		// 		break
-		// 	} else if error != nil {
-		// 		if errr := tx.Rollback(); errr != nil {
-		// 			return errr
-		// 		}
-		// 		return err
-		// 	}
-		// 	id := line[0]
-		// 	email := line[3]
-		// 	password := utils.RandStringBytes(64)
 
 		sqlr = `INSERT INTO person(person_email, person_password) VALUES (?, ?)`
 		if res, err = tx.Exec(sqlr, email, password); err != nil {
@@ -1135,27 +1062,6 @@ func (db *SQLiteDataStore) ImportV1(dir string) error {
 	for _, k := range csvMap {
 		userId := k["user_id"]
 		groupId := k["group_id"]
-		// csvReader = csv.NewReader(bufio.NewReader(csvFile))
-		// i = 0
-		// for {
-		// 	line, error := csvReader.Read()
-
-		// 	// skip header
-		// 	if i == 0 {
-		// 		i++
-		// 		continue
-		// 	}
-
-		// 	if error == io.EOF {
-		// 		break
-		// 	} else if error != nil {
-		// 		if errr := tx.Rollback(); errr != nil {
-		// 			return errr
-		// 		}
-		// 		return err
-		// 	}
-		// 	userId := line[1]
-		// 	groupId := line[2]
 		newuserId := mONperson[userId]
 		newgroupId := mONentity[groupId]
 
@@ -1188,27 +1094,6 @@ func (db *SQLiteDataStore) ImportV1(dir string) error {
 	for _, k := range csvMap {
 		id := k["id"]
 		label := k["label"]
-		// csvReader = csv.NewReader(bufio.NewReader(csvFile))
-		// i = 0
-		// for {
-		// 	line, error := csvReader.Read()
-
-		// 	// skip header
-		// 	if i == 0 {
-		// 		i++
-		// 		continue
-		// 	}
-
-		// 	if error == io.EOF {
-		// 		break
-		// 	} else if error != nil {
-		// 		if errr := tx.Rollback(); errr != nil {
-		// 			return errr
-		// 		}
-		// 		return err
-		// 	}
-		// 	id := line[0]
-		// 	label := line[1]
 
 		sqlr = `INSERT INTO classofcompound(classofcompound_id, classofcompound_label) VALUES (?, ?)`
 		if res, err = tx.Exec(sqlr, id, label); err != nil {
@@ -1239,27 +1124,6 @@ func (db *SQLiteDataStore) ImportV1(dir string) error {
 	for _, k := range csvMap {
 		id := k["id"]
 		label := k["label"]
-		// csvReader = csv.NewReader(bufio.NewReader(csvFile))
-		// i = 0
-		// for {
-		// 	line, error := csvReader.Read()
-
-		// 	// skip header
-		// 	if i == 0 {
-		// 		i++
-		// 		continue
-		// 	}
-
-		// 	if error == io.EOF {
-		// 		break
-		// 	} else if error != nil {
-		// 		if errr := tx.Rollback(); errr != nil {
-		// 			return errr
-		// 		}
-		// 		return err
-		// 	}
-		// 	id := line[0]
-		// 	label := line[1]
 		if label == "----" {
 			continue
 		}
@@ -1293,27 +1157,6 @@ func (db *SQLiteDataStore) ImportV1(dir string) error {
 	for _, k := range csvMap {
 		id := k["id"]
 		label := k["label"]
-		// csvReader = csv.NewReader(bufio.NewReader(csvFile))
-		// i = 0
-		// for {
-		// 	line, error := csvReader.Read()
-
-		// 	// skip header
-		// 	if i == 0 {
-		// 		i++
-		// 		continue
-		// 	}
-
-		// 	if error == io.EOF {
-		// 		break
-		// 	} else if error != nil {
-		// 		if errr := tx.Rollback(); errr != nil {
-		// 			return errr
-		// 		}
-		// 		return err
-		// 	}
-		// 	id := line[0]
-		// 	label := line[1]
 		if label == "----" {
 			continue
 		}
@@ -1347,27 +1190,6 @@ func (db *SQLiteDataStore) ImportV1(dir string) error {
 	for _, k := range csvMap {
 		id := k["id"]
 		label := k["label"]
-		// csvReader = csv.NewReader(bufio.NewReader(csvFile))
-		// i = 0
-		// for {
-		// 	line, error := csvReader.Read()
-
-		// 	// skip header
-		// 	if i == 0 {
-		// 		i++
-		// 		continue
-		// 	}
-
-		// 	if error == io.EOF {
-		// 		break
-		// 	} else if error != nil {
-		// 		if errr := tx.Rollback(); errr != nil {
-		// 			return errr
-		// 		}
-		// 		return err
-		// 	}
-		// 	id := line[0]
-		// 	label := line[1]
 		label = strings.Replace(label, "@", "_", -1)
 
 		logger.Log.Debug("label:" + label)
@@ -1400,27 +1222,6 @@ func (db *SQLiteDataStore) ImportV1(dir string) error {
 	for _, k := range csvMap {
 		id := k["id"]
 		label := k["label"]
-		// csvReader = csv.NewReader(bufio.NewReader(csvFile))
-		// i = 0
-		// for {
-		// 	line, error := csvReader.Read()
-
-		// 	// skip header
-		// 	if i == 0 {
-		// 		i++
-		// 		continue
-		// 	}
-
-		// 	if error == io.EOF {
-		// 		break
-		// 	} else if error != nil {
-		// 		if errr := tx.Rollback(); errr != nil {
-		// 			return errr
-		// 		}
-		// 		return err
-		// 	}
-		// 	id := line[0]
-		// 	label := line[1]
 
 		sqlr = `INSERT INTO physicalstate(physicalstate_id, physicalstate_label) VALUES (?, ?)`
 		if res, err = tx.Exec(sqlr, id, label); err != nil {
@@ -1459,7 +1260,10 @@ func (db *SQLiteDataStore) ImportV1(dir string) error {
 	for rows.Next() {
 		err := rows.Scan(&casid, &caslabel)
 		if err != nil {
-			logger.Log.Fatal(err)
+			if errr := tx.Rollback(); errr != nil {
+				return errr
+			}
+			return err
 		}
 		mRNNcasnumber[caslabel] = casid
 	}
