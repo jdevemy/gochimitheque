@@ -1,4 +1,4 @@
-FROM golang:1.16-rc-buster
+FROM golang:1.16-buster
 LABEL author="Thomas Bellembois"
 
 #
