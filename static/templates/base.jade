@@ -87,7 +87,7 @@ html
             });
         }
         function closeQR() {
-            $("div#video").html("");
+            $("div#video").addClass("invisible")
             window.qrScanner.destroy();
             window.qrScanner = null;
         }
