@@ -173,6 +173,8 @@ var LOCALES_FR = []byte(`
 	one = "entrepôt"
 [s_custom_name_part_of]
 	one = "partie du nom"
+[s_producerref]
+	one = "numéro référence fabriquant"
 [s_name]
 	one = "nom exact"
 [s_casnumber]

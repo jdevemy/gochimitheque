@@ -1793,7 +1793,11 @@ func (db *SQLiteDataStore) GetProducts(p DbselectparamProduct) ([]Product, int, 
 	// get unit_temperature
 	comreq.WriteString(" LEFT JOIN unit ut ON p.unit_temperature = ut.unit_id")
 	// get producerref
-	comreq.WriteString(" LEFT JOIN producerref ON p.producerref = producerref.producerref_id")
+	if p.GetProducerRef() != -1 {
+		comreq.WriteString(" JOIN producerref ON p.producerref = :producerref")
+	} else {
+		comreq.WriteString(" LEFT JOIN producerref ON p.producerref = producerref.producerref_id")
+	}
 	// get producer
 	comreq.WriteString(" LEFT JOIN producer ON producerref.producer = producer.producer_id")
 	// get hazardstatement GROUP_CONCAT for CMR detection
@@ -1883,6 +1887,9 @@ func (db *SQLiteDataStore) GetProducts(p DbselectparamProduct) ([]Product, int, 
 	if p.GetStorageBarecode() != "" {
 		comreq.WriteString(" AND storage.storage_barecode LIKE :storage_barecode")
 	}
+	if p.GetStorageBatchNumber() != "" {
+		comreq.WriteString(" AND storage.storage_batchnumber LIKE :storage_batchnumber")
+	}
 	if p.GetCustomNamePartOf() != "" {
 		comreq.WriteString(" AND name.name_label LIKE :custom_name_part_of")
 	}
@@ -1954,12 +1961,14 @@ func (db *SQLiteDataStore) GetProducts(p DbselectparamProduct) ([]Product, int, 
 		"empiricalformula":    p.GetEmpiricalFormula(),
 		"product_specificity": p.GetProductSpecificity(),
 		"storage_barecode":    p.GetStorageBarecode(),
+		"storage_batchnumber": p.GetStorageBatchNumber(),
 		"custom_name_part_of": "%" + p.GetCustomNamePartOf() + "%",
 		"signalword":          p.GetSignalWord(),
+		"producerref":         p.GetProducerRef(),
 	}
 
-	// logger.Log.Debug(presreq.String() + comreq.String() + postsreq.String())
-	// logger.Log.Debug(m)
+	logger.Log.Debug(presreq.String() + comreq.String() + postsreq.String())
+	logger.Log.Debug(m)
 
 	// select
 	if err = snstmt.Select(&products, m); err != nil {

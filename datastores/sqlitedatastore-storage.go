@@ -246,6 +246,10 @@ func (db *SQLiteDataStore) GetStorages(p DbselectparamStorage) ([]Storage, int, 
 	comreq.WriteString(" LEFT JOIN storage ON s.storage = storage.storage_id")
 	// get product
 	comreq.WriteString(" JOIN product ON s.product = product.product_id")
+	// get producerref
+	if p.GetProducerRef() != -1 {
+		comreq.WriteString(" JOIN producerref ON product.producerref = :producerref")
+	}
 	// get name
 	comreq.WriteString(" JOIN name ON product.name = name.name_id")
 	// get signal word
@@ -362,6 +366,9 @@ func (db *SQLiteDataStore) GetStorages(p DbselectparamStorage) ([]Storage, int, 
 	if p.GetStorageBarecode() != "" {
 		comreq.WriteString(" AND s.storage_barecode LIKE :storage_barecode")
 	}
+	if p.GetStorageBatchNumber() != "" {
+		comreq.WriteString(" AND s.storage_batchnumber LIKE :storage_batchnumber")
+	}
 	if p.GetCustomNamePartOf() != "" {
 		comreq.WriteString(" AND name.name_label LIKE :custom_name_part_of")
 	}
@@ -429,8 +436,10 @@ func (db *SQLiteDataStore) GetStorages(p DbselectparamStorage) ([]Storage, int, 
 		"casnumber":           p.GetCasNumber(),
 		"empiricalformula":    p.GetEmpiricalFormula(),
 		"storage_barecode":    p.GetStorageBarecode(),
+		"storage_batchnumber": p.GetStorageBatchNumber(),
 		"custom_name_part_of": "%" + p.GetCustomNamePartOf() + "%",
 		"signalword":          p.GetSignalWord(),
+		"producerref":         p.GetProducerRef(),
 	}
 
 	// select

@@ -34,12 +34,12 @@ type dbselectparam struct {
 // dbselectparamProduct contains the parameters of the GetProducts function
 type DbselectparamProduct interface {
 	Dbselectparam
+	SetProducerRef(int)
 	SetEntity(int)
 	SetProduct(int)
 	SetStorelocation(int)
 	SetBookmark(bool)
 	SetProductSpecificity(string)
-
 	SetCustomNamePartOf(string)
 	SetName(int)
 	SetEmpiricalFormula(int)
@@ -52,13 +52,14 @@ type DbselectparamProduct interface {
 	SetCasNumberCmr(bool)
 	SetBorrowing(bool)
 	SetStorageToDestroy(bool)
+	SetStorageBatchNumber(string)
 
+	GetProducerRef() int
 	GetEntity() int
 	GetProduct() int
 	GetStorelocation() int
 	GetBookmark() bool
 	GetProductSpecificity() string
-
 	GetCustomNamePartOf() string
 	GetName() int
 	GetEmpiricalFormula() int
@@ -71,12 +72,14 @@ type DbselectparamProduct interface {
 	GetCasNumberCmr() bool
 	GetBorrowing() bool
 	GetStorageToDestroy() bool
+	GetStorageBatchNumber() string
 }
 type dbselectparamProduct struct {
 	dbselectparam
 	Entity        int // id
 	Product       int // id
 	Storelocation int // id
+	ProducerRef   int // id
 	Bookmark      bool
 
 	CustomNamePartOf        string
@@ -84,6 +87,7 @@ type dbselectparamProduct struct {
 	EmpiricalFormula        int // id
 	CasNumber               int // id
 	StorageBarecode         string
+	StorageBatchNumber      string
 	Symbols                 []int // ids
 	HazardStatements        []int //ids
 	PrecautionaryStatements []int //ids
@@ -105,6 +109,7 @@ type DbselectparamStorage interface {
 	SetStorage(int)
 	SetHistory(bool)
 	SetStorageArchive(bool)
+	SetProducerRef(int)
 
 	SetCustomNamePartOf(string)
 	SetName(int)
@@ -118,6 +123,7 @@ type DbselectparamStorage interface {
 	SetCasNumberCmr(bool)
 	SetBorrowing(bool)
 	SetStorageToDestroy(bool)
+	SetStorageBatchNumber(string)
 
 	GetIds() []int
 	GetEntity() int
@@ -127,6 +133,7 @@ type DbselectparamStorage interface {
 	GetStorage() int
 	GetHistory() bool
 	GetStorageArchive() bool
+	GetProducerRef() int
 
 	GetCustomNamePartOf() string
 	GetName() int
@@ -140,6 +147,7 @@ type DbselectparamStorage interface {
 	GetCasNumberCmr() bool
 	GetBorrowing() bool
 	GetStorageToDestroy() bool
+	GetStorageBatchNumber() string
 }
 type dbselectparamStorage struct {
 	dbselectparam
@@ -148,6 +156,7 @@ type dbselectparamStorage struct {
 	Product        int // id
 	Storelocation  int // id
 	Storage        int // id
+	ProducerRef    int // id
 	Bookmark       bool
 	History        bool
 	StorageArchive bool
@@ -157,6 +166,7 @@ type dbselectparamStorage struct {
 	EmpiricalFormula        int // id
 	CasNumber               int // id
 	StorageBarecode         string
+	StorageBatchNumber      string
 	Symbols                 []int // ids
 	HazardStatements        []int //ids
 	PrecautionaryStatements []int //ids
@@ -235,7 +245,6 @@ type dbselectparamProducerRef struct {
 type DbselectparamSupplierRef interface {
 	Dbselectparam
 	SetSupplier(int)
-
 	GetSupplier() int
 }
 type dbselectparamSupplierRef struct {
@@ -360,6 +369,14 @@ func (d *dbselectparamStoreLocation) SetPermission(p string) {
 //
 // dbselectparamProduct functions
 //
+func (d *dbselectparamProduct) SetProducerRef(i int) {
+	d.ProducerRef = i
+}
+
+func (d dbselectparamProduct) GetProducerRef() int {
+	return d.ProducerRef
+}
+
 func (d *dbselectparamProduct) SetEntity(i int) {
 	d.Entity = i
 }
@@ -414,6 +431,14 @@ func (d *dbselectparamProduct) SetCasNumber(n int) {
 
 func (d dbselectparamProduct) GetCasNumber() int {
 	return d.CasNumber
+}
+
+func (d dbselectparamProduct) GetStorageBatchNumber() string {
+	return d.StorageBatchNumber
+}
+
+func (d *dbselectparamProduct) SetStorageBatchNumber(n string) {
+	d.StorageBatchNumber = n
 }
 
 func (d *dbselectparamProduct) SetStorageBarecode(n string) {
@@ -507,6 +532,14 @@ func (d *dbselectparamStorage) GetIds() []int {
 	return d.Ids
 }
 
+func (d *dbselectparamStorage) SetProducerRef(i int) {
+	d.ProducerRef = i
+}
+
+func (d dbselectparamStorage) GetProducerRef() int {
+	return d.ProducerRef
+}
+
 func (d *dbselectparamStorage) SetEntity(i int) {
 	d.Entity = i
 }
@@ -585,6 +618,14 @@ func (d *dbselectparamStorage) SetCasNumber(n int) {
 
 func (d dbselectparamStorage) GetCasNumber() int {
 	return d.CasNumber
+}
+
+func (d *dbselectparamStorage) SetStorageBatchNumber(n string) {
+	d.StorageBatchNumber = n
+}
+
+func (d dbselectparamStorage) GetStorageBatchNumber() string {
+	return d.StorageBatchNumber
 }
 
 func (d *dbselectparamStorage) SetStorageBarecode(n string) {
@@ -747,6 +788,7 @@ func NewdbselectparamProduct(r *http.Request, f func(string) (string, error)) (*
 	)
 
 	// init defaults
+	dspp.ProducerRef = -1
 	dspp.Entity = -1
 	dspp.Product = -1
 	dspp.Storelocation = -1
@@ -755,6 +797,7 @@ func NewdbselectparamProduct(r *http.Request, f func(string) (string, error)) (*
 	dspp.CasNumber = -1
 	dspp.EmpiricalFormula = -1
 	dspp.StorageBarecode = ""
+	dspp.StorageBatchNumber = ""
 	dspp.CustomNamePartOf = ""
 	dspp.SignalWord = -1
 	dspp.CasNumberCmr = false
@@ -778,6 +821,15 @@ func NewdbselectparamProduct(r *http.Request, f func(string) (string, error)) (*
 					Error:   err,
 					Code:    http.StatusInternalServerError,
 					Message: "entity atoi conversion",
+				}
+			}
+		}
+		if producerrefid, ok := r.URL.Query()["producerref"]; ok {
+			if dspp.ProducerRef, err = strconv.Atoi(producerrefid[0]); err != nil {
+				return nil, &AppError{
+					Error:   err,
+					Code:    http.StatusInternalServerError,
+					Message: "producerref atoi conversion",
 				}
 			}
 		}
@@ -886,6 +938,9 @@ func NewdbselectparamProduct(r *http.Request, f func(string) (string, error)) (*
 		if storage_barecode, ok := r.URL.Query()["storage_barecode"]; ok {
 			dspp.StorageBarecode = "%" + storage_barecode[0] + "%"
 		}
+		if storage_batchnumber, ok := r.URL.Query()["storage_batchnumber"]; ok {
+			dspp.StorageBatchNumber = "%" + storage_batchnumber[0] + "%"
+		}
 		if custom_name_part_of, ok := r.URL.Query()["custom_name_part_of"]; ok {
 			dspp.CustomNamePartOf = "%" + custom_name_part_of[0] + "%"
 		}
@@ -936,6 +991,7 @@ func NewdbselectparamStorage(r *http.Request, f func(string) (string, error)) (*
 	)
 
 	// init defaults
+	dsps.ProducerRef = -1
 	dsps.Entity = -1
 	dsps.Product = -1
 	dsps.Storelocation = -1
@@ -947,6 +1003,7 @@ func NewdbselectparamStorage(r *http.Request, f func(string) (string, error)) (*
 	dsps.CasNumber = -1
 	dsps.EmpiricalFormula = -1
 	dsps.StorageBarecode = ""
+	dsps.StorageBatchNumber = ""
 	dsps.CustomNamePartOf = ""
 	dsps.SignalWord = -1
 	dsps.CasNumberCmr = false
@@ -987,6 +1044,15 @@ func NewdbselectparamStorage(r *http.Request, f func(string) (string, error)) (*
 					Error:   err,
 					Code:    http.StatusInternalServerError,
 					Message: "entity atoi conversion",
+				}
+			}
+		}
+		if producerrefid, ok := r.URL.Query()["producerref"]; ok {
+			if dsps.ProducerRef, err = strconv.Atoi(producerrefid[0]); err != nil {
+				return nil, &AppError{
+					Error:   err,
+					Code:    http.StatusInternalServerError,
+					Message: "producerref atoi conversion",
 				}
 			}
 		}
@@ -1121,6 +1187,9 @@ func NewdbselectparamStorage(r *http.Request, f func(string) (string, error)) (*
 		}
 		if storage_barecode, ok := r.URL.Query()["storage_barecode"]; ok {
 			dsps.StorageBarecode = "%" + storage_barecode[0] + "%"
+		}
+		if storage_batchnumber, ok := r.URL.Query()["storage_batchnumber"]; ok {
+			dsps.StorageBatchNumber = "%" + storage_batchnumber[0] + "%"
 		}
 		if custom_name_part_of, ok := r.URL.Query()["custom_name_part_of"]; ok {
 			dsps.CustomNamePartOf = "%" + custom_name_part_of[0] + "%"

@@ -171,6 +171,8 @@ var LOCALES_EN = []byte(`
 
 [s_storelocation]
 	one = "store location"
+[s_producerref]
+	one = "producer reference number"
 [s_custom_name_part_of]
 	one = "part of name"
 [s_name]

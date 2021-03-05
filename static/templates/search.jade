@@ -34,6 +34,11 @@ include mixins
                                 +inputselect(name="s_name", label="s_name")
                         .form-row
                             .form-group.col-sm-6
+                                +inputselect(name="s_producerref", label="producerref_label_title")
+                            .form-group.col-sm-6
+                                +inputtext(name="s_storage_batchnumber", label="storage_batchnumber_title")              
+                        .form-row
+                            .form-group.col-sm-6
                                 +inputselect(name="s_signalword", label="s_signalword")
                             .form-group.col-sm-6
                                 +inputselect(name="s_symbols", label="s_symbols", ismultiple=true)
@@ -79,7 +84,7 @@ include mixins
 
     .col-sm-4
         div
-            span.iconlabel
+            span
                 = T("active_filter", 1) 
         div#filter-item
 
