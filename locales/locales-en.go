@@ -61,9 +61,11 @@ var LOCALES_EN = []byte(`
 [no_item]
 	one = "no item"
 [active_filter]
-	one = "active filter"
+	one = "active filter(s)"
 [no_filter]
 	one = "no filter"
+[remove_filter]
+	one = "remove filter"
 
 [empirical_formula_convert]
 	one = "convert to empirical formula"

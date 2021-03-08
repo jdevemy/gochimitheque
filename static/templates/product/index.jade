@@ -56,5 +56,8 @@ block CONTENTJS
             },
             "click .productdelete": function (e, value, row, index) {
                 Product_operateEventsDelete(e, value, row, index)
+            },
+            "click .totalstock": function (e, value, row, index) {
+                Product_operateEventsTotalStock(e, value, row, index)
             }
         }

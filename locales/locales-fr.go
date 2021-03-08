@@ -61,9 +61,11 @@ var LOCALES_FR = []byte(`
 [no_item]
 	one = "pas d'élément"
 [active_filter]
-	one = "filtre actif"
+	one = "filtre(s) actif"
 [no_filter]
 	one = "pas de filtre"
+[remove_filter]
+	one = "supprimer le filtre"
 
 [empirical_formula_convert]
 	one = "convertir en formule brute"

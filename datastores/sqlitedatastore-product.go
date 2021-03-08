@@ -1859,7 +1859,7 @@ func (db *SQLiteDataStore) GetProducts(p DbselectparamProduct) ([]Product, int, 
 		comreq.WriteString(" AND storage.storage_todestroy = true")
 	}
 	if p.GetCasNumberCmr() {
-		comreq.WriteString(" AND (casnumber.casnumber_cmr IS NOT NULL OR hazardstatement_cmr IS NOT NULL)")
+		comreq.WriteString(" AND (casnumber.casnumber_cmr IS NOT NULL OR (hazardstatement_cmr IS NOT NULL AND hazardstatement_cmr != ''))")
 	}
 	if p.GetProduct() != -1 {
 		comreq.WriteString(" AND p.product_id = :product")

@@ -124,7 +124,7 @@ func (db *SQLiteDataStore) computeStockStorelocationNoUnit(p Product, s *StoreLo
 	t := goqu.T("storage")
 
 	// Getting the store location current stock.
-	sQuery := dialect.From(t).Join(
+	sQuery := dialect.From(t).LeftJoin(
 		goqu.T("unit"),
 		goqu.On(goqu.Ex{"storage.unit_quantity": goqu.I("unit.unit_id")}),
 	).Where(

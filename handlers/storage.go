@@ -356,7 +356,7 @@ func (env *Env) UpdateStorageHandler(w http.ResponseWriter, r *http.Request) *mo
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
-	if err = json.NewEncoder(w).Encode(updateds); err != nil {
+	if err = json.NewEncoder(w).Encode([]models.Storage{updateds}); err != nil {
 		return &models.AppError{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
