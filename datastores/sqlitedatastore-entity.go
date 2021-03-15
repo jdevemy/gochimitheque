@@ -779,7 +779,7 @@ func (db *SQLiteDataStore) UpdateEntity(e Entity) (err error) {
 		return err
 	}
 
-	if _, err = db.Exec(sqlr, args...); err != nil {
+	if _, err = tx.Exec(sqlr, args...); err != nil {
 		return err
 	}
 
