@@ -862,7 +862,7 @@ func (db *SQLiteDataStore) CreateStorage(s Storage, itemNumber int) (int, error)
 		// Getting the barecode prefix from the storelocation name.
 		//
 		// regex to detect store locations names starting with [_a-zA-Z] to build barecode prefixes
-		prefixRegex := regexp.MustCompile(`^\[(?P<groupone>[_a-zA-Z]{1})\].*$`)
+		prefixRegex := regexp.MustCompile(`^\[(?P<groupone>[_a-zA-Z]{1,5})\].*$`)
 		groupNames := prefixRegex.SubexpNames()
 		matches := prefixRegex.FindAllStringSubmatch(s.StoreLocationName.String, -1)
 		// Building a map of matches.
@@ -885,7 +885,7 @@ func (db *SQLiteDataStore) CreateStorage(s Storage, itemNumber int) (int, error)
 		//
 		sqlr := `SELECT storage_barecode FROM storage 
 		JOIN storelocation on storage.storelocation = storelocation.storelocation_id 
-		WHERE product = ? AND storelocation.entity = ? AND regexp('^[_a-zA-Z]{0,1}[0-9]+\.[0-9]+$', '' || storage_barecode || '') = true
+		WHERE product = ? AND storelocation.entity = ? AND regexp('^[_a-zA-Z]{0,5}[0-9]+\.[0-9]+$', '' || storage_barecode || '') = true
 		ORDER BY storage_barecode desc`
 		var rows *sql.Rows
 		if rows, err = tx.Query(sqlr, s.ProductID, s.EntityID); err != nil && err != sql.ErrNoRows {
@@ -909,7 +909,7 @@ func (db *SQLiteDataStore) CreateStorage(s Storage, itemNumber int) (int, error)
 				return 0, err
 			}
 
-			majorRegex := regexp.MustCompile(`^[_a-zA-Z]{0,1}(?P<groupone>[0-9]+)\.(?P<grouptwo>[0-9]+)$`)
+			majorRegex := regexp.MustCompile(`^[_a-zA-Z]{0,5}(?P<groupone>[0-9]+)\.(?P<grouptwo>[0-9]+)$`)
 			groupNames = majorRegex.SubexpNames()
 			matches = majorRegex.FindAllStringSubmatch(barecode, -1)
 			// Building a map of matches.
