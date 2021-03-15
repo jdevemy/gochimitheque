@@ -27,7 +27,9 @@ include mixins
                 .card-body
                     .col-sm-12
                         .form-row
-                            .col-sm-12
+                            .col-sm-6
+                                +inputselect(name="s_entity", label="s_entity")
+                            .col-sm-6
                                 +inputselect(name="s_storelocation", label="s_storelocation")
                         .form-row
                             .col-sm-12

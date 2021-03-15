@@ -171,6 +171,8 @@ var LOCALES_FR = []byte(`
 [welcomeannounce_text_modificationsuccess]
 	one = "Texte modifié"
 
+[s_entity]
+	one = "entité"
 [s_storelocation]
 	one = "entrepôt"
 [s_custom_name_part_of]

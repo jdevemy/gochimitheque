@@ -171,6 +171,8 @@ var LOCALES_EN = []byte(`
 [welcomeannounce_text_modificationsuccess]
 	one = "announce modified"
 
+[s_entity]
+	one = "entity"
 [s_storelocation]
 	one = "store location"
 [s_producerref]
