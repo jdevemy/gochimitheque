@@ -51,6 +51,8 @@ var LOCALES_EN = []byte(`
 	one = "list"
 [create]
 	one = "create"
+[check_all]
+	one = "check all"
 
 [required_input]
 	one = "required input"
@@ -139,7 +141,7 @@ var LOCALES_EN = []byte(`
 	one = "Chimithèque new temporary password\r\n"
 [resetpassword_mailbody2]
 	one = '''
-	Click on this link to reinitialize your password: %s%sreset?token=%s
+	Click on this link to reinitialize your password: %sreset?token=%s
 
 	You will then receive a new mail with a temporary password.
 	'''
@@ -521,6 +523,12 @@ var LOCALES_EN = []byte(`
 	one = "password updated"
 [person_entity_placeholder]
 	one = "select entity(ies)"
+[person_select_all_none_storage]
+	one = "select all 'no permission'"
+[person_select_all_r_storage]
+	one = "select all 'view only'"
+[person_select_all_rw_storage]
+	one = "select all 'view, modify, create and delete'"
 
 [permission_none]
 	one = "no permission"

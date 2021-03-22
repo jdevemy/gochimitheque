@@ -296,7 +296,7 @@ func (env *Env) ResetPasswordHandler(w http.ResponseWriter, r *http.Request) *mo
 	// generating the reinitialization token
 	token := passwordreset.NewToken(person.PersonEmail, 12*time.Hour, hash, []byte("secret"))
 	// and the mail body
-	msgbody := fmt.Sprintf(locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "resetpassword_mailbody2", PluralCount: 1}), env.ProxyURL, env.ProxyPath, token)
+	msgbody := fmt.Sprintf(locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "resetpassword_mailbody2", PluralCount: 1}), env.ApplicationFullURL, token)
 	msgsubject := locales.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "resetpassword_mailsubject2", PluralCount: 1})
 
 	// sending the reinitialisation email

@@ -51,6 +51,8 @@ var LOCALES_FR = []byte(`
 	one = "lister"
 [create]
 	one = "créer"
+[check_all]
+	one = "sélectionner tout"
 
 [required_input]
 	one = "champs requis"
@@ -139,7 +141,7 @@ var LOCALES_FR = []byte(`
 	one = "Chimithèque nouveau mot de passe temporaire\r\n"
 [resetpassword_mailbody2]
 	one = '''
-	Cliquez sur ce lien pour réinitialiser votre mot de passe : %s%sreset?token=%s
+	Cliquez sur ce lien pour réinitialiser votre mot de passe : %sreset?token=%s
 
 	Vous recevrez ensuite un nouveau mail avec un mot de passe temporaire.
 	'''
@@ -521,6 +523,12 @@ var LOCALES_FR = []byte(`
 	one = "mot de passe mis à jour"
 [person_entity_placeholder]
 	one = "sélectionnez une ou plusieurs entité(s)"
+[person_select_all_none_storage]
+	one = "sélectionner tous les 'aucune permission'"
+[person_select_all_r_storage]
+	one = "sélectionner tous les 'voir seulement'"
+[person_select_all_rw_storage]
+	one = "sélectionner tous les 'voir, modifier, créer et supprimer'"
 
 [permission_none]
 	one = "aucune permission"

@@ -14,6 +14,12 @@ block CONTENT
                         +inputtext(name="person_email", label="person_email_title")
                     .col-sm-6
                         +inputselect(name="entities", label="person_entity_title", ismultiple=true)
+                .row
+                    .col-sm-6
+                    .col
+                        button#selectAllEntity.btn.btn-outline-primary(type="button" onclick="Person_selectAllEntity();")
+                            span.mdi.mdi-check-all.iconlabel
+                                = T("check_all", 1) 
                 
                 label 
                     = T("person_permission_title", 1 )
@@ -54,7 +60,20 @@ block CONTENT
                                     span.mdi.mdi-eye.mdi-18px
                                     span.mdi.mdi-creation.mdi-18px
                                     span.mdi.mdi-border-color.mdi-18px
-                                    span.mdi.mdi-delete.mdi-18px  
+                                    span.mdi.mdi-delete.mdi-18px
+                #selectAllPermissions.row.collapse.hide
+                    .col-sm-2
+                    .col-sm-10
+                        .form-check.form-check-inline
+                            button#selectAllEntity.btn.btn-outline-primary(type="button" onclick="$('.permnstorages').prop('checked', true);" title=T("person_select_all_none_storage", 1 ))
+                                span.mdi.mdi-check-all.iconlabel
+                        .form-check.form-check-inline
+                            button#selectAllEntity.btn.btn-outline-primary(type="button" onclick="$('.permrstorages').prop('checked', true);" title=T("person_select_all_r_storage", 1 ))
+                                span.mdi.mdi-check-all.iconlabel
+                        .form-check.form-check-inline
+                            button#selectAllEntity.btn.btn-outline-primary(type="button" onclick="$('.permwstorages').prop('checked', true);" title=T("person_select_all_rw_storage", 1 ))
+                                span.mdi.mdi-check-all.iconlabel
+
                 #permissions
 
                 //- .blockquote-footer
