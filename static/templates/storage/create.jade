@@ -34,17 +34,34 @@ block CONTENT
                     .col-sm-6
                         +checkbox(name="storage_identicalbarecode", label="identical_barecode", icon="", help=T("identical_barecode_comment", 1))
                 hr
+                .consu.collapse
+                    span.badge.badge-pill.badge-danger &nbsp;
+                    span.iconlabel
+                        = T("storage_one_number_required", 1)
+                .form-group.row.consu.collapse
+                    .col-sm-4
+                        +inputnumber(name="storage_number_of_unit", label="storage_number_of_unit", step="1", min="0", max="10000000")
+                    .col-sm-4
+                        +inputnumber(name="storage_number_of_bag", label="storage_number_of_bag", step="1", min="0", max="10000000", value="", help=T("storage_number_of_bag_comment", 1))
+                    .col-sm-4
+                        +inputnumber(name="storage_number_of_carton", label="storage_number_of_carton", step="1", min="0", max="10000000", value="", help=T("storage_number_of_carton_comment", 1))
+
                 .form-group.row
                     .form-group.col-sm-12
                         +inputselect(name="storelocation", label="storage_storelocation_title", ismultiple=false, placeholder="", help="", required=true)
-                .form-group.row
+                .form-group.row.bio.chem.collapse
                     .col-sm-6
                         +inputnumber(name="storage_quantity", label="storage_quantity_title", step="any", min="1", max="10000000")
                     .col-sm-6
                         +inputselect(name="unit_quantity", label="unit_label_title") 
+                .form-group.row
+                    .col-sm-6
+                        +inputtext(name="storage_batchnumber", label="storage_batchnumber_title", htmltype="text", placeholder="", help="", required=true)
+                    .col-sm-6.chem.collapse
+                        +inputtext(name="storage_reference", label="storage_reference_title")
 
                 // bio
-                .form-group.row
+                .form-group.row.bio.chem.collapse
                     .col-sm-6
                         +inputnumber(name="storage_concentration", label="storage_concentration_title", step="any", min="1", max="10000000")
                     .col-sm-6
@@ -62,11 +79,6 @@ block CONTENT
                         +inputtext(name="storage_openingdate", label="storage_openingdate_title", type="date")
                     .col-sm-3
                         +inputtext(name="storage_expirationdate", label="storage_expirationdate_title", type="date")
-                .form-group.row
-                    .col-sm-6
-                        +inputtext(name="storage_reference", label="storage_reference_title")
-                    .col-sm-6
-                        +inputtext(name="storage_batchnumber", label="storage_batchnumber_title")
                 .form-group.row
                     .col-sm-12
                         +inputtext(name="storage_barecode", label="storage_barecode_title", htmltype="text", placeholder="", help=T("storage_create_barecode_comment", 1))

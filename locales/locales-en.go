@@ -213,7 +213,7 @@ var LOCALES_EN = []byte(`
 [menu_borrow]
 	one = "my borrowed products"
 [menu_create_productcard]
-	one = "create a product card"
+	one = "create a product or lab consumable card"
 [menu_entity]
 	one = "entities"
 [menu_storelocation]
@@ -242,6 +242,8 @@ var LOCALES_EN = []byte(`
 	one = "chemical product"
 [biological_product]
 	one = "biological reagent"
+[consumable_product]
+	one = "lab consumable"
 
 [switchproductview_text]
 	one = "switch to product view"
@@ -262,7 +264,7 @@ var LOCALES_EN = []byte(`
 [storeagain_text]
 	one = "store this product"
 [totalstock_text]
-	one = "show total stock"
+	one = "compute total stock"
 
 [unit_label_title]
 	one = "unit"
@@ -363,6 +365,18 @@ var LOCALES_EN = []byte(`
 	one = "select or enter a supplier"
 [storage_print_qrcode]
 	one = "print qrcode"
+[storage_number_of_unit]
+	one = "number of unit(s)"
+[storage_number_of_bag]
+	one = "number of bag(s)"
+[storage_number_of_bag_comment]
+	one = "only if the number of units per bag for the corresponding product is set"
+[storage_number_of_carton]
+	one = "number of carton(s)"
+[storage_number_of_carton_comment]
+	one = "only if the number of units per carton for the corresponding product is set"
+[storage_one_number_required]
+	one = "at least one of the numbers required"
 
 [stock_storelocation_title]
 	one = "in this store location"
@@ -418,6 +432,10 @@ var LOCALES_EN = []byte(`
 	one = "producer product cheet"
 [product_temperature_title]
 	one = "preconised storage temperature"
+[product_number_per_carton_title]
+	one = "number of units per carton"
+[product_number_per_bag_title]
+	one = "number of units per bag"
 [producer_label_title]
 	one = "producer"
 [producerref_label_title]

@@ -164,7 +164,7 @@ var LOCALES_FR = []byte(`
 	'''
 
 [logo_information1]
-	one = "Logo Chimithèque réalisé par "
+	one = "logo Chimithèque réalisé par "
 [logo_information2]
 	one = "Ne pas utiliser ou copier sans sa permission."
 
@@ -213,7 +213,7 @@ var LOCALES_FR = []byte(`
 [menu_borrow]
 	one = "mes produits empruntés"
 [menu_create_productcard]
-	one = "créer une fiche produit"
+	one = "créer une fiche produit ou consommable"
 [menu_entity]
 	one = "entités"
 [menu_storelocation]
@@ -242,6 +242,8 @@ var LOCALES_FR = []byte(`
 	one = "produit chimique"
 [biological_product]
 	one = "réactif biologique"
+[consumable_product]
+	one = "consommable"
 
 [switchproductview_text]
 	one = "vue par produits"
@@ -262,7 +264,7 @@ var LOCALES_FR = []byte(`
 [storeagain_text]
 	one = "stocker ce produit"
 [totalstock_text]
-	one = "afficher le stock total"
+	one = "calculer le stock total"
 
 [unit_label_title]
 	one = "unité"
@@ -363,6 +365,18 @@ var LOCALES_FR = []byte(`
 	one = "selectionnez ou entrez un fournisseur"
 [storage_print_qrcode]
 	one = "imprimer le qrcode"
+[storage_number_of_unit]
+	one = "nombre d'unité(s)"
+[storage_number_of_bag]
+	one = "nombre de sac(s)"
+[storage_number_of_bag_comment]
+	one = "seulement si le nombre d'unités par sachet est défini pour le produit"
+[storage_number_of_carton]
+	one = "nombre de carton(s)"
+[storage_number_of_carton_comment]
+	one = "seulement si le nombre d'unités par carton est défini pour le produit"
+[storage_one_number_required]
+	one = "au moins un des nombres requis"
 
 [stock_storelocation_title]
 	one = "dans cet entrepôt"
@@ -418,6 +432,10 @@ var LOCALES_FR = []byte(`
 	one = "fiche produit fabriquant"
 [product_temperature_title]
 	one = "température de stockage préconisée"
+[product_number_per_carton_title]
+	one = "nombre d'unités par carton"
+[product_number_per_bag_title]
+	one = "nombre d'unités par sachet"
 [producer_label_title]
 	one = "fabriquant"
 [producerref_label_title]

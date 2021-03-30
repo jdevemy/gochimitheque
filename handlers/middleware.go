@@ -27,7 +27,7 @@ func (env *Env) AppMiddleware(h models.AppHandlerFunc) http.Handler {
 					logger.LogInternal.Error(e.Message + "-" + e.Error.Error())
 				}
 			}
-			http.Error(w, e.Message, e.Code)
+			http.Error(w, e.Message+"-"+e.Error.Error(), e.Code)
 		}
 	})
 }

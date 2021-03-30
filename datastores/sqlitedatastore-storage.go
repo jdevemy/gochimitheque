@@ -213,6 +213,9 @@ func (db *SQLiteDataStore) GetStorages(p DbselectparamStorage) ([]Storage, int, 
 		s.storage_comment,
 		s.storage_archive,
 		s.storage_concentration,
+		s.storage_number_of_carton,
+		s.storage_number_of_bag,
+		s.storage_number_of_unit,
 		storage.storage_id AS "storage.storage_id",
 		uq.unit_id AS "unit_quantity.unit_id",
 		uq.unit_label AS "unit_quantity.unit_label",
@@ -224,6 +227,9 @@ func (db *SQLiteDataStore) GetStorages(p DbselectparamStorage) ([]Storage, int, 
 		person.person_email AS "person.person_email", 
 		product.product_id AS "product.product_id",
 		product.product_specificity AS "product.product_specificity",
+		product.product_number_per_carton AS "product.product_number_per_carton",
+		product.product_number_per_bag AS "product.product_number_per_bag",
+        producerref.producerref_id AS "product.producerref.producerref_id",
 		name.name_id AS "product.name.name_id",
 		name.name_label AS "product.name.name_label",
 		casnumber.casnumber_id AS "product.casnumber.casnumber_id",
@@ -249,6 +255,8 @@ func (db *SQLiteDataStore) GetStorages(p DbselectparamStorage) ([]Storage, int, 
 	// get producerref
 	if p.GetProducerRef() != -1 {
 		comreq.WriteString(" JOIN producerref ON product.producerref = :producerref")
+	} else {
+		comreq.WriteString(" LEFT JOIN producerref ON product.producerref = producerref.producerref_id")
 	}
 	// get name
 	comreq.WriteString(" JOIN name ON product.name = name.name_id")
@@ -401,6 +409,25 @@ func (db *SQLiteDataStore) GetStorages(p DbselectparamStorage) ([]Storage, int, 
 	}
 	if p.GetSignalWord() != -1 {
 		comreq.WriteString(" AND signalword.signalword_id = :signalword")
+	}
+
+	// show bio/chem/consu
+	if !p.GetShowChem() && !p.GetShowBio() && p.GetShowConsu() {
+		comreq.WriteString(" AND (product_number_per_carton IS NOT NULL AND product_number_per_carton != 0)")
+	} else if !p.GetShowChem() && p.GetShowBio() && !p.GetShowConsu() {
+		comreq.WriteString(" AND producerref IS NOT NULL")
+		comreq.WriteString(" AND (product_number_per_carton IS NULL OR product_number_per_carton == 0)")
+	} else if !p.GetShowChem() && p.GetShowBio() && p.GetShowConsu() {
+		comreq.WriteString(" AND ((product_number_per_carton IS NOT NULL AND product_number_per_carton != 0)")
+		comreq.WriteString(" OR producerref IS NOT NULL)")
+	} else if p.GetShowChem() && !p.GetShowBio() && !p.GetShowConsu() {
+		comreq.WriteString(" AND producerref IS NULL")
+		comreq.WriteString(" AND (product_number_per_carton IS NULL OR product_number_per_carton == 0)")
+	} else if p.GetShowChem() && !p.GetShowBio() && p.GetShowConsu() {
+		comreq.WriteString(" AND (producerref IS NULL")
+		comreq.WriteString(" OR (product_number_per_carton IS NOT NULL AND product_number_per_carton != 0))")
+	} else if p.GetShowChem() && p.GetShowBio() && !p.GetShowConsu() {
+		comreq.WriteString(" AND (product_number_per_carton IS NULL OR product_number_per_carton == 0)")
 	}
 
 	// post select request
@@ -589,6 +616,9 @@ func (db *SQLiteDataStore) GetStorage(id int) (Storage, error) {
 	storage.storage_qrcode,
 	storage.storage_comment,
 	storage.storage_archive,
+	storage.storage_number_of_carton,
+	storage.storage_number_of_bag,
+	storage.storage_number_of_unit,
 	uq.unit_id AS "unit_quantity.unit_id",
 	uq.unit_label AS "unit_quantity.unit_label",
 	uc.unit_id AS "unit_concentration.unit_id",
@@ -600,6 +630,8 @@ func (db *SQLiteDataStore) GetStorage(id int) (Storage, error) {
 	name.name_id AS "product.name.name_id",
 	name.name_label AS "product.name.name_label",
 	product.product_id AS "product.product_id",
+	product.product_number_per_carton AS "product.product_number_per_carton",
+	producerref.producerref_id AS "product.producerref.producerref_id",
 	casnumber.casnumber_id AS "product.casnumber.casnumber_id",
 	casnumber.casnumber_label AS "product.casnumber.casnumber_label",
 	storelocation.storelocation_id AS "storelocation.storelocation_id",
@@ -615,6 +647,7 @@ func (db *SQLiteDataStore) GetStorage(id int) (Storage, error) {
 	LEFT JOIN supplier ON storage.supplier = supplier.supplier_id
 	JOIN person ON storage.person = person.person_id
 	JOIN product ON storage.product = product.product_id
+	LEFT JOIN producerref ON product.producerref = producerref.producerref_id
 	LEFT JOIN casnumber ON product.casnumber = casnumber.casnumber_id
 	JOIN name ON product.name = name.name_id
 	WHERE storage.storage_id = ?`
@@ -1017,6 +1050,15 @@ func (db *SQLiteDataStore) CreateStorage(s Storage, itemNumber int) (int, error)
 	if s.StorageConcentration.Valid {
 		m["storage_concentration"] = int(s.StorageConcentration.Int64)
 	}
+	if s.StorageNumberOfBag.Valid {
+		m["storage_number_of_bag"] = int(s.StorageNumberOfBag.Int64)
+	}
+	if s.StorageNumberOfCarton.Valid {
+		m["storage_number_of_carton"] = int(s.StorageNumberOfCarton.Int64)
+	}
+	if s.StorageNumberOfUnit.Valid {
+		m["storage_number_of_unit"] = int(s.StorageNumberOfUnit.Int64)
+	}
 	if s.UnitConcentration.UnitID.Valid {
 		m["unit_concentration"] = int(s.UnitConcentration.UnitID.Int64)
 	}
@@ -1141,6 +1183,9 @@ func (db *SQLiteDataStore) UpdateStorage(s Storage) error {
 		storage_todestroy,
 		storage_archive,
 		storage_concentration,
+		storage_number_of_unit integer,
+		storage_number_of_bag integer,
+		storage_number_of_carton integer,
 		person,
 		product,
 		storelocation,
@@ -1161,6 +1206,9 @@ func (db *SQLiteDataStore) UpdateStorage(s Storage) error {
 				storage_todestroy,
 				storage_archive,
 				storage_concentration,
+				storage_number_of_unit integer,
+				storage_number_of_bag integer,
+				storage_number_of_carton integer,
 				person,
 				product,
 				storelocation,
@@ -1240,6 +1288,15 @@ func (db *SQLiteDataStore) UpdateStorage(s Storage) error {
 	}
 	if s.StorageConcentration.Valid {
 		m["storage_concentration"] = int(s.StorageConcentration.Int64)
+	}
+	if s.StorageNumberOfBag.Valid {
+		m["storage_number_of_bag"] = int(s.StorageNumberOfBag.Int64)
+	}
+	if s.StorageNumberOfCarton.Valid {
+		m["storage_number_of_carton"] = int(s.StorageNumberOfCarton.Int64)
+	}
+	if s.StorageNumberOfUnit.Valid {
+		m["storage_number_of_unit"] = int(s.StorageNumberOfUnit.Int64)
 	}
 	if s.UnitConcentration.UnitID.Valid {
 		m["unit_concentration"] = int(s.UnitConcentration.UnitID.Int64)

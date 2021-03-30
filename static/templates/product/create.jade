@@ -16,7 +16,7 @@ block CONTENT
                     = T("close", 1)
 
             .form-row.w-100
-                .form-group.col-sm-4
+                .form-group.col-sm-6
                     .card-body
                         .form-check.form-check-inline
                             input#showchem.form-check-input(type="radio" value="chem" name="typechooser")
@@ -27,6 +27,10 @@ block CONTENT
                             label.form-check-label(for="showbio")
                                 span.mdi.mdi-dna.mdi-36px.iconlabel
                                     = T("biological_product", 1 )
+                            input#showconsu.form-check-input(type="radio" value="consu" name="typechooser")
+                            label.form-check-label(for="showconsu")
+                                span.mdi.mdi-cube-scan.mdi-36px.iconlabel
+                                    = T("consumable_product", 1 )
 
             form#product
                 input#index(type='hidden', name='index', value='')
@@ -58,32 +62,39 @@ block CONTENT
                     .form-group.col-sm-6
                         +inputselect(name="synonyms", label="synonym_label_title", ismultiple=true)
 
-                // bio
-                .form-row.bio.collapse
+                // bio and consu
+                .form-row.bio.consu.collapse
                     .form-group.col-sm-6
                         +inputselect(name="producerref", label="producerref_label_title", ismultiple=false, placeholder="", help="", required=true)
                     .form-group.col-sm-6
                         +inputselect(name="producer", label="producer_label_title")
-                .form-row.bio.collapse
+                .form-row.bio.consu.collapse
                     .form-group.col-sm-5.offset-sm-6
                         +inputtext(name="addproducer", label="add_producer_title")
                     .form-group.col-sm-1.align-self-end
                         button.btn.btn-primary(type="button" onclick="Product_addProducer()")
                             span.mdi.mdi-plus-circle
 
-                // bio
-                .form-row.bio.collapse
+                // bio and consu
+                .form-row.bio.consu.collapse
                     .form-group.col-sm-6
                         +inputselect(name="supplierrefs", label="supplierref_label_title", ismultiple=true)
                     .form-group.col-sm-6
                         +inputselect(name="supplier", label="supplier_label_title")
-                .form-row.bio.collapse
+                .form-row.bio.consu.collapse
                     .form-group.col-sm-5.offset-sm-6
                         +inputtext(name="addsupplier", label="add_supplier_title")
                     .form-group.col-sm-1.align-self-end
                         button.btn.btn-primary(type="button" onclick="Product_addSupplier()")
                             span.mdi.mdi-plus-circle
 
+                // consu
+                .form-row.consu.collapse
+                    .form-group.col-sm-6
+                        +inputnumber(name="product_number_per_carton", label="product_number_per_carton_title", step="1", min="0", max="10000000")
+                    .form-group.col-sm-6
+                        +inputnumber(name="product_number_per_bag", label="product_number_per_bag_title", step="1", min="0", max="10000000")
+                        
                 // bio
                 .form-row.bio.collapse
                     .form-group.col-sm-6
@@ -141,7 +152,6 @@ block CONTENT
                 .form-row
                     .form-group.col-sm-6
                         +inputtext(name="product_msds", label="product_msds_title")
-                    //bio
                     .form-group.col-sm-6
                         +inputtext(name="product_sheet", label="product_sheet_title")
 
@@ -152,32 +162,32 @@ block CONTENT
                         //- +inputfile("product_threedformula_mol_title", "product_molformula")
                         //- +inputhidden("product_molformula_content", "")
 
-                .form-row
+                .form-row.chem.bio
                     .form-group.col-sm-6
                         +inputselect(name="physicalstate", label="physicalstate_label_title")
                     .form-group.col-sm-6
                         +inputselect(name="classofcompound", label="classofcompound_label_title", ismultiple=true)  
 
-                .form-row
+                .form-row.chem.bio
                     .form-group.col-sm-12
                         button.btn.btn-light(type="button" onclick="Product_howToMagicalSelector()")
                             span.mdi.mdi-24px.mdi-cursor-default-click-outline &nbsp;
                             = T("howto_magicalselector", 1 )
 
-                .form-row
+                .form-row.chem.bio
                     .form-group.col-sm-11.d-flex.align-items-end
                         +inputtext(name="magical", label="magical_selector", type="textarea")
                     .form-group.col-sm-1.d-flex.align-items-end
                         button#magical-button(type="button" onclick="Product_magic();")
                             span.mdi.mdi-24px.mdi-auto-fix
 
-                .form-row
+                .form-row.chem.bio
                     .form-group.col-sm-6
                         +inputselect(name="signalword", label="signalword_label_title")
                     .form-group.col-sm-6
                         +inputselect(name="symbols", label="symbol_label_title", ismultiple=true)
 
-                .form-row
+                .form-row.chem.bio
                     .form-group.col-sm-6
                         +inputselect(name="hazardstatements", label="hazardstatement_label_title", ismultiple=true)
                     .form-group.col-sm-6
@@ -186,7 +196,7 @@ block CONTENT
                 .form-row
                     .form-group.col-sm-4
                         +checkbox(name="product_restricted", label="product_restricted_title", icon="mdi-hand")
-                    .form-group.col-sm-4
+                    .form-group.col-sm-4.chem.bio
                         +checkbox(name="product_radioactive", label="product_radioactive_title", icon="mdi-radioactive")
 
                 .form-row

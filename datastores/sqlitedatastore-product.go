@@ -1751,6 +1751,8 @@ func (db *SQLiteDataStore) GetProducts(p DbselectparamProduct) ([]Product, int, 
 	p.product_remark,
 	p.product_sheet,
 	p.product_temperature,
+	p.product_number_per_carton,
+	p.product_number_per_bag,
 	linearformula.linearformula_id AS "linearformula.linearformula_id",
 	linearformula.linearformula_label AS "linearformula.linearformula_label",
 	empiricalformula.empiricalformula_id AS "empiricalformula.empiricalformula_id",
@@ -1927,6 +1929,25 @@ func (db *SQLiteDataStore) GetProducts(p DbselectparamProduct) ([]Product, int, 
 	// filter restricted product
 	if !rperm {
 		comreq.WriteString(" AND p.product_restricted = false")
+	}
+
+	// show bio/chem/consu
+	if !p.GetShowChem() && !p.GetShowBio() && p.GetShowConsu() {
+		comreq.WriteString(" AND (product_number_per_carton IS NOT NULL AND product_number_per_carton != 0)")
+	} else if !p.GetShowChem() && p.GetShowBio() && !p.GetShowConsu() {
+		comreq.WriteString(" AND producerref IS NOT NULL")
+		comreq.WriteString(" AND (product_number_per_carton IS NULL OR product_number_per_carton == 0)")
+	} else if !p.GetShowChem() && p.GetShowBio() && p.GetShowConsu() {
+		comreq.WriteString(" AND ((product_number_per_carton IS NOT NULL AND product_number_per_carton != 0)")
+		comreq.WriteString(" OR producerref IS NOT NULL)")
+	} else if p.GetShowChem() && !p.GetShowBio() && !p.GetShowConsu() {
+		comreq.WriteString(" AND producerref IS NULL")
+		comreq.WriteString(" AND (product_number_per_carton IS NULL OR product_number_per_carton == 0)")
+	} else if p.GetShowChem() && !p.GetShowBio() && p.GetShowConsu() {
+		comreq.WriteString(" AND (producerref IS NULL")
+		comreq.WriteString(" OR (product_number_per_carton IS NOT NULL AND product_number_per_carton != 0))")
+	} else if p.GetShowChem() && p.GetShowBio() && !p.GetShowConsu() {
+		comreq.WriteString(" AND (product_number_per_carton IS NULL OR product_number_per_carton == 0)")
 	}
 
 	// post select request
@@ -2189,6 +2210,7 @@ func (db *SQLiteDataStore) GetProducts(p DbselectparamProduct) ([]Product, int, 
 			reqtsc.Reset()
 			reqtsc.WriteString("SELECT count(DISTINCT storage_id) from storage")
 			reqtsc.WriteString(" JOIN product ON storage.product = ? AND storage.storage IS NULL AND storage.storage_archive == false")
+
 			if isadmin {
 				reqsc.Reset()
 				reqsc.WriteString("SELECT count(DISTINCT storage_id) from storage")
@@ -2270,6 +2292,8 @@ func (db *SQLiteDataStore) GetProduct(id int) (Product, error) {
 	product_remark,
 	product_sheet,
 	product_temperature,
+	product_number_per_carton,
+	product_number_per_bag,
 	linearformula.linearformula_id AS "linearformula.linearformula_id",
 	linearformula.linearformula_label AS "linearformula.linearformula_label",
 	empiricalformula.empiricalformula_id AS "empiricalformula.empiricalformula_id",
@@ -2749,6 +2773,12 @@ func (db *SQLiteDataStore) CreateProduct(p Product) (int, error) {
 	if p.ProductRemark.Valid {
 		s["product_remark"] = p.ProductRemark.String
 	}
+	if p.ProductNumberPerCarton.Valid {
+		s["product_number_per_carton"] = p.ProductNumberPerCarton.Int64
+	}
+	if p.ProductNumberPerBag.Valid {
+		s["product_number_per_bag"] = p.ProductNumberPerBag.Int64
+	}
 	if p.EmpiricalFormulaID.Valid {
 		s["empiricalformula"] = int(p.EmpiricalFormulaID.Int64)
 	}
@@ -3223,6 +3253,12 @@ func (db *SQLiteDataStore) UpdateProduct(p Product) error {
 	}
 	if p.ProductRemark.Valid {
 		s["product_remark"] = p.ProductRemark.String
+	}
+	if p.ProductNumberPerCarton.Valid {
+		s["product_number_per_carton"] = p.ProductNumberPerCarton.Int64
+	}
+	if p.ProductNumberPerBag.Valid {
+		s["product_number_per_bag"] = p.ProductNumberPerBag.Int64
 	}
 	if p.EmpiricalFormulaID.Valid {
 		s["empiricalformula"] = int(p.EmpiricalFormulaID.Int64)

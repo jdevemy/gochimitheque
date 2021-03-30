@@ -1326,6 +1326,8 @@ func (env *Env) UpdateProductHandler(w http.ResponseWriter, r *http.Request) *mo
 	updatedp.ProductMolFormula = p.ProductMolFormula
 	updatedp.ProductDisposalComment = p.ProductDisposalComment
 	updatedp.ProductRemark = p.ProductRemark
+	updatedp.ProductNumberPerCarton = p.ProductNumberPerCarton
+	updatedp.ProductNumberPerBag = p.ProductNumberPerBag
 	updatedp.PhysicalState = p.PhysicalState
 	updatedp.SignalWord = p.SignalWord
 	updatedp.ClassOfCompound = p.ClassOfCompound

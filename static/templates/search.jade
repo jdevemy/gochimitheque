@@ -66,7 +66,7 @@ include mixins
                         = T("search_text", 1)
 
 .row#actions.collapse.show(role="group")
-    .col-sm-8
+    .col-sm-6
         .btn-group
             button.btn.btn-primary#switchview.invisible(type="button" onclick="Common_SwitchProductStorage()")
                 span.mdi.mdi-cube-unfolded.mdi-24px.iconlabel
@@ -80,14 +80,29 @@ include mixins
             button#s_storage_stock_button.btn.btn-outline-primary.invisible(type="button" data-toggle="button" aria-pressed="true" autocomplete="off")
                 span.mdi.mdi-sigma.mdi-24px.iconlabel
                     = T("totalstock_text", 1) 
-            button#clearsearch.btn.btn-outline-primary(type="button" onclick="Common_clearSearch();")
-                span.mdi.mdi-filter-off-outline.mdi-24px.iconlabel
-                    = T("clearsearch_text", 1) 
+            //- button#clearsearch.btn.btn-outline-primary(type="button" onclick="Common_clearSearch();")
+            //-     span.mdi.mdi-filter-off-outline.mdi-24px.iconlabel
+            //-         = T("clearsearch_text", 1) 
 
-    .col-sm-4
+    .col-sm-6
         div
             span.text-uppercase.text-primary
-                = T("active_filter", 1) 
+                = T("active_filter", 1)
+            span &nbsp;
+            button#clearsearch.btn.btn-outline-primary(type="button" onclick="Common_clearSearch();" title=T("clearsearch_text", 1))
+                span.mdi.mdi-filter-off-outline.mdi-24px.iconlabel &nbsp;
+                    
+        div
+            .form-check.form-check-inline
+                input#searchshowchem.form-check-input(checked="checked" type="checkbox" value="chem")
+                label.form-check-label(for="searchshowchem")
+                    span.mdi.mdi-atom.mdi-36px.iconlabel(title=T("chemical_product", 1 ))
+                input#searchshowbio.form-check-input(checked="checked" type="checkbox" value="bio")
+                label.form-check-label(for="searchshowbio")
+                    span.mdi.mdi-dna.mdi-36px.iconlabel(title=T("biological_product", 1 ))
+                input#searchshowconsu.form-check-input(checked="checked" type="checkbox" value="consu")
+                label.form-check-label(for="searchshowconsu")
+                    span.mdi.mdi-cube-scan.mdi-36px.iconlabel(title=T("consumable_product", 1 ))   
         div#filter-item
 
 #stock

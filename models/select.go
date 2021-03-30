@@ -53,6 +53,9 @@ type DbselectparamProduct interface {
 	SetBorrowing(bool)
 	SetStorageToDestroy(bool)
 	SetStorageBatchNumber(string)
+	SetShowBio(bool)
+	SetShowChem(bool)
+	SetShowConsu(bool)
 
 	GetProducerRef() int
 	GetEntity() int
@@ -73,6 +76,9 @@ type DbselectparamProduct interface {
 	GetBorrowing() bool
 	GetStorageToDestroy() bool
 	GetStorageBatchNumber() string
+	GetShowBio() bool
+	GetShowChem() bool
+	GetShowConsu() bool
 }
 type dbselectparamProduct struct {
 	dbselectparam
@@ -96,6 +102,10 @@ type dbselectparamProduct struct {
 	ProductSpecificity      string
 	Borrowing               bool
 	StorageToDestroy        bool
+
+	ShowBio   bool
+	ShowChem  bool
+	ShowConsu bool
 }
 
 // DbselectparamStorage contains the parameters of the GetStorages function
@@ -125,6 +135,10 @@ type DbselectparamStorage interface {
 	SetStorageToDestroy(bool)
 	SetStorageBatchNumber(string)
 
+	SetShowBio(bool)
+	SetShowChem(bool)
+	SetShowConsu(bool)
+
 	GetIds() []int
 	GetEntity() int
 	GetProduct() int
@@ -148,6 +162,10 @@ type DbselectparamStorage interface {
 	GetBorrowing() bool
 	GetStorageToDestroy() bool
 	GetStorageBatchNumber() string
+
+	GetShowBio() bool
+	GetShowChem() bool
+	GetShowConsu() bool
 }
 type dbselectparamStorage struct {
 	dbselectparam
@@ -174,6 +192,10 @@ type dbselectparamStorage struct {
 	CasNumberCmr            bool
 	Borrowing               bool
 	StorageToDestroy        bool
+
+	ShowBio   bool
+	ShowChem  bool
+	ShowConsu bool
 }
 
 // DbselectparamPerson contains the parameters of the GetPeople function
@@ -369,6 +391,30 @@ func (d *dbselectparamStoreLocation) SetPermission(p string) {
 //
 // dbselectparamProduct functions
 //
+func (d *dbselectparamProduct) SetShowBio(b bool) {
+	d.ShowBio = b
+}
+
+func (d *dbselectparamProduct) GetShowBio() bool {
+	return d.ShowBio
+}
+
+func (d *dbselectparamProduct) SetShowChem(b bool) {
+	d.ShowChem = b
+}
+
+func (d *dbselectparamProduct) GetShowChem() bool {
+	return d.ShowChem
+}
+
+func (d *dbselectparamProduct) SetShowConsu(b bool) {
+	d.ShowConsu = b
+}
+
+func (d *dbselectparamProduct) GetShowConsu() bool {
+	return d.ShowConsu
+}
+
 func (d *dbselectparamProduct) SetProducerRef(i int) {
 	d.ProducerRef = i
 }
@@ -524,6 +570,30 @@ func (d *dbselectparamProduct) GetStorageToDestroy() bool {
 //
 // dbselectparamStorage functions
 //
+func (d *dbselectparamStorage) SetShowBio(b bool) {
+	d.ShowBio = b
+}
+
+func (d *dbselectparamStorage) GetShowBio() bool {
+	return d.ShowBio
+}
+
+func (d *dbselectparamStorage) SetShowChem(b bool) {
+	d.ShowChem = b
+}
+
+func (d *dbselectparamStorage) GetShowChem() bool {
+	return d.ShowChem
+}
+
+func (d *dbselectparamStorage) SetShowConsu(b bool) {
+	d.ShowConsu = b
+}
+
+func (d *dbselectparamStorage) GetShowConsu() bool {
+	return d.ShowConsu
+}
+
 func (d *dbselectparamStorage) SetIds(i []int) {
 	d.Ids = i
 }
@@ -974,6 +1044,33 @@ func NewdbselectparamProduct(r *http.Request, f func(string) (string, error)) (*
 				}
 			}
 		}
+		if showbio, ok := r.URL.Query()["showbio"]; ok {
+			if dspp.ShowBio, err = strconv.ParseBool(showbio[0]); err != nil {
+				return nil, &AppError{
+					Error:   err,
+					Code:    http.StatusInternalServerError,
+					Message: "showbio bool conversion",
+				}
+			}
+		}
+		if showchem, ok := r.URL.Query()["showchem"]; ok {
+			if dspp.ShowChem, err = strconv.ParseBool(showchem[0]); err != nil {
+				return nil, &AppError{
+					Error:   err,
+					Code:    http.StatusInternalServerError,
+					Message: "showchem bool conversion",
+				}
+			}
+		}
+		if showconsu, ok := r.URL.Query()["showconsu"]; ok {
+			if dspp.ShowConsu, err = strconv.ParseBool(showconsu[0]); err != nil {
+				return nil, &AppError{
+					Error:   err,
+					Code:    http.StatusInternalServerError,
+					Message: "showconsu bool conversion",
+				}
+			}
+		}
 	}
 	return &dspp, nil
 
@@ -1218,6 +1315,33 @@ func NewdbselectparamStorage(r *http.Request, f func(string) (string, error)) (*
 					Error:   err,
 					Code:    http.StatusInternalServerError,
 					Message: "storage_to_destroy bool conversion",
+				}
+			}
+		}
+		if showbio, ok := r.URL.Query()["showbio"]; ok {
+			if dsps.ShowBio, err = strconv.ParseBool(showbio[0]); err != nil {
+				return nil, &AppError{
+					Error:   err,
+					Code:    http.StatusInternalServerError,
+					Message: "showbio bool conversion",
+				}
+			}
+		}
+		if showchem, ok := r.URL.Query()["showchem"]; ok {
+			if dsps.ShowChem, err = strconv.ParseBool(showchem[0]); err != nil {
+				return nil, &AppError{
+					Error:   err,
+					Code:    http.StatusInternalServerError,
+					Message: "showchem bool conversion",
+				}
+			}
+		}
+		if showconsu, ok := r.URL.Query()["showconsu"]; ok {
+			if dsps.ShowConsu, err = strconv.ParseBool(showconsu[0]); err != nil {
+				return nil, &AppError{
+					Error:   err,
+					Code:    http.StatusInternalServerError,
+					Message: "showconsu bool conversion",
 				}
 			}
 		}

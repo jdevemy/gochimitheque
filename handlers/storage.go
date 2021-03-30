@@ -345,6 +345,9 @@ func (env *Env) UpdateStorageHandler(w http.ResponseWriter, r *http.Request) *mo
 	updateds.StorageReference = s.StorageReference
 	updateds.StorageBatchNumber = s.StorageBatchNumber
 	updateds.StorageToDestroy = s.StorageToDestroy
+	updateds.StorageNumberOfBag = s.StorageNumberOfBag
+	updateds.StorageNumberOfCarton = s.StorageNumberOfCarton
+	updateds.StorageNumberOfUnit = s.StorageNumberOfUnit
 	logger.Log.WithFields(logrus.Fields{"updateds": updateds}).Debug("UpdateStorageHandler")
 
 	if err := env.DB.UpdateStorage(updateds); err != nil {

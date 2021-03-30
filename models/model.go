@@ -160,6 +160,9 @@ type Storage struct {
 	StorageToDestroy         sql.NullBool    `db:"storage_todestroy" json:"storage_todestroy" schema:"storage_todestroy"`
 	StorageArchive           sql.NullBool    `db:"storage_archive" json:"storage_archive" schema:"storage_archive"`
 	StorageConcentration     sql.NullInt64   `db:"storage_concentration" json:"storage_concentration" schema:"storage_concentration"`
+	StorageNumberOfUnit      sql.NullInt64   `db:"storage_number_of_unit" json:"storage_number_of_unit" schema:"storage_number_of_unit"`
+	StorageNumberOfBag       sql.NullInt64   `db:"storage_number_of_bag" json:"storage_number_of_bag" schema:"storage_number_of_bag"`
+	StorageNumberOfCarton    sql.NullInt64   `db:"storage_number_of_carton" json:"storage_number_of_carton" schema:"storage_number_of_carton"`
 	Person                   `db:"person" json:"person" schema:"person"`
 	Product                  `db:"product" json:"product" schema:"product"`
 	StoreLocation            `db:"storelocation" json:"storelocation" schema:"storelocation"`
@@ -293,6 +296,8 @@ type Product struct {
 	ProductRemark          sql.NullString `db:"product_remark" json:"product_remark" schema:"product_remark"`
 	ProductTemperature     sql.NullInt64  `db:"product_temperature" json:"product_temperature" schema:"product_temperature"`
 	ProductSheet           sql.NullString `db:"product_sheet" json:"product_sheet" schema:"product_sheet"`
+	ProductNumberPerCarton sql.NullInt64  `db:"product_number_per_carton" json:"product_number_per_carton" schema:"product_number_per_carton"`
+	ProductNumberPerBag    sql.NullInt64  `db:"product_number_per_bag" json:"product_number_per_bag" schema:"product_number_per_bag"`
 	EmpiricalFormula       `db:"empiricalformula" json:"empiricalformula" schema:"empiricalformula"`
 	LinearFormula          `db:"linearformula" json:"linearformula" schema:"linearformula"`
 	PhysicalState          `db:"physicalstate" json:"physicalstate" schema:"physicalstate"`
