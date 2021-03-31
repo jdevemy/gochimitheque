@@ -25,15 +25,15 @@ block CONTENT
                 thead
                     tr
                         // th(data-field='product_id' data-sortable='true') ID
-                        th.th-product-name(data-field='name.name_label' data-sortable='true')
+                        th.th-product-name(data-field='name.name_label' data-sortable='true' data-formatter='Product_nameFormatter')
                             = T("product_name_table_header", 1)
                         th(data-field='empiricalformula.empiricalformula_label' data-sortable='true' data-formatter='Product_empiricalformulaFormatter')
                             = T("product_empiricalformula_table_header", 1)
                         th(data-field='casnumber.casnumber_label' data-sortable='true' data-formatter='Product_casnumberFormatter')
                             = T("product_cas_table_header", 1)
-                        th(data-field='product_specificity' data-sortable='false' data-formatter='Product_productspecificityFormatter')
-                            = T("product_specificity_table_header", 1)
-                        th(data-field='product_sl' data-formatter='Product_productslFormatter' data-sortable='false') 
+                        //- th(data-field='product_specificity' data-sortable='false' data-formatter='Product_productspecificityFormatter')
+                        //-     = T("product_specificity_table_header", 1)
+                        //- th(data-field='product_sl' data-formatter='Product_productslFormatter' data-sortable='false') 
                         th.th-product-operate(data-field='operate' data-formatter='Product_operateFormatter' data-events='operateEvents') 
 
 block CONTENTJS

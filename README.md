@@ -51,8 +51,8 @@ Main goals:
 Team:
 - Delphine Pitrat (ENS-Lyon, Chemical Engineer): project manager, chemistry specialist
 - Antoine Goisnard - Phd (University Clermont-Auvergne / IMOST lab.): biology specialist
-- Marie Depresle (University Clermont-Auvergne / Biopass): biology specialist
-- Manon Roux (University Clermont-Auvergne / Biopass): chemistry specialist
+- Marie Depresle (University Clermont-Auvergne / Biomarqueurs): biology specialist
+- Manon Roux (University Clermont-Auvergne / Biomarqueurs): chemistry specialist
 
 ![screenshot](screenshot.png)
 
