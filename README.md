@@ -28,6 +28,7 @@
   - [Docker installation](#docker-installation)
 - [Support](#support)
 - [Use of categories and tags](#use-of-categories-and-tags)
+- [Use of barecode and QRCode](#use-of-barecode-and-qrcode)
 - [V1/V2 version](#v1v2-version)
 - [List of public database Chimithèque instances](#list-of-public-database-chimithèque-instances)
 - [Get the latest development compiled version](#get-the-latest-development-compiled-version)
@@ -46,6 +47,12 @@ Main goals:
 - *simplicity*: do one think (stores products) but do it well
 - *security*: provide a global listing of the chemicals products storages
 - *cost/ecology*: share chemical products to avoid waste
+
+Team:
+- Delphine Pitrat (ENS-Lyon, Chemical Engineer): project manager, chemistry specialist
+- Antoine Goisnard - Phd (University Clermont-Auvergne / IMOST lab.): biology specialist
+- Marie Depresle (University Clermont-Auvergne / Biopass): biology specialist
+- Manon Roux (University Clermont-Auvergne / Biopass): chemistry specialist
 
 ![screenshot](screenshot.png)
 
@@ -285,6 +292,18 @@ Subscribe to the mailing list: <https://groupes.renater.fr/sympa/subscribe/chimi
 For chemical and biological reagents, there is now the possibility to class products in different categories in order to make easier product research. This solution is available when creating a new product sheet with a scrolling menu and suggest different preregistered product categories. It is possible to create a new category if concerned product does not feet with already existing suggestions. This solution allows in main menu, with advanced research, to show only products called with a specific category, and thus have a global vision on a specific class of products. 
 
 This solution is completed with the possibility to apply tags on chemical or biological reagents, also available in product sheet section. This allows to associate a product with various fields, methods, protocols, projects, or application domains. Like previously, preregistered tags are proposed in a scrolling menu with the possibility to create new tags. For example, a stem cell culture medium can be associated with Stem Cells, Cell Culture or Culture Medium tags. This function may reveal particularly useful to rapidly show products associated with a specific activity, projects or method in the advanced research of Chimithéque main menu. Moreover, it is a way to personalize and adapt product research according to a lab or a structure specific needs or habits. 
+
+# Use of barecode and QRCode
+
+A new option is now available for creating an association between a product and a specific label: the QRCode. 
+It is different from the bare-code, because it is readable by every device which have a camera and permits to access directly to the page with the product's storage. 
+By default, when a product is stocked, the software create a random bare-code and a new QRcode. 
+However, if a product need to be sampled, you can check the option "identical bare-code" when the number of samples is required, and it will generate the same bare-code for each new sample. 
+The major advantage is that you can scan any QRcode of these strictly identical products and it will display the page of the storage with all the samples. 
+Then, any of these samples could be borrowed or archived, for example. 
+For instance, for conservation conditions, it could be recommend ed to limite freeze-thaw cycles. 
+To avoid that, the product could be sampled in different dishes with the same volume or mass. 
+To store them on Chimitheque, the "identical bare-code" option will permit to create QRcodes linked with all the samples, so that any of them could be destocked when one of them is used. 
 
 # V1/V2 version
 
