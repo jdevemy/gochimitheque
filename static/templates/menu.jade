@@ -37,9 +37,11 @@ nav.navbar.navbar-expand-lg.navbar-light.border-bottom
                         = T("menu_entity", 1)
                 div.dropdown-menu(aria-labelledby="navbarDropdown")
                     a(href="#", onclick="Menu_loadContent('entity', '" + c.ProxyPath + "v/entities', 'Entity_list')").dropdown-item
-                        = T("list", 1)
+                        span.iconlabel
+                            = T("list", 1)
                     a#menu_create_entity.collapse(href="#", onclick="Menu_loadContent('entity', '" + c.ProxyPath + "vc/entities', 'Entity_create')").dropdown-item
-                        = T("create", 1)
+                        span.iconlabel
+                            = T("create", 1)
 
             li.nav-item.dropdown#menu_storelocations.collapse
                 a(href="#").nav-link.dropdown-toggle#navbarDropdown(
@@ -51,9 +53,11 @@ nav.navbar.navbar-expand-lg.navbar-light.border-bottom
                         = T("menu_storelocation", 1)
                 div.dropdown-menu(aria-labelledby="navbarDropdown")
                     a(href="#", onclick="Menu_loadContent('storelocation', '" + c.ProxyPath + "v/storelocations', 'StoreLocation_list')").dropdown-item
-                        = T("list", 1)
+                        span.iconlabel
+                            = T("list", 1)
                     a#menu_create_storelocation.collapse(href="#", onclick="Menu_loadContent('storelocation', '" + c.ProxyPath + "vc/storelocations', 'StoreLocation_create')").dropdown-item
-                        = T("create", 1)
+                        span.iconlabel
+                            = T("create", 1)
 
             li.nav-item.dropdown#menu_people.collapse
                 a(href="#").nav-link.dropdown-toggle#navbarDropdown(
@@ -65,9 +69,11 @@ nav.navbar.navbar-expand-lg.navbar-light.border-bottom
                         = T("menu_people", 1)
                 div.dropdown-menu(aria-labelledby="navbarDropdown")
                     a(href="#", onclick="Menu_loadContent('person', '" + c.ProxyPath + "v/people', 'Person_list')").dropdown-item
-                        = T("list", 1)
+                        span.iconlabel
+                            = T("list", 1)
                     a#menu_create_person.collapse(href="#", onclick="Menu_loadContent('person', '" + c.ProxyPath + "vc/people', 'Person_create')").dropdown-item
-                        = T("create", 1)
+                        span.iconlabel
+                            = T("create", 1)
 
             li.nav-item.dropdown#menu_account
                 a(href="#").nav-link.dropdown-toggle#navbarDropdown(
@@ -79,14 +85,14 @@ nav.navbar.navbar-expand-lg.navbar-light.border-bottom
                         = T("menu_account", 1)
                 div.dropdown-menu(aria-labelledby="navbarDropdown")
                     a.dropdown-item(href="#", onclick="Menu_loadContent('person', '" + c.ProxyPath + "vu/peoplepass', 'PersonPass_list')")
-                        span.mdi.mdi-shield-lock-outline.mdi-36px.iconlabel
+                        span.mdi.iconlabel
                                 = T("menu_password", 1)
                     a#menu_update_welcomeannounce.dropdown-item(href="#", onclick="Menu_loadContent('welcome', '" + c.ProxyPath + "v/welcomeannounce', 'WelcomeAnnounce_list')").collapse
-                        span.mdi.mdi-information-outline.mdi-36px.iconlabel
+                        span.mdi.iconlabel
                                 = T("menu_welcomeannounce", 1)
                     a.dropdown-item(onclick="localStorage.clear(); window.location.replace('" + c.ProxyPath + "delete-token')")
-                        span.mdi.mdi-logout.mdi-36px.iconlabel
+                        span.mdi.iconlabel
                                 = T("menu_logout", 1 )
                     a.dropdown-item(href="#", onclick="Menu_loadContent('about', '" + c.ProxyPath + "about', 'About_list')")
-                        span.mdi.mdi-information.mdi-36px.iconlabel
+                        span.mdi.iconlabel
                                 = T("menu_about", 1 )

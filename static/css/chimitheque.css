@@ -1,13 +1,7 @@
 @font-face {
-    font-family: 'economicaregular';
-    src: url('../fonts/economica-regular-webfont.woff2') format('woff2'),
-         url('../fonts/economica-regular-webfont.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-}
-@font-face {
-    font-family: 'oswald';
-    src: url('../fonts/Oswald-ExtraLight.ttf') format('truetype');
+    font-family: 'ibm';
+    src: url('../fonts/IBMPlexSans-Regular.woff2') format('woff2'),
+         url('../fonts/IBMPlexSans-Regular.woff') format('woff');
     font-weight: normal;
     font-style: normal;
 }
@@ -26,7 +20,8 @@ body {
 	height: auto !important;
 }
 .iconlabel {
-    font-family: oswald;
+    font-family: ibm;
+    font-size: 14px;
 }
 .verticaltext {
     writing-mode: vertical-rl;

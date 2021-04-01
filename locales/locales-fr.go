@@ -207,13 +207,13 @@ var LOCALES_FR = []byte(`
 [menu_home]
 	one = "accueil"
 [menu_bookmark]
-	one = "mes favoris"
+	one = "favoris"
 [menu_scanqr]
-	one = "scanner un code QR"
+	one = "scanner"
 [menu_borrow]
 	one = "mes produits empruntés"
 [menu_create_productcard]
-	one = "créer une fiche produit ou consommable"
+	one = "créer une fiche"
 [menu_entity]
 	one = "entités"
 [menu_storelocation]
@@ -232,7 +232,7 @@ var LOCALES_FR = []byte(`
 	one = "mon compte"
 
 [clearsearch_text]
-	one = "réinitialiser le filtre"
+	one = "supprimer tous les filtres"
 [search_text]
 	one = "rechercher"
 [advancedsearch_text]

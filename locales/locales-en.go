@@ -207,13 +207,13 @@ var LOCALES_EN = []byte(`
 [menu_home]
 	one = "home"
 [menu_bookmark]
-	one = "my bookmarks"
+	one = "bookmarks"
 [menu_scanqr]
-	one = "scan a QR code"
+	one = "scan"
 [menu_borrow]
 	one = "my borrowed products"
 [menu_create_productcard]
-	one = "create a product or lab consumable card"
+	one = "create a card"
 [menu_entity]
 	one = "entities"
 [menu_storelocation]
@@ -232,7 +232,7 @@ var LOCALES_EN = []byte(`
 	one = "my account"
 
 [clearsearch_text]
-	one = "reset filter"
+	one = "reset filters"
 [search_text]
 	one = "search"
 [advancedsearch_text]
