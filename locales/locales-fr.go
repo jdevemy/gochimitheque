@@ -548,6 +548,12 @@ var LOCALES_FR = []byte(`
 [person_select_all_rw_storage]
 	one = "sélectionner tous les 'voir, modifier, créer et supprimer'"
 
+[permission_product]
+	one = "produits"
+[permission_rproduct]
+	one = "produits restreints"
+[permission_storages]
+	one = "stockages"
 [permission_none]
 	one = "aucune permission"
 [permission_read]
