@@ -243,8 +243,9 @@ func (db *SQLiteDataStore) GetStorages(p DbselectparamStorage) ([]Storage, int, 
 		entity.entity_id AS "storelocation.entity.entity_id"
 		`)
 
-	// borrower.person_id AS "borrowing.borrower.person_id",
-	// borrower.person_email AS "borrowing.borrower.person_email",
+	if p.GetCasNumberCmr() {
+		presreq.WriteString(`,GROUP_CONCAT(DISTINCT hazardstatement.hazardstatement_cmr) AS "product.hazardstatement_cmr"`)
+	}
 
 	// common parts
 	comreq.WriteString(" FROM storage as s")
@@ -252,6 +253,11 @@ func (db *SQLiteDataStore) GetStorages(p DbselectparamStorage) ([]Storage, int, 
 	comreq.WriteString(" LEFT JOIN storage ON s.storage = storage.storage_id")
 	// get product
 	comreq.WriteString(" JOIN product ON s.product = product.product_id")
+	// CMR
+	if p.GetCasNumberCmr() {
+		comreq.WriteString(" LEFT JOIN producthazardstatements ON producthazardstatements.producthazardstatements_product_id = product.product_id")
+		comreq.WriteString(" LEFT JOIN hazardstatement ON producthazardstatements.producthazardstatements_hazardstatement_id = hazardstatement.hazardstatement_id")
+	}
 	// get producerref
 	if p.GetProducerRef() != -1 {
 		comreq.WriteString(" JOIN producerref ON product.producerref = :producerref")
@@ -280,17 +286,8 @@ func (db *SQLiteDataStore) GetStorages(p DbselectparamStorage) ([]Storage, int, 
 	} else {
 		comreq.WriteString(" LEFT JOIN borrowing ON s.storage_id = borrowing.storage")
 	}
-	//comreq.WriteString(" LEFT JOIN person AS borrower ON borrowing.borrower = borrower.person_id")
-
-	// get name
-	//comreq.WriteString(" JOIN name ON product.name = name.name_id")
-	// get CMR
-	if p.GetCasNumberCmr() {
-		comreq.WriteString(" JOIN casnumber ON product.casnumber = casnumber.casnumber_id AND casnumber.casnumber_cmr IS NOT NULL")
-	} else {
-		// get casnumber
-		comreq.WriteString(" LEFT JOIN casnumber ON product.casnumber = casnumber.casnumber_id")
-	}
+	// get casnumber
+	comreq.WriteString(" LEFT JOIN casnumber ON product.casnumber = casnumber.casnumber_id")
 	// get empirical formula
 	comreq.WriteString(" LEFT JOIN empiricalformula ON product.empiricalformula = empiricalformula.empiricalformula_id")
 	// get symbols
@@ -333,6 +330,9 @@ func (db *SQLiteDataStore) GetStorages(p DbselectparamStorage) ([]Storage, int, 
 	}
 	if p.GetStorageToDestroy() {
 		comreq.WriteString(" AND s.storage_todestroy = true")
+	}
+	if p.GetCasNumberCmr() {
+		comreq.WriteString(" AND (casnumber.casnumber_cmr IS NOT NULL OR (hazardstatement_cmr IS NOT NULL AND hazardstatement_cmr != ''))")
 	}
 	if p.GetProduct() != -1 {
 		comreq.WriteString(" AND product.product_id = :product")

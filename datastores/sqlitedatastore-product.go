@@ -1788,6 +1788,11 @@ func (db *SQLiteDataStore) GetProducts(p DbselectparamProduct) ([]Product, int, 
 
 	// common parts
 	comreq.WriteString(" FROM product as p")
+	// CMR
+	if p.GetCasNumberCmr() {
+		comreq.WriteString(" LEFT JOIN producthazardstatements ON producthazardstatements.producthazardstatements_product_id = p.product_id")
+		comreq.WriteString(" LEFT JOIN hazardstatement ON producthazardstatements.producthazardstatements_hazardstatement_id = hazardstatement.hazardstatement_id")
+	}
 	// get name
 	comreq.WriteString(" JOIN name ON p.name = name.name_id")
 	// get category
@@ -1802,11 +1807,6 @@ func (db *SQLiteDataStore) GetProducts(p DbselectparamProduct) ([]Product, int, 
 	}
 	// get producer
 	comreq.WriteString(" LEFT JOIN producer ON producerref.producer = producer.producer_id")
-	// get hazardstatement GROUP_CONCAT for CMR detection
-	if p.GetCasNumberCmr() {
-		comreq.WriteString(" LEFT JOIN producthazardstatements ON producthazardstatements.producthazardstatements_product_id = p.product_id")
-		comreq.WriteString(" LEFT JOIN hazardstatement ON producthazardstatements.producthazardstatements_hazardstatement_id = hazardstatement.hazardstatement_id")
-	}
 	// get casnumber
 	comreq.WriteString(" LEFT JOIN casnumber ON p.casnumber = casnumber.casnumber_id")
 	// get cenumber

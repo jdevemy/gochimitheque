@@ -46,8 +46,10 @@ WORKDIR /go/src/github.com/tbellembois/gochimitheque-wasm
 RUN GOOS=js GOARCH=wasm go get -v -d ./...
 RUN GOOS=js GOARCH=wasm go build -o wasm .
 
-# Copying WASM module into sources.
+# Copying and compress WASM module into sources.
 RUN cp /go/src/github.com/tbellembois/gochimitheque-wasm/wasm /go/src/github.com/tbellembois/gochimitheque/wasm/
+RUN gzip -9 -v -c /go/src/github.com/tbellembois/gochimitheque/wasm/wasm > /go/src/github.com/tbellembois/gochimitheque/wasm/wasm.gz
+RUN rm /go/src/github.com/tbellembois/gochimitheque/wasm/wasm
 
 # Installing Chimithèque dependencies.
 WORKDIR /go/src/github.com/tbellembois/gochimitheque/
