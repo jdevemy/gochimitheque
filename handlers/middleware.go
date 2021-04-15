@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -154,43 +153,6 @@ func (env *Env) AuthenticateMiddleware(h http.Handler) http.Handler {
 
 		h.ServeHTTP(w, r.WithContext(ctx))
 	})
-}
-
-func (env *Env) getItemEntities(personid int, item, itemid string) ([]models.Entity, error) {
-	var (
-		storelocation models.StoreLocation
-		entity        models.Entity
-		es            []models.Entity
-		err           error
-		itemidInt     int
-	)
-
-	if itemidInt, err = strconv.Atoi(itemid); err != nil {
-		return nil, err
-	}
-
-	es = make([]models.Entity, 0)
-
-	switch item {
-	case "storages":
-		if entity, err = env.DB.GetStorageEntity(itemidInt); err != nil {
-			return nil, err
-		}
-		es = append(es, entity)
-	case "storelocations":
-		if storelocation, err = env.DB.GetStoreLocation(itemidInt); err != nil {
-			return nil, err
-		}
-		es = append(es, storelocation.Entity)
-	case "people":
-		if es, err = env.DB.GetPersonEntities(personid, itemidInt); err != nil {
-			return nil, err
-		}
-	default:
-		return nil, fmt.Errorf("unexpecter permission item")
-	}
-
-	return es, nil
 }
 
 // AuthorizeMiddleware check that the user extracted from the JWT token by the AuthenticateMiddleware has the permissions to access the requested resource
