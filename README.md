@@ -1,4 +1,9 @@
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+**Table of Contents**
+
 - [Chimithèque](#chimithèque)
+  - [Team](#team)
+  - [Features](#features)
 - [Web browser compatibility](#web-browser-compatibility)
 - [Download](#download)
 - [Requirements](#requirements)
@@ -13,7 +18,10 @@
     - [Installation](#installation)
     - [Configuration](#configuration-1)
   - [Binary command line and Docker parameters](#binary-command-line-and-docker-parameters)
-  - [Setting up application administrators](#setting-up-application-administrators)
+    - [listenport](#listenport)
+    - [proxyurl, proxypath](#proxyurl-proxypath)
+    - [enablepublicproductsendpoint](#enablepublicproductsendpoint)
+    - [admins](#admins)
 - [Database backup](#database-backup)
 - [Chimithèque V2 initial database import](#chimithèque-v2-initial-database-import)
   - [Principle](#principle)
@@ -29,30 +37,30 @@
 - [Support](#support)
 - [Use of categories and tags](#use-of-categories-and-tags)
 - [Use of barecode and QRCode](#use-of-barecode-and-qrcode)
-- [V1/V2 version](#v1v2-version)
 - [List of public database Chimithèque instances](#list-of-public-database-chimithèque-instances)
 - [Get the latest development compiled version](#get-the-latest-development-compiled-version)
 
+<!-- markdown-toc end -->
+
 # Chimithèque
 
-Chimithèque is an open source *chemical product and biological reagent management* application started by the ENS-Lyon (France) and co-developped with the Université Clermont-Auvergne (France). It is written in *Golang*.
+Chimithèque is an open source *chemical product, biological reagent and lab consumables* management application started by the ENS-Lyon (France) and co-developped with the Université Clermont-Auvergne (France). It is written in *Golang*.
 
-*projet leader*: Delphine Pitrat (delphine[dot]pitrat[at]ens-lyon[dot]fr)
-*technical referent - chemistry*: Delphine Pitrat (delphine[dot]pitrat[at]ens-lyon[dot]fr)
-*technical referent - biology*: Antoine Goisnard (antoine[dot]goinard[at]uca[dot]fr)
+The project was started in 2015 and has moved to Github in 2017.
 
-The project has started in 2015 and has moved to Github in 2017.
+## Team
 
-Main goals:
-- *simplicity*: do one think (stores products) but do it well
-- *security*: provide a global listing of the chemicals products storages
-- *cost/ecology*: share chemical products to avoid waste
+- *projet leader*: Delphine Pitrat - ENS-Lyon (delphine[dot]pitrat[at]ens-lyon[dot]fr)  
+- *technical referent - chemistry*: Delphine Pitrat  
+- *technical referent - biology*: Antoine Goisnard Phd - University Clermont-Auvergne / IMOST lab. (antoine[dot]goinard[at]uca[dot]fr)  
+- Marie Depresle - University Clermont-Auvergne / Biomarqueur: *biology specialist*
+- Manon Roux - University Clermont-Auvergne / Biomarqueur: *chemistry specialist*
 
-Team:
-- Delphine Pitrat (ENS-Lyon, Chemical Engineer): project manager, chemistry specialist
-- Antoine Goisnard - Phd (University Clermont-Auvergne / IMOST lab.): biology specialist
-- Marie Depresle (University Clermont-Auvergne / Biomarqueurs): biology specialist
-- Manon Roux (University Clermont-Auvergne / Biomarqueurs): chemistry specialist
+## Features
+
+- Chemical product, biological reagent and lab consumable storages
+- Simple interface
+- Easy to install (Docker)
 
 ![screenshot](screenshot.png)
 
@@ -85,6 +93,7 @@ Chimithèque is statically compiled and then does not require other dependencies
 ```
 
 ## Without Docker
+
 1. download the latest `gochimitheque` binary here <https://github.com/tbellembois/gochimitheque/releases/latest/download/gochimitheque>
 2. uncompress it in a directory
 3. run `./gochimitheque`
@@ -193,11 +202,29 @@ One shot commands:
 >
 > will run the appplication behind a proxy at the URL `https://appserver.foo.fr/chimitheque` with 2 additionnal administrators `john.bar@foo.fr` and `jean.dupont@foo.fr`
 
-## Setting up application administrators
+### listenport
+
+You probably won't have to change this. This is the listening port of the Chimithèque binary. Change it only is you share the same HTTP proxy for other applications and if the default port is already used.
+
+### proxyurl, proxypath
+
+You should set those parameters in a production environment.
+
+If you instance is hosted at `https://myserver.foo.com/chim` then:
+- proxyurl = `https://myserver.foo.co`
+- proxypath = `/chim`
+
+Note that proxyurl has no trailing slash.
+
+### enablepublicproductsendpoint
+
+You should enable this feature because you want to be a member of the great Chimithèque community. :)
+
+### admins
+
+Comma separated list of admins emails. Account must have been created in the application before. You should limit the number of admins and set entity managers instead.
 
 A static administrator `admin@chimitheque.fr` is created during the installation. His password must be changed after the first connection.
-
-You can add additional administrators with the `-admins` command line parameters. Note that those admins *must already be present* in the database.
 
 > example: `-admins=john.bar@foo.com,jean.dupont@foo.com`
 
@@ -207,8 +234,14 @@ Chimithèque uses a local *sqlite* database. You are strongly encouraged to sche
 
 You can backup the database with:
 ```bash
-    sqlite3 /path/to/chimitheque/storage.db ".backup '/path/to/backup/storage.sq3'"
+  sqlite3 /path/to/chimitheque/storage.db ".backup '/path/to/backup/storage.sq3'"
 ```
+
+Restore it with:
+```bash
+  cp /path/to/backup/storage.sq3 /path/to/chimitheque/storage.db
+```
+
 # Chimithèque V2 initial database import
 
 ## Principle
@@ -289,9 +322,12 @@ Subscribe to the mailing list: <https://groupes.renater.fr/sympa/subscribe/chimi
 
 # Use of categories and tags
 
-For chemical and biological reagents, there is now the possibility to class products in different categories in order to make easier product research. This solution is available when creating a new product sheet with a scrolling menu and suggest different preregistered product categories. It is possible to create a new category if concerned product does not feet with already existing suggestions. This solution allows in main menu, with advanced research, to show only products called with a specific category, and thus have a global vision on a specific class of products. 
+For chemical and biological reagents, there is now the possibility to class products in different categories in order to make easier product research.
 
-This solution is completed with the possibility to apply tags on chemical or biological reagents, also available in product sheet section. This allows to associate a product with various fields, methods, protocols, projects, or application domains. Like previously, preregistered tags are proposed in a scrolling menu with the possibility to create new tags. For example, a stem cell culture medium can be associated with Stem Cells, Cell Culture or Culture Medium tags. This function may reveal particularly useful to rapidly show products associated with a specific activity, projects or method in the advanced research of Chimithéque main menu. Moreover, it is a way to personalize and adapt product research according to a lab or a structure specific needs or habits. 
+This solution is available when creating a new product sheet with a scrolling menu and suggest different preregistered product categories. It is possible to create a new category if concerned product does not feet with already existing suggestions. This solution allows in main menu, with advanced research, to show only products called with a specific category, and thus have a global vision on a specific class of products. 
+
+This solution is completed with the possibility to apply tags on chemical or biological reagents, also available in product sheet section. This allows to associate a product with various fields, methods, protocols, projects, or application domains. 
+Like previously, preregistered tags are proposed in a scrolling menu with the possibility to create new tags. For example, a stem cell culture medium can be associated with Stem Cells, Cell Culture or Culture Medium tags. This function may reveal particularly useful to rapidly show products associated with a specific activity, projects or method in the advanced research of Chimithéque main menu. Moreover, it is a way to personalize and adapt product research according to a lab or a structure specific needs or habits. 
 
 # Use of barecode and QRCode
 
@@ -301,18 +337,9 @@ By default, when a product is stocked, the software create a random bare-code an
 However, if a product need to be sampled, you can check the option "identical bare-code" when the number of samples is required, and it will generate the same bare-code for each new sample. 
 The major advantage is that you can scan any QRcode of these strictly identical products and it will display the page of the storage with all the samples. 
 Then, any of these samples could be borrowed or archived, for example. 
-For instance, for conservation conditions, it could be recommend ed to limite freeze-thaw cycles. 
+For instance, for conservation conditions, it could be recommended to limit freeze-thaw cycles. 
 To avoid that, the product could be sampled in different dishes with the same volume or mass. 
 To store them on Chimitheque, the "identical bare-code" option will permit to create QRcodes linked with all the samples, so that any of them could be destocked when one of them is used. 
-
-# V1/V2 version
-
-The v2 version has been rewritten in Golang.
-
-- dramastically faster
-- much easier to deploy (zero dependencies, embeded database)
-- responsive design
-- simplified GUI
 
 # List of public database Chimithèque instances
 

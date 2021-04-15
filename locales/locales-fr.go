@@ -547,7 +547,9 @@ var LOCALES_FR = []byte(`
 	one = "sélectionner tous les 'voir seulement'"
 [person_select_all_rw_storage]
 	one = "sélectionner tous les 'voir, modifier, créer et supprimer'"
-
+[person_show_password]
+  one = "afficher le champs mot de passe"
+  
 [permission_product]
 	one = "produits"
 [permission_rproduct]

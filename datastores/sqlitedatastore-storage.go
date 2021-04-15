@@ -469,6 +469,9 @@ func (db *SQLiteDataStore) GetStorages(p DbselectparamStorage) ([]Storage, int, 
 		"producerref":         p.GetProducerRef(),
 	}
 
+	logger.Log.Debug(presreq.String() + comreq.String() + postsreq.String())
+	logger.Log.Debug(m)
+
 	// select
 	if err = snstmt.Select(&storages, m); err != nil {
 		return nil, 0, err

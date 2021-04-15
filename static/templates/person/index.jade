@@ -43,7 +43,10 @@ block CONTENT
                                 +inputselect(name="entities", label="person_entity_title", ismultiple=true)
                         .row
                             .col-sm-6
-                            .col
+                              a(onclick='showPassword();' href="#")
+                                span.mdi.mdi-lock
+                                  = T("person_show_password", 1 )
+                            .col-sm-6
                                 button#selectAllEntity.btn.btn-outline-primary(type="button" onclick="Person_selectAllEntity();")
                                     span.mdi.mdi-check-all.iconlabel
                                         = T("check_all", 1) 
@@ -102,7 +105,7 @@ block CONTENT
                             .form-check.form-check-inline
                                 button#selectAllEntity.btn.btn-outline-primary(type="button" onclick="$('.permwstorages').prop('checked', true);" title=T("person_select_all_rw_storage", 1 ))
                                     span.mdi.mdi-check-all.iconlabel
-
+                     
                     #permissions
 
                         //- .blockquote-footer
@@ -111,9 +114,6 @@ block CONTENT
                         //-     span.mdi.mdi-creation.mdi-18px create
                         //-     span.mdi.mdi-border-color.mdi-18px update
                         //-     span.mdi.mdi-delete.mdi-18px delete
-                        // hidden feature
-                        a(onclick='showPassword();' href="#")    
-                            i .
                         
                     button#save.btn.btn-primary.float-right(type='button', onclick='Person_savePerson()')
                         span.mdi.mdi-content-save.mdi-24px.iconlabel

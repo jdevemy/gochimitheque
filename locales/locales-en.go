@@ -547,7 +547,9 @@ var LOCALES_EN = []byte(`
 	one = "select all 'view only'"
 [person_select_all_rw_storage]
 	one = "select all 'view, modify, create and delete'"
-
+[person_show_password]
+  one = "show password field"
+  
 [permission_product]
 	one = "products"
 [permission_rproduct]
