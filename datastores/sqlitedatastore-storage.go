@@ -266,6 +266,10 @@ func (db *SQLiteDataStore) GetStorages(p DbselectparamStorage) ([]Storage, int, 
 	}
 	// get name
 	comreq.WriteString(" JOIN name ON product.name = name.name_id")
+	// get category
+	if p.GetCategory() != -1 {
+		comreq.WriteString(" JOIN category ON product.category = :category")
+	}
 	// get signal word
 	comreq.WriteString(" LEFT JOIN signalword ON product.signalword = signalword.signalword_id")
 	// get person
@@ -301,6 +305,10 @@ func (db *SQLiteDataStore) GetStorages(p DbselectparamStorage) ([]Storage, int, 
 	// get precautionarystatements
 	if len(p.GetPrecautionaryStatements()) != 0 {
 		comreq.WriteString(" JOIN productprecautionarystatements AS pps ON pps.productprecautionarystatements_product_id = product.product_id")
+	}
+	// get tags
+	if len(p.GetTags()) != 0 {
+		comreq.WriteString(" JOIN producttags AS ptags ON ptags.producttags_product_id = product.product_id")
 	}
 	// get bookmarks
 	if p.GetBookmark() {
@@ -407,6 +415,15 @@ func (db *SQLiteDataStore) GetStorages(p DbselectparamStorage) ([]Storage, int, 
 		comreq.WriteString("-1")
 		comreq.WriteString(" )")
 	}
+	if len(p.GetTags()) != 0 {
+		comreq.WriteString(" AND ptags.producttags_tag_id IN (")
+		for _, t := range p.GetTags() {
+			comreq.WriteString(fmt.Sprintf("%d,", t))
+		}
+		// to complete the last comma
+		comreq.WriteString("-1")
+		comreq.WriteString(" )")
+	}
 	if p.GetSignalWord() != -1 {
 		comreq.WriteString(" AND signalword.signalword_id = :signalword")
 	}
@@ -467,6 +484,7 @@ func (db *SQLiteDataStore) GetStorages(p DbselectparamStorage) ([]Storage, int, 
 		"custom_name_part_of": "%" + p.GetCustomNamePartOf() + "%",
 		"signalword":          p.GetSignalWord(),
 		"producerref":         p.GetProducerRef(),
+		"category":            p.GetCategory(),
 	}
 
 	logger.Log.Debug(presreq.String() + comreq.String() + postsreq.String())

@@ -28,6 +28,11 @@ include mixins
                     .col-sm-12
                         .form-row
                             .col-sm-6
+                                +inputselect(name="s_tags", label="s_tags")
+                            .col-sm-6
+                                +inputselect(name="s_category", label="s_category")
+                        .form-row
+                            .col-sm-6
                                 +inputselect(name="s_entity", label="s_entity")
                             .col-sm-6
                                 +inputselect(name="s_storelocation", label="s_storelocation")

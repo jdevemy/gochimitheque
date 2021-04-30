@@ -1796,7 +1796,11 @@ func (db *SQLiteDataStore) GetProducts(p DbselectparamProduct) ([]Product, int, 
 	// get name
 	comreq.WriteString(" JOIN name ON p.name = name.name_id")
 	// get category
-	comreq.WriteString(" LEFT JOIN category ON p.category = category.category_id")
+	if p.GetCategory() != -1 {
+		comreq.WriteString(" JOIN category ON p.category = :category")
+	} else {
+		comreq.WriteString(" LEFT JOIN category ON p.category = category.category_id")
+	}
 	// get unit_temperature
 	comreq.WriteString(" LEFT JOIN unit ut ON p.unit_temperature = ut.unit_id")
 	// get producerref
@@ -1848,6 +1852,10 @@ func (db *SQLiteDataStore) GetProducts(p DbselectparamProduct) ([]Product, int, 
 	// get precautionarystatements
 	if len(p.GetPrecautionaryStatements()) != 0 {
 		comreq.WriteString(" JOIN productprecautionarystatements AS pps ON pps.productprecautionarystatements_product_id = p.product_id")
+	}
+	// get tags
+	if len(p.GetTags()) != 0 {
+		comreq.WriteString(" JOIN producttags AS ptags ON ptags.producttags_product_id = p.product_id")
 	}
 
 	// filter by permissions
@@ -1922,6 +1930,16 @@ func (db *SQLiteDataStore) GetProducts(p DbselectparamProduct) ([]Product, int, 
 		comreq.WriteString("-1")
 		comreq.WriteString(" )")
 	}
+	if len(p.GetTags()) != 0 {
+		comreq.WriteString(" AND ptags.producttags_tag_id IN (")
+		for _, t := range p.GetTags() {
+			comreq.WriteString(fmt.Sprintf("%d,", t))
+		}
+		// to complete the last comma
+		comreq.WriteString("-1")
+		comreq.WriteString(" )")
+	}
+
 	if p.GetSignalWord() != -1 {
 		comreq.WriteString(" AND signalword.signalword_id = :signalword")
 	}
@@ -1986,6 +2004,7 @@ func (db *SQLiteDataStore) GetProducts(p DbselectparamProduct) ([]Product, int, 
 		"custom_name_part_of": "%" + p.GetCustomNamePartOf() + "%",
 		"signalword":          p.GetSignalWord(),
 		"producerref":         p.GetProducerRef(),
+		"category":            p.GetCategory(),
 	}
 
 	logger.Log.Debug(presreq.String() + comreq.String() + postsreq.String())

@@ -173,6 +173,10 @@ var LOCALES_EN = []byte(`
 [welcomeannounce_text_modificationsuccess]
 	one = "announce modified"
 
+[s_tags]
+	one = "tag(s)"
+[s_category]
+	one = "category"
 [s_entity]
 	one = "entity"
 [s_storelocation]

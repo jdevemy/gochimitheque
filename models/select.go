@@ -56,6 +56,8 @@ type DbselectparamProduct interface {
 	SetShowBio(bool)
 	SetShowChem(bool)
 	SetShowConsu(bool)
+	SetTags([]int)
+	SetCategory(int)
 
 	GetProducerRef() int
 	GetEntity() int
@@ -79,6 +81,8 @@ type DbselectparamProduct interface {
 	GetShowBio() bool
 	GetShowChem() bool
 	GetShowConsu() bool
+	GetTags() []int
+	GetCategory() int
 }
 type dbselectparamProduct struct {
 	dbselectparam
@@ -102,6 +106,8 @@ type dbselectparamProduct struct {
 	ProductSpecificity      string
 	Borrowing               bool
 	StorageToDestroy        bool
+	Tags                    []int
+	Category                int
 
 	ShowBio   bool
 	ShowChem  bool
@@ -134,6 +140,8 @@ type DbselectparamStorage interface {
 	SetBorrowing(bool)
 	SetStorageToDestroy(bool)
 	SetStorageBatchNumber(string)
+	SetTags([]int)
+	SetCategory(int)
 
 	SetShowBio(bool)
 	SetShowChem(bool)
@@ -162,6 +170,8 @@ type DbselectparamStorage interface {
 	GetBorrowing() bool
 	GetStorageToDestroy() bool
 	GetStorageBatchNumber() string
+	GetTags() []int
+	GetCategory() int
 
 	GetShowBio() bool
 	GetShowChem() bool
@@ -192,6 +202,8 @@ type dbselectparamStorage struct {
 	CasNumberCmr            bool
 	Borrowing               bool
 	StorageToDestroy        bool
+	Tags                    []int
+	Category                int
 
 	ShowBio   bool
 	ShowChem  bool
@@ -391,6 +403,22 @@ func (d *dbselectparamStoreLocation) SetPermission(p string) {
 //
 // dbselectparamProduct functions
 //
+func (d *dbselectparamProduct) SetTags(t []int) {
+	d.Tags = t
+}
+
+func (d *dbselectparamProduct) GetTags() []int {
+	return d.Tags
+}
+
+func (d *dbselectparamProduct) SetCategory(c int) {
+	d.Category = c
+}
+
+func (d *dbselectparamProduct) GetCategory() int {
+	return d.Category
+}
+
 func (d *dbselectparamProduct) SetShowBio(b bool) {
 	d.ShowBio = b
 }
@@ -570,6 +598,22 @@ func (d *dbselectparamProduct) GetStorageToDestroy() bool {
 //
 // dbselectparamStorage functions
 //
+func (d *dbselectparamStorage) SetTags(t []int) {
+	d.Tags = t
+}
+
+func (d *dbselectparamStorage) GetTags() []int {
+	return d.Tags
+}
+
+func (d *dbselectparamStorage) SetCategory(c int) {
+	d.Category = c
+}
+
+func (d *dbselectparamStorage) GetCategory() int {
+	return d.Category
+}
+
 func (d *dbselectparamStorage) SetShowBio(b bool) {
 	d.ShowBio = b
 }
@@ -858,6 +902,7 @@ func NewdbselectparamProduct(r *http.Request, f func(string) (string, error)) (*
 	)
 
 	// init defaults
+	dspp.Category = -1
 	dspp.ProducerRef = -1
 	dspp.Entity = -1
 	dspp.Product = -1
@@ -1071,6 +1116,28 @@ func NewdbselectparamProduct(r *http.Request, f func(string) (string, error)) (*
 				}
 			}
 		}
+		if categoryid, ok := r.URL.Query()["category"]; ok {
+			if dspp.Category, err = strconv.Atoi(categoryid[0]); err != nil {
+				return nil, &AppError{
+					Error:   err,
+					Code:    http.StatusInternalServerError,
+					Message: "category atoi conversion",
+				}
+			}
+		}
+		if tagsids, ok := r.URL.Query()["tags[]"]; ok {
+			var tint int
+			for _, t := range tagsids {
+				if tint, err = strconv.Atoi(t); err != nil {
+					return nil, &AppError{
+						Error:   err,
+						Code:    http.StatusInternalServerError,
+						Message: "tag atoi conversion",
+					}
+				}
+				dspp.Tags = append(dspp.Tags, tint)
+			}
+		}
 	}
 	return &dspp, nil
 
@@ -1088,6 +1155,7 @@ func NewdbselectparamStorage(r *http.Request, f func(string) (string, error)) (*
 	)
 
 	// init defaults
+	dsps.Category = -1
 	dsps.ProducerRef = -1
 	dsps.Entity = -1
 	dsps.Product = -1
@@ -1343,6 +1411,28 @@ func NewdbselectparamStorage(r *http.Request, f func(string) (string, error)) (*
 					Code:    http.StatusInternalServerError,
 					Message: "showconsu bool conversion",
 				}
+			}
+		}
+		if categoryid, ok := r.URL.Query()["category"]; ok {
+			if dsps.Category, err = strconv.Atoi(categoryid[0]); err != nil {
+				return nil, &AppError{
+					Error:   err,
+					Code:    http.StatusInternalServerError,
+					Message: "category atoi conversion",
+				}
+			}
+		}
+		if tagsids, ok := r.URL.Query()["tags[]"]; ok {
+			var tint int
+			for _, t := range tagsids {
+				if tint, err = strconv.Atoi(t); err != nil {
+					return nil, &AppError{
+						Error:   err,
+						Code:    http.StatusInternalServerError,
+						Message: "tag atoi conversion",
+					}
+				}
+				dsps.Tags = append(dsps.Tags, tint)
 			}
 		}
 	}
