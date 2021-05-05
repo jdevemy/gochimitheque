@@ -14,7 +14,7 @@ services:
             - chimitheque
     chimitheque:
         container_name: chimitheque
-        image: tbellembois/gochimitheque
+        image: tbellembois/gochimitheque:[tag]
         restart: unless-stopped
         environment:
             - CHIMITHEQUE_PROXYPATH=/chimitheque/

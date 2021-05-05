@@ -1,11 +1,13 @@
 FROM golang:1.16-buster
 LABEL author="Thomas Bellembois"
+ARG GIT_COMMIT
+ENV ENV_GIT_COMMIT=$GIT_COMMIT
 
 #
 # Build prepare.
 #
 
-# TODO: fixme workaround WASM module incompatible Go module
+# ref. go.mod gochimitheque-wasm
 RUN mkdir -p /home/thbellem/workspace
 RUN ln -s /go /home/thbellem/workspace/workspace_go
 
@@ -16,9 +18,7 @@ RUN mkdir /data && chown www-data /data
 RUN mkdir /var/www-data && chown www-data /var/www-data
 
 # Installing Jade command.
-# TODO: fixme
-#RUN go get -v github.com/Joker/jade/cmd/jade
-COPY jade /go/bin/
+RUN go get -v github.com/Joker/jade/cmd/jade@master
 
 #
 # Sources.
@@ -26,9 +26,6 @@ COPY jade /go/bin/
 
 # Getting wasm module sources.
 WORKDIR /go/src/github.com/tbellembois/
-# prod.
-#RUN git clone -b devel https://github.com/tbellembois/gochimitheque-wasm.git
-# devel. with:
 # sudo mount --bind ~/workspace/workspace_go/src/github.com/tbellembois/gochimitheque-wasm ./bind-gochimitheque-wasm
 COPY ./bind-gochimitheque-wasm ./gochimitheque-wasm
 
@@ -59,7 +56,8 @@ RUN go get -v -d ./...
 RUN go generate
 
 # Building Chimithèque.
-RUN if [ ! -z "$GitCommit" ]; then export GIT_COMMIT=$GitCommit; else export GIT_COMMIT=$(git rev-list -1 HEAD); fi; echo "version=$GIT_COMMIT" ;go build -ldflags "-X main.GitCommit=$GIT_COMMIT"
+# docker build --build-arg GIT_COMMIT=2.0.7 -t tbellembois/gochimitheque:2.0.7 .
+RUN if [ ! -z "$ENV_GIT_COMMIT" ]; then export GIT_COMMIT=$ENV_GIT_COMMIT; else export GIT_COMMIT=$(git rev-list -1 HEAD); fi; echo "version=$GIT_COMMIT" ;go build -ldflags "-X main.GitCommit=$GIT_COMMIT"
 
 #
 # Install.

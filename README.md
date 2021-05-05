@@ -38,7 +38,6 @@
 - [Use of categories and tags](#use-of-categories-and-tags)
 - [Use of barecode and QRCode](#use-of-barecode-and-qrcode)
 - [List of public database Chimithèque instances](#list-of-public-database-chimithèque-instances)
-- [Get the latest development compiled version](#get-the-latest-development-compiled-version)
 
 <!-- markdown-toc end -->
 
@@ -60,7 +59,7 @@ The project was started in 2015 and has moved to Github in 2017.
 
 - Chemical product, biological reagent and lab consumable storages
 - Simple interface
-- Easy to install (Docker)
+- Easy to install (Docker or binary with no dependencies)
 
 ![screenshot](screenshot.png)
 
@@ -88,8 +87,13 @@ Chimithèque is statically compiled and then does not require other dependencies
 
 ## With Docker
 
+Look at the latest tagged version at <https://hub.docker.com/repository/docker/tbellembois/gochimitheque>.
+
+Do *NOT* use the `latest` tag as it is the development version.
+
+For example fo the `2.0.7` version:
 ```bash
-  docker run  -p 127.0.0.1:8081:8081 tbellembois/gochimitheque:latest
+  docker run --name chimitheque -p 127.0.0.1:8081:8081 tbellembois/gochimitheque:2.0.7
 ```
 
 ## Without Docker
@@ -118,6 +122,8 @@ Retrieve the Chimithèque `docker-compose.yml` file:
 ```bash
   wget https://raw.githubusercontent.com/tbellembois/gochimitheque/master/docker-compose.yml -O docker-compose.yml
 ```
+
+and change `[tag]` with the latest tagged stable version.
 
 Create the data directories for the Nginx and Chimithèque containers:
 ```bash
@@ -346,10 +352,3 @@ To store them on Chimitheque, the "identical bare-code" option will permit to cr
 - ENS de Lyon: `https://chimitheque.ens-lyon.fr`
 
 If you want to share your product database please send an email to the mailing list or create a Github issue.
-
-# Get the latest development compiled version
-
-You can retrieve the latest auto-compiled version from the trunk. 
-This is strongly not recommended in a production environment except if you know what you do.
-
-Go in the [action](https://github.com/tbellembois/gochimitheque/actions) tab of the project. Click on the last (top of the list) successfull workflow. Download the `chimitheque` artifacts zip. The `gochimitheque` binary is in the zip file. 
